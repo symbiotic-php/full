@@ -34,7 +34,7 @@ class ContextualBindingBuilder
      * @param  string|array  $concrete
      * @return void
      */
-    public function __construct(DIContainerInterface $container, string|array $concrete)
+    public function __construct(DIContainerInterface $container, $concrete)
     {
         $this->concrete = $concrete;
         $this->container = $container;

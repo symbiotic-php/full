@@ -103,7 +103,7 @@ class MiddlewaresDispatcher
      * @param string|\Closure $middleware
      * @return MiddlewareInterface
      */
-    public function factory(string|\Closure $middleware): MiddlewareInterface
+    public function factory($middleware): MiddlewareInterface
     {
         if ($middleware instanceof \Closure) {
             return new MiddlewareCallback($middleware);

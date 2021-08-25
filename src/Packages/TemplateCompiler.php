@@ -6,7 +6,7 @@ use Dissonance\Mimetypes\MimeTypesMini;
 
 class TemplateCompiler {
 
-    protected  array $extensions = [];
+    protected $extensions = [];
 
     /**
      * @param TemplateCompilerInterface $compiler

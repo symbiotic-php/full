@@ -14,7 +14,7 @@ class RequestPrefixMiddleware implements MiddlewareInterface
     /**
      * @var null|string
      */
-    protected ?string $uri_prefix;
+    protected $uri_prefix = null;
 
     /**
      * RequestPrefixMiddleware constructor.

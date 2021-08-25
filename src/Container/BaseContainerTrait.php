@@ -19,7 +19,7 @@ trait BaseContainerTrait /*implements \Dissonance\Container\BaseContainerInterfa
      * @return array|\ArrayAccess
      * @todo: Can do protected, on the one hand it is convenient, but to give everyone in a row to manage is not correct!?
      */
-    abstract protected function &getContainerItems(): array|\ArrayAccess;
+    abstract protected function &getContainerItems();
 
     /**
      * @param string $key
@@ -28,7 +28,7 @@ trait BaseContainerTrait /*implements \Dissonance\Container\BaseContainerInterfa
      *
      * @return mixed|null
      */
-    public function get(string|int $key)
+    public function get($key)
     {
         $items = &$this->getContainerItems();
         return $this->hasBy($key,$items) ? $items[$key] :
@@ -43,7 +43,7 @@ trait BaseContainerTrait /*implements \Dissonance\Container\BaseContainerInterfa
      * @info
      * @return bool
      */
-    public function has(string|int $key): bool
+    public function has($key): bool
     {
         $items = &$this->getContainerItems();
         return $this->hasBy($key,$items);
@@ -55,7 +55,7 @@ trait BaseContainerTrait /*implements \Dissonance\Container\BaseContainerInterfa
      * @return bool
      * @info
      */
-    private function hasBy(string|int $key, \ArrayAccess|array &$items): bool
+    private function hasBy($key, &$items): bool
     {
         return isset($items[$key]) // isset в 4 раза быстрее array_key_exists
             ||  (is_array($items) && array_key_exists($key, $items))
@@ -66,7 +66,7 @@ trait BaseContainerTrait /*implements \Dissonance\Container\BaseContainerInterfa
      * @param int|string $key
      * @param $value
      */
-    public function set(string|int $key, $value): void
+    public function set($key, $value): void
     {
         $items = &$this->getContainerItems();
         $items[$key] = $value;
@@ -77,7 +77,7 @@ trait BaseContainerTrait /*implements \Dissonance\Container\BaseContainerInterfa
      * @param int|string $key
      * @return mixed
      */
-    public function delete(string|int $key): bool
+    public function delete($key): bool
     {
         $items = &$this->getContainerItems();
         unset($items[$key]);

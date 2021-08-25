@@ -21,7 +21,7 @@ class CacheRouterDecorator implements RouterInterface
     protected $router = null;
 
 
-    protected string $cache_key = '';
+    protected $cache_key = '';
 
     protected $allowed_cache = true;
 

@@ -4,7 +4,7 @@ namespace Dissonance\Core\Events;
 
 class CacheClear {
 
-    protected ?string $path = null;
+    protected  $path = null;
 
     public function __construct(string $path = null)
     {

@@ -22,26 +22,26 @@ class Core extends Container implements CoreInterface
      * Class names Runners {@see \Dissonance\Core\Runner}
      * @var string[]
      */
-    protected array $runners = [];
+    protected $runners = [];
 
     /**
      * @var string|null
      */
-    protected ?string $base_path;
+    protected $base_path = null;
 
     /**
      * The bootstrap classes for the application.
      *
      * @var array
      */
-    protected array $bootstraps = [];
+    protected $bootstraps = [];
 
     /**
      * The bootstrap classes for the application.
      *
      * @var array
      */
-    protected array $last_bootstraps = [
+    protected $last_bootstraps = [
         ProvidersBootstrap::class,
         BootBootstrap::class,
     ];
@@ -50,7 +50,7 @@ class Core extends Container implements CoreInterface
      * Массив ключей разрешенных сервисов для кеширования
      * @var array|string[]
      */
-    protected array $allow_cached = [];
+    protected $allow_cached = [];
 
     public function __construct(array $config = [])
     {
@@ -66,7 +66,7 @@ class Core extends Container implements CoreInterface
     /**
      * @param string| string[] $bootstraps
      */
-    public function addBootstraps(string|array $bootstraps): void
+    public function addBootstraps($bootstraps): void
     {
         foreach ((array)$bootstraps as $v) {
             $this->bootstraps[] = $v;

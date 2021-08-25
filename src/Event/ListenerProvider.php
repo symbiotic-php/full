@@ -24,7 +24,7 @@ class ListenerProvider implements ListenersInterface
      *
      * @return void
      */
-    public function add(string $event,string|\Closure $handler): void
+    public function add(string $event, $handler): void
     {
         $this->listeners[$event][] = $handler;
     }

@@ -8,13 +8,13 @@ class SessionStorageNative implements SessionStorageInterface
 {
     use ArrayAccessTrait;
 
-    protected array $items = [];
+    protected $items = [];
 
-    protected bool $started = false;
+    protected $started = false;
     /**
      * @var string|null
      */
-    protected ?string $session_namespace;
+    protected $session_namespace;
 
     public function __construct(string $session_namespace = null)
     {

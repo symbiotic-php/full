@@ -2,7 +2,7 @@
   "name": "symbiotic/full",
   "description": "Полная сборка пакетов фреймворка Symbiotic.",
   "license": "BSD-3-Clause",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "authors": [{
     "name": "Surkov Sergey",
     "role": "creator"

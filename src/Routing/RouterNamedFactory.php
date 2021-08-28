@@ -1,13 +1,13 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 
 
 
 /**
  * Class Router
- * @package Dissonance\Routing
+ * @package Symbiotic\Routing
  *
  */
 class RouterNamedFactory extends RouterFactory

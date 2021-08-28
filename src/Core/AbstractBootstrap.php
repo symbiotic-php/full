@@ -1,7 +1,7 @@
 <?php
-namespace Dissonance\Core;
+namespace Symbiotic\Core;
 
-use Dissonance\Container\CachedContainerInterface;
+use Symbiotic\Container\CachedContainerInterface;
 
 
 abstract class AbstractBootstrap implements BootstrapInterface

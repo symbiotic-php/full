@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Storage;
+namespace Symbiotic\Storage;
 
 interface RememberingInterface
 {

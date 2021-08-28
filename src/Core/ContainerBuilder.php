@@ -1,9 +1,9 @@
 <?php
 
 
-namespace Dissonance\Core;
+namespace Symbiotic\Core;
 
-use Dissonance\Core\Bootstrap\LazyPackagesBootstrap;
+use Symbiotic\Core\Bootstrap\LazyPackagesBootstrap;
 use Psr\SimpleCache\CacheInterface;
 
 class ContainerBuilder

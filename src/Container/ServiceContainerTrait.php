@@ -1,9 +1,9 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 
-trait ServiceContainerTrait /*implements \Dissonance\Container\ServiceContainerInterface */
+trait ServiceContainerTrait /*implements \Symbiotic\Container\ServiceContainerInterface */
 {
     /**
      * @var DIContainerInterface
@@ -12,7 +12,7 @@ trait ServiceContainerTrait /*implements \Dissonance\Container\ServiceContainerI
     /**
      * All of the registered service providers.
      *
-     * @var \Dissonance\Core\ServiceProvider[]
+     * @var \Symbiotic\Core\ServiceProvider[]
      */
     protected array $serviceProviders = [];
 
@@ -48,7 +48,7 @@ trait ServiceContainerTrait /*implements \Dissonance\Container\ServiceContainerI
     }
     /**
      * @param array $services
-     * @used-by \Dissonance\Core\ProvidersRepository::load()
+     * @used-by \Symbiotic\Core\ProvidersRepository::load()
      */
     public function setDeferred(array $services)
     {

@@ -1,13 +1,13 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 
 
 
 /**
  * Interface RouterInterface
- * @package Dissonance\Routing
+ * @package Symbiotic\Routing
  */
 interface RouterInterface
 {
@@ -22,7 +22,7 @@ interface RouterInterface
      *                     // optional params
      *                     'as' => 'module.entity.edit',
      *                     'module' => 'prefix_module',
-     *                     'middleware' => ['\\Dissonance\\Http\\Middlewares\Auth', '\\Module\\Http\\Middlewares\Test']
+     *                     'middleware' => ['\\Symbiotic\\Http\\Middlewares\Auth', '\\Module\\Http\\Middlewares\Test']
      * ]
      *
      * @return RouteInterface

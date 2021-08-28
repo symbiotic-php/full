@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 
 
@@ -12,7 +12,7 @@ namespace Dissonance\Container;
  * The name of the interface is specially different, so as not to be confused with the interface from PSR.
  * Using aliases is not recommended.
  *
- * @package Dissonance\Container
+ * @package Symbiotic\Container
  *
  * Extenders this interface
  * @see ArrayContainerInterface

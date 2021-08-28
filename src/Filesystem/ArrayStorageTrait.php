@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Dissonance\Filesystem;
+namespace Symbiotic\Filesystem;
 
 
 

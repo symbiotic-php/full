@@ -1,8 +1,8 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
-use Dissonance\Core\Support\{Str,Arr};
+use Symbiotic\Core\Support\{Str,Arr};
 
 
 class UrlGenerator implements UrlGeneratorInterface

@@ -1,13 +1,13 @@
 <?php
 
-namespace Dissonance\Apps;
+namespace Symbiotic\Apps;
 
-use Dissonance\Container\{DIContainerInterface, SubContainerTrait, ServiceContainerTrait};
+use Symbiotic\Container\{DIContainerInterface, SubContainerTrait, ServiceContainerTrait};
 
 
 /**
  * Class Application
- * @package Dissonance\App
+ * @package Symbiotic\App
  * @property AppConfigInterface $config
  * @property $this = [
  *     'config' => new AppConfig()

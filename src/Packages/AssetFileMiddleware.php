@@ -1,8 +1,8 @@
 <?php
 
-namespace Dissonance\Packages;
+namespace Symbiotic\Packages;
 
-use Dissonance\Mimetypes\MimeTypesMini;
+use Symbiotic\Mimetypes\MimeTypesMini;
 
 use Psr\Http\Message\{ResponseFactoryInterface, ResponseInterface, ServerRequestInterface};
 use Psr\Http\Server\{MiddlewareInterface, RequestHandlerInterface};
@@ -47,7 +47,7 @@ class AssetFileMiddleware implements MiddlewareInterface
         if (preg_match($pattern, ltrim($request->getRequestTarget(), '/'), $match)) {
 
             /**
-             * @var  \Dissonance\Http\PsrHttpFactory|ResponseFactoryInterface $response_factory
+             * @var  \Symbiotic\Http\PsrHttpFactory|ResponseFactoryInterface $response_factory
              */
             $response_factory = $this->response_factory;
             try {

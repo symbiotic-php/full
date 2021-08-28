@@ -1,12 +1,12 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 
 class AppRouting implements AppRoutingInterface
 {
     /**
-     * @see \Dissonance\Packages\PackagesRepository::addPackage()
+     * @see \Symbiotic\Packages\PackagesRepository::addPackage()
      */
     protected string $app_id;
 

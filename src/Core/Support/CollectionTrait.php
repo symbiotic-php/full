@@ -1,10 +1,10 @@
 <?php
 
-namespace Dissonance\Core\Support;
+namespace Symbiotic\Core\Support;
 
 
-use Dissonance\Container\ArrayAccessTrait;
-use Dissonance\Container\MagicAccessTrait;
+use Symbiotic\Container\ArrayAccessTrait;
+use Symbiotic\Container\MagicAccessTrait;
 use \Traversable;
 use \ArrayIterator;
 

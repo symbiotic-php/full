@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Core\Support;
+namespace Symbiotic\Core\Support;
 
 
 interface ArrayableInterface

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Dissonance\Mimetypes;
+namespace Symbiotic\Mimetypes;
 /**
  * abbreviating standard names
  */

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Apps;
+namespace Symbiotic\Apps;
 
 interface AppsRepositoryInterface
 {

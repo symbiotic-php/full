@@ -1,9 +1,9 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 
-use Dissonance\Core\Support\Collection;
+use Symbiotic\Core\Support\Collection;
 
 class SettlementsRouter extends Router implements RouterInterface
 {
@@ -12,12 +12,12 @@ class SettlementsRouter extends Router implements RouterInterface
     const DEFAULT_ROUTER = 'default';
 
     /**
-     * @var RouterLazy[]|\Dissonance\Routing\RouterInterface[]
+     * @var RouterLazy[]|\Symbiotic\Routing\RouterInterface[]
      */
     protected $routers = [];
 
     /**
-     * @var Router|\Dissonance\Routing\RouterInterface|null
+     * @var Router|\Symbiotic\Routing\RouterInterface|null
      */
     protected $current_router = null;
 

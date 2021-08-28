@@ -1,8 +1,8 @@
 <?php
 
-namespace Dissonance\Packages;
+namespace Symbiotic\Packages;
 
-use Dissonance\Core\{AbstractBootstrap, CoreInterface};
+use Symbiotic\Core\{AbstractBootstrap, CoreInterface};
 
 
 class PackagesBootstrap extends AbstractBootstrap

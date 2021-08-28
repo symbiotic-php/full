@@ -1,12 +1,12 @@
 <?php
 
-namespace Dissonance\Apps;
+namespace Symbiotic\Apps;
 
-use Dissonance\Container\{ArrayAccessTrait, ItemsContainerTrait};
+use Symbiotic\Container\{ArrayAccessTrait, ItemsContainerTrait};
 
 /**
  * Class AppConfig
- * @package Dissonance\Apps
+ * @package Symbiotic\Apps
  * @deprecated  не нужная прослойка, все есть в самом приложении
  */
 class AppConfig implements AppConfigInterface

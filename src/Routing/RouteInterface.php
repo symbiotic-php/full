@@ -1,10 +1,10 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 /**
  * Interface RouteInterface
- * @package Dissonance\Routing
+ * @package Symbiotic\Routing
  */
 interface RouteInterface
 {

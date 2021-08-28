@@ -1,8 +1,8 @@
 <?php
 
-namespace Dissonance\Http\Kernel;
+namespace Symbiotic\Http\Kernel;
 
-use Dissonance\Http\Middleware\MiddlewaresHandler;
+use Symbiotic\Http\Middleware\MiddlewaresHandler;
 
 
 class PreloadKernelHandler extends MiddlewaresHandler

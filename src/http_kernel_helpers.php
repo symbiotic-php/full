@@ -3,7 +3,7 @@
 namespace _DS;
 
 
-use Dissonance\Core\HttpKernelInterface;
+use Symbiotic\Core\HttpKernelInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 

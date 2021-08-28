@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 
 /**
@@ -8,10 +8,10 @@ namespace Dissonance\Container;
  *
  * Менее универсальный, но рабоает на 35% быстрее {@see \BaseContainerTrai}
  *
- * @package dissonance/container-traits
+ * @package symbiotic/container-traits
  *
  */
-trait ItemsContainerTrait /*implements \Dissonance\Container\BaseContainerInterface*/
+trait ItemsContainerTrait /*implements \Symbiotic\Container\BaseContainerInterface*/
 {
 
 

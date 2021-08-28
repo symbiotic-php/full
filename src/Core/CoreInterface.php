@@ -1,12 +1,12 @@
 <?php
 
-namespace Dissonance\Core;
+namespace Symbiotic\Core;
 
-use Dissonance\Container\{DIContainerInterface, ServiceContainerInterface};
+use Symbiotic\Container\{DIContainerInterface, ServiceContainerInterface};
 
 /**
  * Interface CoreInterface
- * @package Dissonance\Contracts
+ * @package Symbiotic\Contracts
  */
 interface CoreInterface extends DIContainerInterface, ServiceContainerInterface
 {
@@ -27,7 +27,7 @@ interface CoreInterface extends DIContainerInterface, ServiceContainerInterface
      * Запускает инициализацию приложения
      *
      * @used-by  HttpKernelInterface::bootstrap()
-     * @used-by  \Dissonance\Http\Kernel\HttpKernel::bootstrap()
+     * @used-by  \Symbiotic\Http\Kernel\HttpKernel::bootstrap()
      */
     public function bootstrap(): void;
 

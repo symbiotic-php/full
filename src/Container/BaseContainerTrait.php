@@ -1,16 +1,16 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 
 /**
  * Trait BaseContainerTrait
  *
- * @package dissonance/container-traits
+ * @package symbiotic/container-traits
  *
  * Старая версия, из-за getContainerItems на 30% дольше рабоает, но универсальней
  */
-trait BaseContainerTrait /*implements \Dissonance\Container\BaseContainerInterface*/
+trait BaseContainerTrait /*implements \Symbiotic\Container\BaseContainerInterface*/
 {
 
     /**

@@ -1,15 +1,15 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
-use Dissonance\Container\DIContainerInterface;
-use Dissonance\Core\Support\Arr;
+use Symbiotic\Container\DIContainerInterface;
+use Symbiotic\Core\Support\Arr;
 class ContextualBindingBuilder
 {
     /**
      * The underlying container instance.
      *
-     * @var \Dissonance\Container\DIContainerInterface
+     * @var \Symbiotic\Container\DIContainerInterface
      */
     protected $container;
 
@@ -30,7 +30,7 @@ class ContextualBindingBuilder
     /**
      * Create a new contextual binding builder.
      *
-     * @param  \Dissonance\Container\DIContainerInterface  $container
+     * @param  \Symbiotic\Container\DIContainerInterface  $container
      * @param  string|array  $concrete
      * @return void
      */

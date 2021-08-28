@@ -1,16 +1,16 @@
 <?php
 
-namespace Dissonance\Apps;
+namespace Symbiotic\Apps;
 
-use Dissonance\Container\DIContainerInterface;
-use Dissonance\Container\ServiceContainerInterface;
+use Symbiotic\Container\DIContainerInterface;
+use Symbiotic\Container\ServiceContainerInterface;
 
 
 /**
  * Interface ApplicationInterface
- * @package dissonance/apps-сontracts
+ * @package symbiotic/apps-сontracts
  *
- * @property \Dissonance\Core\Core|ApplicationInterface $app для плагинов контейнером будет роджительское приложение
+ * @property \Symbiotic\Core\Core|ApplicationInterface $app для плагинов контейнером будет роджительское приложение
  *
  */
 interface  ApplicationInterface extends AppConfigInterface, DIContainerInterface, ServiceContainerInterface

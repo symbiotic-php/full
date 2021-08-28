@@ -1,10 +1,10 @@
 <?php
 
-namespace Dissonance\SimpleCacheFilesystem;
+namespace Symbiotic\SimpleCacheFilesystem;
 
-use Dissonance\Core\AbstractBootstrap;
-use Dissonance\Core\CoreInterface;
-use Dissonance\Core\Events\CacheClear;
+use Symbiotic\Core\AbstractBootstrap;
+use Symbiotic\Core\CoreInterface;
+use Symbiotic\Core\Events\CacheClear;
 use Psr\SimpleCache\CacheInterface;
 
 class Bootstrap extends AbstractBootstrap
@@ -21,7 +21,7 @@ class Bootstrap extends AbstractBootstrap
             $app['listeners']->add(CacheClear::class, function($event) use ($app){
                 $app[CacheInterface::class]->clear();
             });
-            $app->alias(CacheInterface::class,\Dissonance\SimpleCacheFilesystem\SimpleCacheInterface::class);
+            $app->alias(CacheInterface::class,\Symbiotic\SimpleCacheFilesystem\SimpleCacheInterface::class);
         }
     }
 }

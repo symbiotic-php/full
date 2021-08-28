@@ -1,13 +1,13 @@
 <?php
 
-namespace Dissonance\Http\Middleware;
+namespace Symbiotic\Http\Middleware;
 
 use Psr\Http\Server\MiddlewareInterface;
 
 /**
  * Class MiddlewaresDispatcher
- * @package Dissonance\Http\Middleware
- * @category Dissonance\Http
+ * @package Symbiotic\Http\Middleware
+ * @category Symbiotic\Http
  *
  * @notice The use of functions as middleware is made exclusively for Micro assembly
  * @example function(ServerRequestInterface $request, RequestHandlerInterface $handler) : ResponseInterface {}

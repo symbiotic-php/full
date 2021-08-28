@@ -2,11 +2,11 @@
 
 namespace _DS;
 
-use Dissonance\Core\Config;
-use Dissonance\Core\Core;
-use \Dissonance\Core\Support\Str;
-use \Dissonance\Core\Support\Collection;
-use \Dissonance\Core\Support\Arr;
+use Symbiotic\Core\Config;
+use Symbiotic\Core\Core;
+use \Symbiotic\Core\Support\Str;
+use \Symbiotic\Core\Support\Collection;
+use \Symbiotic\Core\Support\Arr;
 
 
 const DS = DIRECTORY_SEPARATOR;
@@ -240,8 +240,8 @@ if (!function_exists('_DS\\ends_with')) {
      * @param string $haystack
      * @param string|array $needles
      * @return bool
-     * @uses \Dissonance\Core\Support\Str::endsWith()
-     * @deprecated \Dissonance\Str::endsWith() should be used directly instead. Will be removed in Laravel 5.9.
+     * @uses \Symbiotic\Core\Support\Str::endsWith()
+     * @deprecated \Symbiotic\Str::endsWith() should be used directly instead. Will be removed in Laravel 5.9.
      */
     function ends_with($haystack, $needles)
     {

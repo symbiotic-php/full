@@ -1,13 +1,13 @@
 <?php
 
-namespace Dissonance\Core;
+namespace Symbiotic\Core;
 /**
  * Interface ServiceProvider
- * @package Dissonance\Container
+ * @package Symbiotic\Container
  * @property  array $app  = [
- *       'config' => new \Dissonance\Config(),
- *       'router' => new \Dissonance\Contracts\Routing\Router(),
- *       'apps' => new \Dissonance\Contracts\Appss\AppsRepository(),
+ *       'config' => new \Symbiotic\Config(),
+ *       'router' => new \Symbiotic\Contracts\Routing\Router(),
+ *       'apps' => new \Symbiotic\Contracts\Appss\AppsRepository(),
  *
  *
  *

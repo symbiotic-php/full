@@ -1,8 +1,8 @@
 <?php
 
-namespace Dissonance\Packages;
+namespace Symbiotic\Packages;
 
-use Dissonance\Mimetypes\MimeTypesMini;
+use Symbiotic\Mimetypes\MimeTypesMini;
 
 class TemplateCompiler {
 

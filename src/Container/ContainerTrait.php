@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 use \Closure;
 
@@ -257,7 +257,7 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
         return function ($container, $parameters = []) use ($abstract, $concrete) {
 
             /**
-             * @var \Dissonance\Container\DIContainerInterface $container
+             * @var \Symbiotic\Container\DIContainerInterface $container
              */
             if ($abstract === $concrete) {
                 return $container->build($concrete);

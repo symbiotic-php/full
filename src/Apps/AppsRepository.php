@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Apps;
+namespace Symbiotic\Apps;
 
 use function _DS\app;
 
@@ -47,12 +47,12 @@ class AppsRepository implements AppsRepositoryInterface
      *     'name' => 'App title',
      *     'parent_app' => 'parent_app_id', //  Parent app id or package name
      *     'description' => 'App description....',
-     *     'routing' => '\\Dissonance\\App\\Core\\Routing', // class name implements {@see \Dissonance\Routing\AppRoutingInterface}
-     *     'controllers_namespace' => '\\Dissonance\\App\\Core\\Controllers', // Your base controllers namespace
+     *     'routing' => '\\Symbiotic\\App\\Core\\Routing', // class name implements {@see \Symbiotic\Routing\AppRoutingInterface}
+     *     'controllers_namespace' => '\\Symbiotic\\App\\Core\\Controllers', // Your base controllers namespace
      *     'version' => '1.0.2',
      *     'providers' => [    // Providers of your app
-     *       '\\Dissonance\\App\\Core\\Providers\\FilesProvider',
-     *       '\\Dissonance\\App\\Core\\Providers\\AppsUpdaterProvider',
+     *       '\\Symbiotic\\App\\Core\\Providers\\FilesProvider',
+     *       '\\Symbiotic\\App\\Core\\Providers\\AppsUpdaterProvider',
      *      ],
      *
      *     // .... and your advanced params

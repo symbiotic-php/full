@@ -1,11 +1,11 @@
 <?php
 
-namespace Dissonance\Packages;
+namespace Symbiotic\Packages;
 
 
 /**
  * Interface TemplatesRepositoryInterface
- * @package Dissonance\Packages
+ * @package Symbiotic\Packages
  */
 interface TemplatesRepositoryInterface
 {
@@ -17,8 +17,8 @@ interface TemplatesRepositoryInterface
      *
      * @return string php code string for eval
      *
-     * @see \Dissonance\Packages\TemplateCompiler
-     * @uses \Dissonance\Packages\ResourcesRepositoryInterface::getResourceFileStream()
+     * @see \Symbiotic\Packages\TemplateCompiler
+     * @uses \Symbiotic\Packages\ResourcesRepositoryInterface::getResourceFileStream()
      *
      * @throws \Throwable
      *

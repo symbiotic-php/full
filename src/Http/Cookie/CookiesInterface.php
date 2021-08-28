@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Http\Cookie;
+namespace Symbiotic\Http\Cookie;
 
 use Psr\Http\Message\ResponseInterface;
 
@@ -43,7 +43,7 @@ interface CookiesInterface extends \ArrayAccess
 
     /**
      * @return array[]|\ArrayAccess[]
-     * @uses \Dissonance\Http\Cookie\Cookies::$items
+     * @uses \Symbiotic\Http\Cookie\Cookies::$items
      * @see  CookiesInterface::setCookie()
      * [
      *   0 => ['name' =>'c_name','value' => 'val','domain' =>'domain.com','path' => '/',..],

@@ -1,15 +1,15 @@
 <?php
 
-namespace Dissonance\Http\Kernel;
+namespace Symbiotic\Http\Kernel;
 
-use Dissonance\Container\FactoryInterface;
-use Dissonance\Core\CoreInterface;
+use Symbiotic\Container\FactoryInterface;
+use Symbiotic\Core\CoreInterface;
 
-use Dissonance\Core\HttpKernelInterface;
-use Dissonance\Http\Middleware\MiddlewaresCollection;
-use Dissonance\Http\Middleware\MiddlewaresDispatcher;
+use Symbiotic\Core\HttpKernelInterface;
+use Symbiotic\Http\Middleware\MiddlewaresCollection;
+use Symbiotic\Http\Middleware\MiddlewaresDispatcher;
 
-use Dissonance\Core\View\View;
+use Symbiotic\Core\View\View;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -24,7 +24,7 @@ class HttpKernel implements HttpKernelInterface
      */
     protected $app;
     /**
-     * @var string[]  Names of classes implements from {@uses \Dissonance\Core\BootstrapInterface}
+     * @var string[]  Names of classes implements from {@uses \Symbiotic\Core\BootstrapInterface}
      */
     protected $bootstrappers = [];
 

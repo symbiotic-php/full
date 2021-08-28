@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
-use Dissonance\Container\DIContainerInterface;
-use Dissonance\Core\{CoreInterface, ServiceProvider};
+use Symbiotic\Container\DIContainerInterface;
+use Symbiotic\Core\{CoreInterface, ServiceProvider};
 
 
 class Provider extends ServiceProvider

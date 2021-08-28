@@ -1,12 +1,12 @@
 <?php
 
 
-namespace Dissonance\Http\Kernel;
+namespace Symbiotic\Http\Kernel;
 
-use Dissonance\Http\Middleware\ {MiddlewaresCollection, MiddlewaresDispatcher};
+use Symbiotic\Http\Middleware\ {MiddlewaresCollection, MiddlewaresDispatcher};
 use Psr\Http\Message\ {ResponseInterface, ServerRequestInterface};
 use Psr\Http\Server\RequestHandlerInterface;
-use Dissonance\Core\CoreInterface;
+use Symbiotic\Core\CoreInterface;
 
 
 class RoutingHandler implements RequestHandlerInterface
@@ -26,7 +26,7 @@ class RoutingHandler implements RequestHandlerInterface
 
         $app = $this->app;
         /**
-         * @var \Dissonance\Routing\RouteInterface|null $route
+         * @var \Symbiotic\Routing\RouteInterface|null $route
          */
         $path = $request->getUri()->getPath();
         $route = $app['router']->match($request->getMethod(), $path);

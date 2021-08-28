@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\SimpleCacheFilesystem;
+namespace Symbiotic\SimpleCacheFilesystem;
 
 
 
@@ -17,7 +17,7 @@ class SimpleCache implements SimpleCacheInterface
      * Cache constructor.
      * @param string $cache_directory
      * @param int $default_ttl
-     * @throws \Dissonance\SimpleCacheFilesystem\Exception
+     * @throws \Symbiotic\SimpleCacheFilesystem\Exception
      */
     public function __construct(string $cache_directory, int $default_ttl = 600)
     {
@@ -57,7 +57,7 @@ class SimpleCache implements SimpleCacheInterface
      * @param null $default
      * @return mixed|null
      * @throws Exception
-     * @throws \Dissonance\SimpleCacheFilesystem\InvalidArgumentException
+     * @throws \Symbiotic\SimpleCacheFilesystem\InvalidArgumentException
      */
     public function get($key, $default = null)
     {
@@ -81,7 +81,7 @@ class SimpleCache implements SimpleCacheInterface
      * @param mixed $value
      * @param int $ttl
      * @return bool
-     * @throws \Dissonance\SimpleCacheFilesystem\InvalidArgumentException
+     * @throws \Symbiotic\SimpleCacheFilesystem\InvalidArgumentException
      */
     public function set($key, $value, $ttl = null)
     {
@@ -97,7 +97,7 @@ class SimpleCache implements SimpleCacheInterface
     /**
      * @param string $key
      * @return bool
-     * @throws \Dissonance\SimpleCacheFilesystem\Exception|\Dissonance\SimpleCacheFilesystem\InvalidArgumentException
+     * @throws \Symbiotic\SimpleCacheFilesystem\Exception|\Symbiotic\SimpleCacheFilesystem\InvalidArgumentException
      */
     public function delete($key)
     {
@@ -141,8 +141,8 @@ class SimpleCache implements SimpleCacheInterface
      * @param iterable $keys
      * @param null $default
      * @return array|iterable
-     * @throws \Dissonance\SimpleCacheFilesystem\Exception
-     * @throws \Dissonance\SimpleCacheFilesystem\InvalidArgumentException
+     * @throws \Symbiotic\SimpleCacheFilesystem\Exception
+     * @throws \Symbiotic\SimpleCacheFilesystem\InvalidArgumentException
      */
     public function getMultiple($keys, $default = null)
     {
@@ -158,7 +158,7 @@ class SimpleCache implements SimpleCacheInterface
      * @param iterable $values
      * @param null $ttl
      * @return bool
-     * @throws \Dissonance\SimpleCacheFilesystem\InvalidArgumentException|\Dissonance\SimpleCacheFilesystem\Exception
+     * @throws \Symbiotic\SimpleCacheFilesystem\InvalidArgumentException|\Symbiotic\SimpleCacheFilesystem\Exception
      */
     public function setMultiple($values, $ttl = null)
     {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Core\Events;
+namespace Symbiotic\Core\Events;
 
 class CacheClear {
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace Dissonance\Http\Cookie;
+namespace Symbiotic\Http\Cookie;
 
-use Dissonance\Core\CoreInterface;
-use Dissonance\Http\Middleware\MiddlewaresDispatcher;
-use Dissonance\Core\ServiceProvider;
+use Symbiotic\Core\CoreInterface;
+use Symbiotic\Http\Middleware\MiddlewaresDispatcher;
+use Symbiotic\Core\ServiceProvider;
 use Psr\Http\Message\ServerRequestInterface;
 
 

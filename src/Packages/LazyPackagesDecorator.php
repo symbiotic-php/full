@@ -1,9 +1,9 @@
 <?php
 
-namespace Dissonance\Packages;
+namespace Symbiotic\Packages;
 
-use Dissonance\Filesystem\ArrayStorageTrait;
-use Dissonance\Storage\RememberingInterface;
+use Symbiotic\Filesystem\ArrayStorageTrait;
+use Symbiotic\Storage\RememberingInterface;
 
 class LazyPackagesDecorator implements PackagesRepositoryInterface, RememberingInterface
 {

@@ -1,14 +1,14 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 
 /**
  * Trait HttpMethodsTrait
- * @package Dissonance\Routing
+ * @package Symbiotic\Routing
  * @method RouteInterface addRoute($httpMethods, string $uri, $action)
  *
- * @uses \Dissonance\Routing\RouterInterface::addRoute()
+ * @uses \Symbiotic\Routing\RouterInterface::addRoute()
  */
 trait AddRouteTrait
 {

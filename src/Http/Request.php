@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Http;
+namespace Symbiotic\Http;
 
 
 class Request extends \Nyholm\Psr7\Request

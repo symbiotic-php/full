@@ -1,8 +1,8 @@
 <?php
 
-namespace Dissonance\Session;
+namespace Symbiotic\Session;
 
-use Dissonance\Container\ArrayAccessTrait;
+use Symbiotic\Container\ArrayAccessTrait;
 
 class SessionStorageNative implements SessionStorageInterface
 {

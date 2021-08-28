@@ -1,13 +1,13 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 use \Closure;
 use Psr\Container\ContainerInterface;
 
 /**
  * Interface DependencyInjectionInterface
- * @package Dissonance\Container
+ * @package Symbiotic\Container
  */
 interface DIContainerInterface extends ArrayContainerInterface, ContainerInterface, FactoryInterface
 {

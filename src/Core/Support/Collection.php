@@ -1,11 +1,11 @@
 <?php
 
-namespace Dissonance\Core\Support;
+namespace Symbiotic\Core\Support;
 
 
 /**
  * Class Collection
- * @package Dissonance\Core\Support
+ * @package Symbiotic\Core\Support
  * @see  https://laravel.com/docs/5.8/collections
  */
 class Collection implements

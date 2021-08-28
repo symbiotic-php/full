@@ -1,15 +1,15 @@
 <?php
 
-namespace Dissonance\Core;
+namespace Symbiotic\Core;
 
 
-use Dissonance\Container\{DIContainerInterface, ArrayAccessTrait, SingletonTrait, Container, ServiceContainerTrait};
-use Dissonance\Core\Bootstrap\{BootBootstrap, CoreBootstrap, ProvidersBootstrap};
+use Symbiotic\Container\{DIContainerInterface, ArrayAccessTrait, SingletonTrait, Container, ServiceContainerTrait};
+use Symbiotic\Core\Bootstrap\{BootBootstrap, CoreBootstrap, ProvidersBootstrap};
 
 
 /**
  * Class Core
- * @package Dissonance/Core
+ * @package Symbiotic/Core
  */
 class Core extends Container implements CoreInterface
 {
@@ -19,7 +19,7 @@ class Core extends Container implements CoreInterface
         SingletonTrait;
 
     /**
-     * Class names Runners {@see \Dissonance\Core\Runner}
+     * Class names Runners {@see \Symbiotic\Core\Runner}
      * @var string[]
      */
     protected array $runners = [];

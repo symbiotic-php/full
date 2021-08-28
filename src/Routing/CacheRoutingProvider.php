@@ -1,8 +1,8 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
-use Dissonance\Core\ServiceProvider;
+use Symbiotic\Core\ServiceProvider;
 
 
 class CacheRoutingProvider extends ServiceProvider

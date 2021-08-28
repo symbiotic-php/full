@@ -1,13 +1,13 @@
 <?php
 
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 
-use Dissonance\Container\CachedContainerInterface;
-use Dissonance\Container\DIContainerInterface;
-use Dissonance\Apps\AppConfigInterface;
-use Dissonance\Packages\PackagesRepositoryInterface;
+use Symbiotic\Container\CachedContainerInterface;
+use Symbiotic\Container\DIContainerInterface;
+use Symbiotic\Apps\AppConfigInterface;
+use Symbiotic\Packages\PackagesRepositoryInterface;
 
 
 class SettlementsRoutingProvider extends Provider

@@ -1,19 +1,19 @@
 <?php
 
-namespace Dissonance\Packages;
+namespace Symbiotic\Packages;
 
-use Dissonance\Core\CoreInterface;
+use Symbiotic\Core\CoreInterface;
 use Psr\SimpleCache\CacheInterface;
 
 /**
  * Class PackagesRepository
- * @package Dissonance\Apps
+ * @package Symbiotic\Apps
  * @property  CoreInterface|array $app  = [
- *       'config' => new \Dissonance\Config(),
- *       'router' => new \Dissonance\Contracts\Routing\Router(),
- *       'apps' => new \Dissonance\Contracts\Appss\AppsRepository(),
- *       'events' => new \Dissonance\Event\DispatcherInterface(),
- *       'listeners' => new \Dissonance\Event\ListenersInterface(),
+ *       'config' => new \Symbiotic\Config(),
+ *       'router' => new \Symbiotic\Contracts\Routing\Router(),
+ *       'apps' => new \Symbiotic\Contracts\Appss\AppsRepository(),
+ *       'events' => new \Symbiotic\Event\DispatcherInterface(),
+ *       'listeners' => new \Symbiotic\Event\ListenersInterface(),
  * ]
  */
 class PackagesRepository implements PackagesRepositoryInterface

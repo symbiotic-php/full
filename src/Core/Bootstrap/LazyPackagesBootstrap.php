@@ -1,11 +1,11 @@
 <?php
 
-namespace Dissonance\Core\Bootstrap;
+namespace Symbiotic\Core\Bootstrap;
 
-use Dissonance\Core\AbstractBootstrap;
-use Dissonance\Core\CoreInterface;
-use Dissonance\Packages\LazyPackagesDecorator;
-use Dissonance\Packages\PackagesRepositoryInterface;
+use Symbiotic\Core\AbstractBootstrap;
+use Symbiotic\Core\CoreInterface;
+use Symbiotic\Packages\LazyPackagesDecorator;
+use Symbiotic\Packages\PackagesRepositoryInterface;
 
 class LazyPackagesBootstrap extends AbstractBootstrap {
 

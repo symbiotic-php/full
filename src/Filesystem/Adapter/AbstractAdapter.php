@@ -1,9 +1,9 @@
 <?php
 
-namespace Dissonance\Filesystem\Adapter;
+namespace Symbiotic\Filesystem\Adapter;
 
-use Dissonance\Filesystem\AdapterInterface;
-use Dissonance\Filesystem\PathPrefixInterface;
+use Symbiotic\Filesystem\AdapterInterface;
+use Symbiotic\Filesystem\PathPrefixInterface;
 
 abstract class AbstractAdapter implements AdapterInterface,PathPrefixInterface
 {

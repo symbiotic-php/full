@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 
 class SettlementRouteDecorator implements RouteInterface

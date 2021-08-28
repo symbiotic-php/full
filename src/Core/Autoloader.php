@@ -1,17 +1,17 @@
 <?php
 
-namespace Dissonance\Core;
+namespace Symbiotic\Core;
 
 /**
  *
  * ПОЛНЫЙ ГОВНО КОД, но работает )) подделка автолоадера композера(made in china)
  * Class Autoloader
- * @package Dissonance
+ * @package Symbiotic
  */
 class Autoloader
 {
 
-    protected static $namespace = 'Dissonance';
+    protected static $namespace = 'Symbiotic';
 
     private static $registered = false;
 

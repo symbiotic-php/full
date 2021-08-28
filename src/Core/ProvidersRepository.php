@@ -1,9 +1,9 @@
 <?php
 
-namespace Dissonance\Core;
+namespace Symbiotic\Core;
 
-use Dissonance\Container\ServiceContainerInterface;
-use Dissonance\Packages\PackagesRepositoryInterface;
+use Symbiotic\Container\ServiceContainerInterface;
+use Symbiotic\Packages\PackagesRepositoryInterface;
 
 class ProvidersRepository
 {

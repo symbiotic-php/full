@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Http\Cookie;
+namespace Symbiotic\Http\Cookie;
 
 use Psr\Http\Message\ResponseInterface;
 
@@ -34,7 +34,7 @@ class Cookies implements CookiesInterface
 
     /**
      * @var string|null
-     * @uses \Dissonance\Http\Cookie\CookiesInterface::SAMESITE_VALUES
+     * @uses \Symbiotic\Http\Cookie\CookiesInterface::SAMESITE_VALUES
      */
     protected $same_site;
 

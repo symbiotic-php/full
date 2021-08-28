@@ -1,10 +1,10 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 /**
  * Trait NamedRouterTrait
- * @package Dissonance\Routing
+ * @package Symbiotic\Routing
  *
  */
 trait NamedRouterTrait

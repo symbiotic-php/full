@@ -1,18 +1,18 @@
 <?php
 
-namespace Dissonance\Core\View;
+namespace Symbiotic\Core\View;
 
 
-use Dissonance\Apps\Application;
-use Dissonance\Core\CoreInterface;
-use Dissonance\Apps\ApplicationInterface;
-use Dissonance\Core\Support\RenderableInterface;
-use Dissonance\Routing\RouteInterface;
+use Symbiotic\Apps\Application;
+use Symbiotic\Core\CoreInterface;
+use Symbiotic\Apps\ApplicationInterface;
+use Symbiotic\Core\Support\RenderableInterface;
+use Symbiotic\Routing\RouteInterface;
 
 
-use Dissonance\Apps\AppsRepositoryInterface;
-use Dissonance\Packages\TemplatesRepositoryInterface;
-use Dissonance\Core\Support\Str;
+use Symbiotic\Apps\AppsRepositoryInterface;
+use Symbiotic\Packages\TemplatesRepositoryInterface;
+use Symbiotic\Core\Support\Str;
 
 
 /**
@@ -98,7 +98,7 @@ function js($path = '', $absolute = true)
 /**
  * Class View
  *
- * @package Dissonance\View
+ * @package Symbiotic\View
  *
  */
 class View implements RenderableInterface
@@ -106,9 +106,9 @@ class View implements RenderableInterface
 
     /**
      * @var CoreInterface | array $core = [
-     *       'config' => new \Dissonance\Config(),
-     *       'router' => new \Dissonance\Contracts\Routing\Router(),
-     *       'apps' => new \Dissonance\Contracts\Apps\AppsRepository()
+     *       'config' => new \Symbiotic\Config(),
+     *       'router' => new \Symbiotic\Contracts\Routing\Router(),
+     *       'apps' => new \Symbiotic\Contracts\Apps\AppsRepository()
      *
      * ]
      * @used-by View::setContainer()

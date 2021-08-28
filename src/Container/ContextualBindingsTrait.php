@@ -1,10 +1,10 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 /**
  * Trait ConceptualBindingsTrait
- * @package Dissonance\Container
+ * @package Symbiotic\Container
  *
  * Use only in @see DIContainerInterface
  */

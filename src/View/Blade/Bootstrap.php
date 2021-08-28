@@ -1,12 +1,12 @@
 <?php
 
-namespace Dissonance\View\Blade;
+namespace Symbiotic\View\Blade;
 
 
-use Dissonance\Core\CoreInterface;
-use Dissonance\Packages\TemplateCompiler;
+use Symbiotic\Core\CoreInterface;
+use Symbiotic\Packages\TemplateCompiler;
 
-class Bootstrap implements \Dissonance\Core\BootstrapInterface
+class Bootstrap implements \Symbiotic\Core\BootstrapInterface
 {
 
     public function bootstrap(CoreInterface $app): void

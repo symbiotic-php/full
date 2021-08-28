@@ -1,11 +1,11 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 
 /**
  * Interface NamedRouterInterface
- * @package Dissonance\Routing
+ * @package Symbiotic\Routing
  */
 interface NamedRouterInterface
 {

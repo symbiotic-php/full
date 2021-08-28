@@ -1,9 +1,9 @@
 <?php
 
-namespace Dissonance\Packages;
+namespace Symbiotic\Packages;
 
 
-use Dissonance\Core\Support\Arr;
+use Symbiotic\Core\Support\Arr;
 use Psr\SimpleCache\CacheInterface;
 
 class PackagesLoaderFilesystem implements PackagesLoaderInterface
@@ -11,11 +11,11 @@ class PackagesLoaderFilesystem implements PackagesLoaderInterface
     /**
      * @var array
      */
-    protected $scan_dirs = [];
+    protected array $scan_dirs = [];
     /**
      * @var int
      */
-    protected $max_depth = 3;
+    protected int  $max_depth = 3;
 
     /**
      * @var null |CacheInterface
@@ -77,7 +77,7 @@ class PackagesLoaderFilesystem implements PackagesLoaderInterface
 
         foreach ($files as $file) {
             if (\is_readable($file)) {
-                $config = Arr::get(@\json_decode(file_get_contents($file), true), 'extra.dissonance');
+                $config = Arr::get(@\json_decode(file_get_contents($file), true), 'extra.symbiotic');
                 if (is_array($config)) {
                     $app = Arr::get($config, 'app');
                     $config['base_path'] = dirname($file);

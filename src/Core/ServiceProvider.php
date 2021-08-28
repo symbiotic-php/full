@@ -1,23 +1,23 @@
 <?php
 
-namespace Dissonance\Core;
+namespace Symbiotic\Core;
 
-use Dissonance\Container\DIContainerInterface;
+use Symbiotic\Container\DIContainerInterface;
 /**
  * Class ServiceProvider
- * @package Dissonance
+ * @package Symbiotic
  * @property  DIContainerInterface|array $app  = [
- *       'config' => new \Dissonance\Config(),
- *       'router' => new \Dissonance\Contracts\Routing\Router(),
- *       'apps' => new \Dissonance\Contracts\Appss\AppsRepository(),
- *       'events' => new \Dissonance\Contracts\Events\Dispatcher(),
- *       'listeners' => new \Dissonance\Event\ListenerProvider()
+ *       'config' => new \Symbiotic\Config(),
+ *       'router' => new \Symbiotic\Contracts\Routing\Router(),
+ *       'apps' => new \Symbiotic\Contracts\Appss\AppsRepository(),
+ *       'events' => new \Symbiotic\Contracts\Events\Dispatcher(),
+ *       'listeners' => new \Symbiotic\Event\ListenerProvider()
  * ]
  */
 class  ServiceProvider implements ServiceProviderInterface
 {
     /**
-     * @var DIContainerInterface| [ 'config' => new \Dissonance\Config() ]
+     * @var DIContainerInterface| [ 'config' => new \Symbiotic\Config() ]
      */
     protected $app = null;
 

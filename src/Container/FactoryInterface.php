@@ -1,14 +1,14 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 /**
  * Describes the basic interface of a factory.
  *
- * @package Dissonance\Container
+ * @package Symbiotic\Container
  *
  * @author Matthieu Napoli <matthieu@mnapoli.fr>
- * @refactor Sergey Surkov <dissonancephp@gmail.com>
+ * @refactor Sergey Surkov <symbioticphp@gmail.com>
  */
 interface FactoryInterface
 {

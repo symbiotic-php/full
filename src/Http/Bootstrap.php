@@ -1,9 +1,9 @@
 <?php
 
-namespace Dissonance\Http;
+namespace Symbiotic\Http;
 
 
-use Dissonance\Core\{CoreInterface,BootstrapInterface};
+use Symbiotic\Core\{CoreInterface,BootstrapInterface};
 
 use Psr\Http\Message\{
     StreamFactoryInterface,

@@ -1,9 +1,9 @@
 <?php
 
-namespace Dissonance\Packages;
+namespace Symbiotic\Packages;
 
-use Dissonance\Http\Kernel\PreloadKernelHandler;
-use Dissonance\Http\Middleware\MiddlewaresDispatcher;
+use Symbiotic\Http\Kernel\PreloadKernelHandler;
+use Symbiotic\Http\Middleware\MiddlewaresDispatcher;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 
@@ -12,7 +12,7 @@ class ResourcesBootstrap
     protected $cache_key = 'core.resources';
 
     /**
-     * @param \Dissonance\Container\ServiceContainerInterface|\Dissonance\Core\Core $app
+     * @param \Symbiotic\Container\ServiceContainerInterface|\Symbiotic\Core\Core $app
      */
     public function bootstrap($app)
     {

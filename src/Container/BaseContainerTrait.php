@@ -1,16 +1,16 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 
 /**
  * Trait BaseContainerTrait
  *
- * @package dissonance/container-traits
+ * @package symbiotic/container-traits
  *
  * Старая версия, из-за getContainerItems на 30% дольше рабоает, но универсальней
  */
-trait BaseContainerTrait /*implements \Dissonance\Container\BaseContainerInterface*/
+trait BaseContainerTrait /*implements \Symbiotic\Container\BaseContainerInterface*/
 {
 
     /**
@@ -19,7 +19,7 @@ trait BaseContainerTrait /*implements \Dissonance\Container\BaseContainerInterfa
      * @return array|\ArrayAccess
      * @todo: Can do protected, on the one hand it is convenient, but to give everyone in a row to manage is not correct!?
      */
-    abstract protected function &getContainerItems();
+    abstract protected function &getContainerItems(): array|\ArrayAccess;
 
     /**
      * @param string $key
@@ -28,7 +28,7 @@ trait BaseContainerTrait /*implements \Dissonance\Container\BaseContainerInterfa
      *
      * @return mixed|null
      */
-    public function get($key)
+    public function get(string|int $key)
     {
         $items = &$this->getContainerItems();
         return $this->hasBy($key,$items) ? $items[$key] :
@@ -43,7 +43,7 @@ trait BaseContainerTrait /*implements \Dissonance\Container\BaseContainerInterfa
      * @info
      * @return bool
      */
-    public function has($key): bool
+    public function has(string|int $key): bool
     {
         $items = &$this->getContainerItems();
         return $this->hasBy($key,$items);
@@ -55,7 +55,7 @@ trait BaseContainerTrait /*implements \Dissonance\Container\BaseContainerInterfa
      * @return bool
      * @info
      */
-    private function hasBy($key, &$items): bool
+    private function hasBy(string|int $key, \ArrayAccess|array &$items): bool
     {
         return isset($items[$key]) // isset в 4 раза быстрее array_key_exists
             ||  (is_array($items) && array_key_exists($key, $items))
@@ -66,7 +66,7 @@ trait BaseContainerTrait /*implements \Dissonance\Container\BaseContainerInterfa
      * @param int|string $key
      * @param $value
      */
-    public function set($key, $value): void
+    public function set(string|int $key, $value): void
     {
         $items = &$this->getContainerItems();
         $items[$key] = $value;
@@ -77,7 +77,7 @@ trait BaseContainerTrait /*implements \Dissonance\Container\BaseContainerInterfa
      * @param int|string $key
      * @return mixed
      */
-    public function delete($key): bool
+    public function delete(string|int $key): bool
     {
         $items = &$this->getContainerItems();
         unset($items[$key]);

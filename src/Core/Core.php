@@ -1,15 +1,15 @@
 <?php
 
-namespace Dissonance\Core;
+namespace Symbiotic\Core;
 
 
-use Dissonance\Container\{DIContainerInterface, ArrayAccessTrait, SingletonTrait, Container, ServiceContainerTrait};
-use Dissonance\Core\Bootstrap\{BootBootstrap, CoreBootstrap, ProvidersBootstrap};
+use Symbiotic\Container\{DIContainerInterface, ArrayAccessTrait, SingletonTrait, Container, ServiceContainerTrait};
+use Symbiotic\Core\Bootstrap\{BootBootstrap, CoreBootstrap, ProvidersBootstrap};
 
 
 /**
  * Class Core
- * @package Dissonance/Core
+ * @package Symbiotic/Core
  */
 class Core extends Container implements CoreInterface
 {
@@ -19,29 +19,29 @@ class Core extends Container implements CoreInterface
         SingletonTrait;
 
     /**
-     * Class names Runners {@see \Dissonance\Core\Runner}
+     * Class names Runners {@see \Symbiotic\Core\Runner}
      * @var string[]
      */
-    protected $runners = [];
+    protected array $runners = [];
 
     /**
      * @var string|null
      */
-    protected $base_path = null;
+    protected ?string $base_path;
 
     /**
      * The bootstrap classes for the application.
      *
      * @var array
      */
-    protected $bootstraps = [];
+    protected array $bootstraps = [];
 
     /**
      * The bootstrap classes for the application.
      *
      * @var array
      */
-    protected $last_bootstraps = [
+    protected array $last_bootstraps = [
         ProvidersBootstrap::class,
         BootBootstrap::class,
     ];
@@ -50,7 +50,7 @@ class Core extends Container implements CoreInterface
      * Массив ключей разрешенных сервисов для кеширования
      * @var array|string[]
      */
-    protected $allow_cached = [];
+    protected array $allow_cached = [];
 
     public function __construct(array $config = [])
     {
@@ -66,7 +66,7 @@ class Core extends Container implements CoreInterface
     /**
      * @param string| string[] $bootstraps
      */
-    public function addBootstraps($bootstraps): void
+    public function addBootstraps(string|array $bootstraps): void
     {
         foreach ((array)$bootstraps as $v) {
             $this->bootstraps[] = $v;

@@ -1,13 +1,13 @@
 <?php
 
 
-namespace Dissonance\Filesystem;
+namespace Symbiotic\Filesystem;
 
 
 
 trait ArrayStorageTrait
 {
-    private $storage_path = null;
+    private ?string $storage_path = null;
 
     protected function setStoragePath(string $path)
     {

@@ -1,8 +1,8 @@
 <?php
 
-namespace Dissonance\Http\Middleware;
+namespace Symbiotic\Http\Middleware;
 
-use Dissonance\Http\UriHelper;
+use Symbiotic\Http\UriHelper;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -14,7 +14,7 @@ class RequestPrefixMiddleware implements MiddlewareInterface
     /**
      * @var null|string
      */
-    protected $uri_prefix = null;
+    protected ?string $uri_prefix;
 
     /**
      * RequestPrefixMiddleware constructor.

@@ -1,13 +1,13 @@
 <?php
 
-namespace Dissonance\Core\Bootstrap;
+namespace Symbiotic\Core\Bootstrap;
 
 
-use Dissonance\Core\BootstrapInterface;
-use Dissonance\Core\CoreInterface;
-use Dissonance\Event\EventDispatcher;
-use Dissonance\Event\ListenerProvider;
-use Dissonance\Event\ListenersInterface;
+use Symbiotic\Core\BootstrapInterface;
+use Symbiotic\Core\CoreInterface;
+use Symbiotic\Event\EventDispatcher;
+use Symbiotic\Event\ListenerProvider;
+use Symbiotic\Event\ListenersInterface;
 
 use Psr\EventDispatcher\ListenerProviderInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;

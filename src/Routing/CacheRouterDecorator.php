@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 use Closure;
 
@@ -21,7 +21,7 @@ class CacheRouterDecorator implements RouterInterface
     protected $router = null;
 
 
-    protected $cache_key = '';
+    protected string $cache_key = '';
 
     protected $allowed_cache = true;
 

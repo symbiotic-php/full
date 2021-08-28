@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 
 class CacheLazyRouterDecorator extends CacheRouterDecorator implements RouterInterface, NamedRouterInterface, LazyRouterInterface

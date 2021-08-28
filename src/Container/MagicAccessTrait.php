@@ -1,29 +1,29 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 
 /**
  * Trait MagicAccessTrait
- * @package Dissonance\Container
+ * @package Symbiotic\Container
  *
  * @method bool has(string $key)
- * @uses \Dissonance\Container\BaseContainerInterface::has()
+ * @uses \Symbiotic\Container\BaseContainerInterface::has()
  * @uses BaseContainerTrait::has()
  *
  * @method mixed|null get(string $key)
- * @uses \Dissonance\Container\BaseContainerInterface::get()
+ * @uses \Symbiotic\Container\BaseContainerInterface::get()
  * @uses BaseContainerTrait::get()
  *
  * @method void set(string $key, $value)
- * @uses \Dissonance\Container\BaseContainerInterface::set()
+ * @uses \Symbiotic\Container\BaseContainerInterface::set()
  * @uses BaseContainerTrait::set()
  *
  * @method bool delete(string $key)
- * @uses \Dissonance\Container\BaseContainerInterface::delete()
+ * @uses \Symbiotic\Container\BaseContainerInterface::delete()
  * @uses BaseContainerTrait::delete()
  */
-trait MagicAccessTrait /*implements \Dissonance\Container\MagicAccessInterface*/
+trait MagicAccessTrait /*implements \Symbiotic\Container\MagicAccessInterface*/
 {
 
     public function __get($key)

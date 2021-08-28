@@ -1,31 +1,31 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 
 
 /**
  * Trait MultipleAccessTrait
  *
- * @package Dissonance/container-tarits
+ * @package Symbiotic/container-tarits
  *
  * @method bool has(string $key)
- * @uses \Dissonance\Container\BaseContainerInterface::has()
+ * @uses \Symbiotic\Container\BaseContainerInterface::has()
  * @uses BaseContainerTrait::has()
  *
  * @method mixed|null get(string $key)
- * @uses \Dissonance\Container\BaseContainerInterface::get()
+ * @uses \Symbiotic\Container\BaseContainerInterface::get()
  * @uses BaseContainerTrait::get()
  *
  * @method void set(string $key, $value)
- * @uses \Dissonance\Container\BaseContainerInterface::set()
+ * @uses \Symbiotic\Container\BaseContainerInterface::set()
  * @uses BaseContainerTrait::set()
  *
  * @method bool delete(string $key)
- * @uses \Dissonance\Container\BaseContainerInterface::delete()
+ * @uses \Symbiotic\Container\BaseContainerInterface::delete()
  * @uses BaseContainerTrait::delete()
  */
-trait MultipleAccessTrait /*implements \Dissonance\Container\MultipleAccessInterface*/
+trait MultipleAccessTrait /*implements \Symbiotic\Container\MultipleAccessInterface*/
 {
     /**
      * @param iterable $keys array keys

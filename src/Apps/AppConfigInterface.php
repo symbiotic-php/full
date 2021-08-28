@@ -1,20 +1,20 @@
 <?php
 
-namespace Dissonance\Apps;
+namespace Symbiotic\Apps;
 
-use Dissonance\Container\ArrayContainerInterface;
+use Symbiotic\Container\ArrayContainerInterface;
 
 /**
  * Interface AppConfigInterface
  *
- * @package dissonance/apps-contracts
+ * @package symbiotic/apps-contracts
  */
 interface AppConfigInterface extends ArrayContainerInterface
 {
     /**
      * The app ID is based on its alias and parent ID
      * @return string
-     * @see \Dissonance\Apps\AppsRepository::addApp();
+     * @see \Symbiotic\Apps\AppsRepository::addApp();
      */
     public function getId(): string;
 
@@ -22,7 +22,7 @@ interface AppConfigInterface extends ArrayContainerInterface
 
     /**
      * @return string|null
-     * @uses \Dissonance\Routing\AppRouting
+     * @uses \Symbiotic\Routing\AppRouting
      */
     public function getRoutingProvider(): ?string;
 

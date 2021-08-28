@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Http\Middleware;
+namespace Symbiotic\Http\Middleware;
 
 use Psr\Http\Server\MiddlewareInterface;
 

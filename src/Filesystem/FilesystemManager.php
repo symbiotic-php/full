@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Dissonance\Filesystem;
+namespace Symbiotic\Filesystem;
 
-use Dissonance\Container\DIContainerInterface;
-use Dissonance\Filesystem\Adapter\Local;
+use Symbiotic\Container\DIContainerInterface;
+use Symbiotic\Filesystem\Adapter\Local;
 
 
 
@@ -13,7 +13,7 @@ class FilesystemManager
     /**
      * The application instance.
      *
-     * @var \Dissonance\Core\Core|DIContainerInterface
+     * @var \Symbiotic\Core\Core|DIContainerInterface
      */
     protected $app;
 

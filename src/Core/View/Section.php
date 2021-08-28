@@ -1,8 +1,8 @@
 <?php
 
-namespace Dissonance\Core\View;
+namespace Symbiotic\Core\View;
 
-use Dissonance\Core\Support\RenderableInterface;
+use Symbiotic\Core\Support\RenderableInterface;
 
 class Section {
 
@@ -28,7 +28,7 @@ class Section {
      *		Section::start('header');
      *
      *		// Inject a raw string into the "header" section without buffering
-     *		Section::start('header', '<title>Dissonance php</title>');
+     *		Section::start('header', '<title>Symbiotic php</title>');
      * </code>
      *
      * @param  string          $section

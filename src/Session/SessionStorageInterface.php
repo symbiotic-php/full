@@ -1,8 +1,8 @@
 <?php
 
-namespace Dissonance\Session;
+namespace Symbiotic\Session;
 
-use Dissonance\Container\ArrayContainerInterface;
+use Symbiotic\Container\ArrayContainerInterface;
 
 interface SessionStorageInterface extends ArrayContainerInterface
 {

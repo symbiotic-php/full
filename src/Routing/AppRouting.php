@@ -1,19 +1,19 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 
 class AppRouting implements AppRoutingInterface
 {
     /**
-     * @see \Dissonance\Packages\PackagesRepository::addPackage()
+     * @see \Symbiotic\Packages\PackagesRepository::addPackage()
      */
-    protected $app_id;
+    protected string $app_id;
 
     /**
      * @var string|null
      */
-    protected $controllers_namespace = null;
+    protected ?string $controllers_namespace = null;
 
 
     public function __construct(string $app_id, string $controllers_namespace = null)

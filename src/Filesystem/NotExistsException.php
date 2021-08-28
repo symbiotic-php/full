@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Filesystem;
+namespace Symbiotic\Filesystem;
 
 
 class NotExistsException extends \Exception {

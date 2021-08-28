@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Core;
+namespace Symbiotic\Core;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;

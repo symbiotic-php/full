@@ -1,8 +1,8 @@
 <?php
 
-namespace Dissonance\Core;
+namespace Symbiotic\Core;
 
-use Dissonance\Container\{CachedContainerInterface,CachedContainerTrait};
+use Symbiotic\Container\{CachedContainerInterface,CachedContainerTrait};
 
 class CachedCore extends Core implements CachedContainerInterface
 {

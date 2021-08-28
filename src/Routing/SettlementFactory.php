@@ -1,15 +1,15 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 
 /**
  * Class SettlementFactory
  *
  * для расширения Поселений через DI  оберните данный класс
- * @see \Dissonance\Container\DIContainerInterface::extend()
+ * @see \Symbiotic\Container\DIContainerInterface::extend()
  *
- * @package Dissonance\Routing
+ * @package Symbiotic\Routing
  */
 class SettlementFactory
 {

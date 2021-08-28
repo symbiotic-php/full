@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Http\Middleware;
+namespace Symbiotic\Http\Middleware;
 
 
 use Psr\Http\Message\ResponseInterface;
@@ -13,7 +13,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 /**
  * Class MiddlewaresCollection
- * @package Dissonance\Http\MiddlewareHandler
+ * @package Symbiotic\Http\MiddlewareHandler
  *
  * @author shadowhand https://github.com/shadowhand
  * @link https://github.com/jbboehr/dispatch - base source

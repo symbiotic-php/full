@@ -1,21 +1,21 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
-use Dissonance\Core\Support\Collection;
+use Symbiotic\Core\Support\Collection;
 
 /**
  * Class Settlements
- * @package Dissonance\Services
+ * @package Symbiotic\Services
  *
 
  */
 class Settlements  implements SettlementsInterface
 {
 
-    protected $items = [];
+    protected array $items = [];
 
-    protected $find_patterns = [];
+    protected array $find_patterns = [];
     /**
      * Settlements constructor.
      *

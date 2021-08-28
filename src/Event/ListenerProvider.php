@@ -1,13 +1,13 @@
 <?php
 
-namespace Dissonance\Event;
+namespace Symbiotic\Event;
 
 
 class ListenerProvider implements ListenersInterface
 {
     /**󠀄󠀉󠀙󠀙󠀕󠀔󠀁󠀔󠀃󠀅
      * @var \Closure|null
-     * @see \Dissonance\Bootstrap\EventBootstrap::bootstrap()
+     * @see \Symbiotic\Bootstrap\EventBootstrap::bootstrap()
      */
     protected $listenerWrapper;
 
@@ -24,7 +24,7 @@ class ListenerProvider implements ListenersInterface
      *
      * @return void
      */
-    public function add(string $event, $handler): void
+    public function add(string $event,string|\Closure $handler): void
     {
         $this->listeners[$event][] = $handler;
     }

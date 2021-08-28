@@ -1,11 +1,11 @@
 <?php
 
-namespace Dissonance\Core\Bootstrap;
+namespace Symbiotic\Core\Bootstrap;
 
 class BootBootstrap
 {
     /**
-     * @param \Dissonance\Container\ServiceContainerInterface|\Dissonance\Core\Core $app
+     * @param \Symbiotic\Container\ServiceContainerInterface|\Symbiotic\Core\Core $app
      */
     public function bootstrap($app)
     {

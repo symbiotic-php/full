@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Http\Cookie;
+namespace Symbiotic\Http\Cookie;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;

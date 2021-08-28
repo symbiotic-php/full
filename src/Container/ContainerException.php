@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 use Psr\Container\ContainerExceptionInterface;
 

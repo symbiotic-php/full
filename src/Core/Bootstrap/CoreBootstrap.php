@@ -1,13 +1,13 @@
 <?php
 
-namespace Dissonance\Core\Bootstrap;
+namespace Symbiotic\Core\Bootstrap;
 
 
-use Dissonance\Core\BootstrapInterface;
-use Dissonance\Core\CoreInterface;
-use Dissonance\Core\Config;
-use Dissonance\Core\Events\CacheClear;
-use Dissonance\Core\View\View;
+use Symbiotic\Core\BootstrapInterface;
+use Symbiotic\Core\CoreInterface;
+use Symbiotic\Core\Config;
+use Symbiotic\Core\Events\CacheClear;
+use Symbiotic\Core\View\View;
 
 
 class CoreBootstrap implements BootstrapInterface

@@ -1,9 +1,9 @@
 <?php
 
-namespace Dissonance\Core;
+namespace Symbiotic\Core;
 
-use Dissonance\Container\ServiceContainerInterface;
-use Dissonance\Packages\PackagesRepositoryInterface;
+use Symbiotic\Container\ServiceContainerInterface;
+use Symbiotic\Packages\PackagesRepositoryInterface;
 
 class ProvidersRepository
 {
@@ -14,14 +14,14 @@ class ProvidersRepository
      * @var array
      * [class => bool (active flag),... ]
      */
-    protected $providers = [];
+    protected array $providers = [];
 
     /**
      * @var array [serviceClassName => ProviderClassName]
      */
-    protected $defer_services = [];
+    protected array $defer_services = [];
 
-    protected $loaded = false;
+    protected bool $loaded = false;
 
     /**
      * @param string|string[] $items

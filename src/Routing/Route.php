@@ -1,13 +1,13 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 
 class Route implements RouteInterface
 {
 
 
-    protected $action = [];
+    protected array $action = [];
 
     protected $pattern = '';
 

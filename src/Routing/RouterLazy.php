@@ -1,11 +1,11 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 
 /**
  * Class RouterLazy
- * @package Dissonance\Routing
+ * @package Symbiotic\Routing
  * @property  RouterNamedFactory $router_factory
  */
 class RouterLazy extends Router implements NamedRouterInterface,LazyRouterInterface

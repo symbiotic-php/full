@@ -1,8 +1,8 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
-use Dissonance\SimpleCacheFilesystem\SimpleCacheInterface;
+use Symbiotic\SimpleCacheFilesystem\SimpleCacheInterface;
 
 
 class RouterCacheFactory implements RouterFactoryInterface

@@ -1,4 +1,4 @@
-# Dissonance Web (MVP, BETA-PRE-ZERO EDITION)
+# Symbiotic Web (MVP, BETA-PRE-ZERO EDITION)
 ### Описание
 **Фреймфорк создан с целью упростить интеграцию независимых небольших приложений в другие CMS и фреймворки, а также для расширения функциональности пакетов для композера.** 
 
@@ -55,11 +55,11 @@
 
 ## Установка
 ```
-composer require dissonance/full
+composer require symbiotic/full
 ```
 Сразу ставьте и пакет для разработки
 ```
-composer require dissonance/develop
+composer require symbiotic/develop
 ```
 
 ## Запуск
@@ -68,14 +68,14 @@ composer require dissonance/develop
  
  Если вы используете уже фреймворк, то необходимо включить режим симбиоза в конфиге
 ```php
-$config['symbiosis'] = true;
+$config['symbiotic'] = true;
 ```
 ##### Инициализация
 ```php
 $basePath = dirname(__DIR__);// корневая папка проекта
 include_once $basePath . '/vendor/autoload.php';
 
-include $basePath.'/vendor/dissonance/full/src/dissonance.php';
+include $basePath.'/vendor/symbiotic/full/src/symbiotic.php';
 
 // Дальше может идти код инициализации и отработки другого фреймворка...
 //....
@@ -91,40 +91,44 @@ include_once $basePath. '/vendor/autoload.php';
 
 $config  = [
     'debug' => true,
-    'symbiosis' => true, // Режим симбиоза, если включен и фреймворк не найдет обработчик,
+    'symbiotic' => true, // Режим симбиоза, если включен и фреймворк не найдет обработчик,
     // то он ничего не вернет и основной фреймворк смодет сам обработать запрос
     'default_host' => 'localhost',// для консоли , но ее пока нет
-    'uri_prefix' => 'dissonance', // Префикс в котором работет фреймворк, если пустой то работае от корня
+    'uri_prefix' => 'symbiotic', // Префикс в котором работет фреймворк, если пустой то работае от корня
     'base_path' => $basePath, // базовая папка проекта
     'assets_prefix' => '/assets',
     'storage_path' =>  $basePath . '/storage', // Если убрать то кеш отключится
     'packages_paths' => [
         $basePath . '/vendor', // Папка для приложений
     ],
-     'bootstrappers' => [
-            \Dissonance\Develop\Bootstrap\DebugBootstrap::class,/// debug only
-            \Dissonance\Core\Bootstrap\EventBootstrap::class,
-            \Dissonance\SimpleCacheFilesystem\Bootstrap::class,
-            \Dissonance\Packages\PackagesLoaderFilesystemBootstrap::class,
-            \Dissonance\Packages\PackagesBootstrap::class,
-            \Dissonance\Packages\ResourcesBootstrap::class,
-            \Dissonance\Apps\Bootstrap::class,
-            \Dissonance\Http\Bootstrap::class,
-            \Dissonance\Http\Kernel\Bootstrap::class,
-            \Dissonance\View\Blade\Bootstrap::class,
-       ],
-       'providers' => [
-           \Dissonance\Http\Cookie\CookiesProvider::class,
-           \Dissonance\Routing\SettlementsRoutingProvider::class,
-           \Dissonance\Session\NativeProvider::class,
-       ],
+    'bootstrappers' => [
+        \Symbiotic\Develop\Bootstrap\DebugBootstrap::class,/// debug only
+        \Symbiotic\Bootstrap\EventBootstrap::class,
+        \Symbiotic\SimpleCacheFilesystem\Bootstrap::class,
+        \Symbiotic\PackagesLoaderFilesystem\Bootstrap::class,
+        \Symbiotic\Packages\PackagesBootstrap::class,
+        \Symbiotic\Packages\ResourcesBootstrap::class,
+        \Symbiotic\Apps\Bootstrap::class,
+        \Symbiotic\Http\Bootstrap::class,
+        \Symbiotic\HttpKernel\Bootstrap::class,
+        \Symbiotic\CacheRouting\Bootstrap::class,
+        \Symbiotic\ViewBlade\Bootstrap::class,
+    ],
+    'providers' => [
+        \Symbiotic\Http\Cookie\CookiesProvider::class,
+        \Symbiotic\SettlementsRouting\Provider::class,
+        \Symbiotic\Session\NativeProvider::class,
+    ],
+    'providers_exclude' => [
+        \Symbiotic\Routing\Provider::class,
+    ]
 ];
 
 // Базовая постройка контейнера
-$core = new \Dissonance\Core\Core($config);
+$core = new \Symbiotic\Core($config);
 // Или через билдер с кешем
-$cache = new Dissonance\SimpleCacheFilesystem\SimpleCache($basePath . '/storage/cache/core');
-$core = (new \Dissonance\Core\ContainerBuilder($cache))
+$cache = new Symbiotic\SimpleCacheFilesystem\SimpleCache($basePath . '/storage/cache/core');
+$core = (new \Symbiotic\CachedContainer\ContainerBuilder($cache))
     ->buildCore($config);
 
 // Запуск 
@@ -146,7 +150,7 @@ $core->run();
   },
 // Добавляем описание пакета для фреймворка
   "extra": {
-    "dissonance": {
+    "symbiotic": {
           "id": "wso.my_package_id", // ID пакета формируется на сайте фреймворка, но можно локально любой ставить
            // Описание приложения, пакет может и не иметь секцию приложения, а быть лишь расширением
           "app": { 
@@ -154,12 +158,12 @@ $core->run();
                 "parent_app": "wso", // ID родительсского приложения, если приложение плагин 
                 "name": "WSO Users exporter", // Имя приложения, используется в списке приложений и меню
                 "routing": "\\\\MyVendor\\\\MySuperPackage\\\\Routing", // Класс роутинга, не обязательно
-                "controllers_namespace": "\\\\Dissonance\\\\Develop\\\\Controllers", // Базовый неймспейс для контроллеров, не обязательно
+                "controllers_namespace": "\\\\Symbiotic\\\\Develop\\\\Controllers", // Базовый неймспейс для контроллеров, не обязательно
                 "version": "1.0.0", // Версия, не обязательно, плагины могут проверять и подстаиваться под изменения
                 "providers": [ // Провайдеры приложения, не обязательно
                   "MyVendor\\\\MySuperPackage\\\\Providers\\\\AppProvider"
                 ],
-                // Не обязательно! Наследник от \\Dissonance\\App\\Application
+                // Не обязательно! Наследник от \\Symbiotic\\App\\Application
                 "app_class": "MyVendor\\\\MySuperPackage\\\\MyAppContainer" 
           },
     
@@ -192,7 +196,7 @@ $core->run();
    // ...
   },
   "extra": {
-    "dissonance": {
+    "symbiotic": {
           "id": "my_super_theme_2",
           // Можно указать что то одно или все вместе
           "public_path": "assets", // Папка со статикой, относительно корня пакета 
@@ -222,11 +226,11 @@ $core->run();
    // ...
   },
   "extra": {
-    "dissonance": {
+    "symbiotic": {
            "app": { 
                 "id": "my_package_id", // Id приложения
                 "routing": "\\\\MyVendor\\\\MySuperPackage\\\\Routing",
-                "controllers_namespace": "\\\\Dissonance\\\\Develop\\\\Controllers"
+                "controllers_namespace": "\\\\Symbiotic\\\\Develop\\\\Controllers"
           },
     }
   }
@@ -256,13 +260,13 @@ vendor/
           -/composer.json
 ```
 
-При необходимости можно поселить все классы для приложения фреймворка в подпапку src/Dissonance. Так не будет путаницы с функционалом вашего пакета.
+При необходимости можно поселить все классы для приложения фреймворка в подпапку src/Symbiotic. Так не будет путаницы с функционалом вашего пакета.
 
 ```text
 vendor/
    -/my_vendor
       -/my_package_name
-           -/dissonance
+           -/symbiotic
                    -/assets          - Статика
                         -/js
                         -/css
@@ -271,7 +275,7 @@ vendor/
                         -/views
                         -/...
            -/src                     - Ваш пакет
-               -/Dissonance
+               -/Symbiotic
                        -/Http
                            -/Cоntrollers
                            -/...

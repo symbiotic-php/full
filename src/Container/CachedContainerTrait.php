@@ -1,27 +1,27 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 use \Closure;
 use Psr\SimpleCache\CacheInterface;
 
 /**
  * Trait CacheContainerTrait
- * @package Dissonance\Container
+ * @package Symbiotic\Container
  */
 trait CachedContainerTrait /*implements CachedContainerInterface*/
 {
     /**
      * @var null|CacheInterface
      */
-    protected $container_cache = null;
+    protected ?CacheInterface $container_cache = null;
 
-    protected $container_key = '';
+    protected string $container_key = '';
     /**
      * Массив ключей разрешенных сервисов для кеширования
      * @var array|string[]
      */
-    protected $allow_cached = [];
+    protected array $allow_cached = [];
 
     /**
      * set cache storage
@@ -47,7 +47,7 @@ trait CachedContainerTrait /*implements CachedContainerInterface*/
      * @param string $abstract - ключ сервиса для кеширования
      *
      */
-    public function cached(string $abstract,  $concrete = null, string $alias = null)
+    public function cached(string $abstract, Closure|string $concrete = null, string $alias = null)
     {
 
         /**
@@ -82,7 +82,7 @@ trait CachedContainerTrait /*implements CachedContainerInterface*/
     protected function getSerializeData(): array
     {
         /**
-         * @var \Dissonance\Container\ContainerTrait|\Dissonance\Container\SubContainerTrait| $this
+         * @var \Symbiotic\Container\ContainerTrait|\Symbiotic\Container\SubContainerTrait| $this
          */
         $data = [
             'cache' => $this->container_cache,
@@ -106,7 +106,7 @@ trait CachedContainerTrait /*implements CachedContainerInterface*/
     public function unserialize($serialized)
     {
         /**
-         * @var \Dissonance\Container\ContainerTrait|\Dissonance\Container\SubContainerTrait| $this
+         * @var \Symbiotic\Container\ContainerTrait|\Symbiotic\Container\SubContainerTrait| $this
          */
         $data = \unserialize($serialized, ['allowed_classes' => true]);
         $this->container_cache = $data['cache'];
@@ -126,7 +126,7 @@ trait CachedContainerTrait /*implements CachedContainerInterface*/
     public function __destruct()
     {
         /**
-         * @var \Dissonance\Container\ContainerTrait|\Dissonance\Container\SubContainerTrait| $this
+         * @var \Symbiotic\Container\ContainerTrait|\Symbiotic\Container\SubContainerTrait| $this
          */
         if ($this->container_cache) {
             // $this->container_cache->has($this->container_key);

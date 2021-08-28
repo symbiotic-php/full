@@ -1,9 +1,9 @@
 <?php
 
 
-namespace Dissonance\Session;
+namespace Symbiotic\Session;
 
-use Dissonance\Core\ServiceProvider;
+use Symbiotic\Core\ServiceProvider;
 
 class NativeProvider extends ServiceProvider
 {

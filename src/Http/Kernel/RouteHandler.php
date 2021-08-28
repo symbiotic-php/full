@@ -1,11 +1,11 @@
 <?php
 
-namespace Dissonance\Http\Kernel;
+namespace Symbiotic\Http\Kernel;
 
-use Dissonance\Apps\ {ApplicationInterface, AppsRepositoryInterface};
-use Dissonance\Core\ {CoreInterface, Support\ArrayableInterface, Support\RenderableInterface};
-use Dissonance\Routing\RouteInterface;
-use Dissonance\Http\ResponseMutable;
+use Symbiotic\Apps\ {ApplicationInterface, AppsRepositoryInterface};
+use Symbiotic\Core\ {CoreInterface, Support\ArrayableInterface, Support\RenderableInterface};
+use Symbiotic\Routing\RouteInterface;
+use Symbiotic\Http\ResponseMutable;
 
 use Psr\Http\Message\ {ResponseFactoryInterface, ResponseInterface, ServerRequestInterface, StreamInterface};
 use Psr\Http\Server\RequestHandlerInterface;

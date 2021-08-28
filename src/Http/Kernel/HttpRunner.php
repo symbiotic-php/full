@@ -1,13 +1,13 @@
 <?php
 
-namespace Dissonance\Http\Kernel;
+namespace Symbiotic\Http\Kernel;
 
-use Dissonance\Core\{CoreInterface, HttpKernelInterface, Runner};
-use Dissonance\Http\ {ResponseSender, PsrHttpFactory, UriHelper};
+use Symbiotic\Core\{CoreInterface, HttpKernelInterface, Runner};
+use Symbiotic\Http\ {ResponseSender, PsrHttpFactory, UriHelper};
 use Psr\Http\Message\ {ResponseFactoryInterface, ServerRequestInterface, ResponseInterface};
-use Dissonance\Http\Middleware\ {MiddlewareCallback, MiddlewaresHandler, RequestPrefixMiddleware};
+use Symbiotic\Http\Middleware\ {MiddlewareCallback, MiddlewaresHandler, RequestPrefixMiddleware};
 use Psr\Http\Server\RequestHandlerInterface;
-use Dissonance\Packages\AssetFileMiddleware;
+use Symbiotic\Packages\AssetFileMiddleware;
 
 
 class HttpRunner extends Runner
@@ -24,7 +24,7 @@ class HttpRunner extends Runner
          * @var CoreInterface $app
          */
         $app = $this->app;
-        $symbiosis = \_DS\config('symbiosis',false);
+        $symbiotic = \_DS\config('symbiotic',false);
         try {
             $request_interface = ServerRequestInterface::class;
             $request = $app[PsrHttpFactory::class]->createServerRequestFromGlobals();
@@ -57,10 +57,10 @@ class HttpRunner extends Runner
             $response = $handler->handle($request);
 
             // Определяем нужно ли отдавать ответ
-            if (!$app('destroy_response', false) || !$symbiosis) {
+            if (!$app('destroy_response', false) || !$symbiotic) {
                 $this->sendResponse($response);
                 // при режиме симбиоза не даем другим скриптам продолжить работу, т.к. отдали наш ответ
-                if ($symbiosis) {
+                if ($symbiotic) {
                     exit;// завершаем работу
                 }
             } else {
@@ -69,7 +69,7 @@ class HttpRunner extends Runner
 
         } catch (\Throwable $e) {
             // при режиме симбиоза не отдаем ответ с ошибкой, запишем выше в лог
-            if (!$symbiosis) {
+            if (!$symbiotic) {
                 $this->sendResponse($app[HttpKernelInterface::class]->response(500, $e));
             } else {
                 // TODO:log
@@ -132,7 +132,7 @@ class HttpRunner extends Runner
         $sender = new ResponseSender($response);
         $sender->render();
         if (\function_exists('fastcgi_finish_request')) {
-            \fastcgi_finish_request();
+            fastcgi_finish_request();
         } elseif (!\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true)) {
             static::closeOutputBuffers(0, true);
         }

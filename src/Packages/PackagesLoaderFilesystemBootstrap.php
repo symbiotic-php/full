@@ -1,9 +1,9 @@
 <?php
 
-namespace Dissonance\Packages;
+namespace Symbiotic\Packages;
 
-use Dissonance\Core\CoreInterface;
-use Dissonance\Core\BootstrapInterface;
+use Symbiotic\Core\CoreInterface;
+use Symbiotic\Core\BootstrapInterface;
 
 class PackagesLoaderFilesystemBootstrap implements BootstrapInterface
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 interface ContextualBindingsInterface
 {
@@ -11,7 +11,7 @@ interface ContextualBindingsInterface
      *
      * @return ContextualBindingBuilder
      */
-    public function when($concrete): ContextualBindingBuilder;
+    public function when(string|array $concrete): ContextualBindingBuilder;
 
 
     /**

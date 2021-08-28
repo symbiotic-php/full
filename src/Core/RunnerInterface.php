@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Core;
+namespace Symbiotic\Core;
 
 
 interface RunnerInterface

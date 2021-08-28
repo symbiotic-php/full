@@ -1,9 +1,9 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 
-trait ServiceContainerTrait /*implements \Dissonance\Container\ServiceContainerInterface */
+trait ServiceContainerTrait /*implements \Symbiotic\Container\ServiceContainerInterface */
 {
     /**
      * @var DIContainerInterface
@@ -12,18 +12,18 @@ trait ServiceContainerTrait /*implements \Dissonance\Container\ServiceContainerI
     /**
      * All of the registered service providers.
      *
-     * @var \Dissonance\Core\ServiceProvider[]
+     * @var \Symbiotic\Core\ServiceProvider[]
      */
-    protected $serviceProviders = [];
+    protected array $serviceProviders = [];
 
     /**
      * The names of the loaded service providers.
      *
      * @var array
      */
-    protected $loadedProviders = [];
+    protected array  $loadedProviders = [];
 
-    protected $defer_services = [];
+    protected array $defer_services = [];
 
     /**
      * Indicates if the application has "booted".
@@ -48,7 +48,7 @@ trait ServiceContainerTrait /*implements \Dissonance\Container\ServiceContainerI
     }
     /**
      * @param array $services
-     * @used-by \Dissonance\Core\ProvidersRepository::load()
+     * @used-by \Symbiotic\Core\ProvidersRepository::load()
      */
     public function setDeferred(array $services)
     {
@@ -189,7 +189,7 @@ trait ServiceContainerTrait /*implements \Dissonance\Container\ServiceContainerI
      * @param string |object $provider
      * @return false|string
      */
-    protected function getClass($provider)
+    protected function getClass(string|object $provider)
     {
         return  \is_string($provider) ? \ltrim($provider, '\\') : \get_class($provider);
     }

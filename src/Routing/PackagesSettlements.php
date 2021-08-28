@@ -1,13 +1,13 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
-use Dissonance\Core\Support\Collection;
-use Dissonance\Packages\PackagesRepositoryInterface;
+use Symbiotic\Core\Support\Collection;
+use Symbiotic\Packages\PackagesRepositoryInterface;
 
 /**
  * Class Settlements
- * @package Dissonance\Services
+ * @package Symbiotic\Services
  *
 
  */

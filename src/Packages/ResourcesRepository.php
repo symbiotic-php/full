@@ -1,19 +1,19 @@
 <?php
 
-namespace Dissonance\Packages;
+namespace Symbiotic\Packages;
 
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 
 /**
  * Class AssetsRepository
- * @package Dissonance\Apps
+ * @package Symbiotic\Apps
  *
  */
 class ResourcesRepository implements ResourcesRepositoryInterface, AssetsRepositoryInterface, TemplatesRepositoryInterface
 {
 
-    protected $packages = [];
+    protected array $packages = [];
 
     /**
      * @var TemplateCompiler

@@ -1,10 +1,10 @@
 <?php
 
-namespace Dissonance\Core\Events;
+namespace Symbiotic\Core\Events;
 
 class CacheClear {
 
-    protected  $path = null;
+    protected ?string $path = null;
 
     public function __construct(string $path = null)
     {

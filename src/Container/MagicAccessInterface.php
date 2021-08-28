@@ -1,12 +1,12 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 /**
  * Interface ArrayContainerInterface
- * @package Dissonance\Container
+ * @package Symbiotic\Container
  *
- * @see \Dissonance\Container\MagicAccessTrait  realisation trait (package: dissonance/container-traits)
+ * @see \Symbiotic\Container\MagicAccessTrait  realisation trait (package: symbiotic/container-traits)
  */
 interface MagicAccessInterface
 {

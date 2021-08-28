@@ -1,11 +1,11 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 /**
  * Interface MultipleAccessInterface
  *
- * @package Dissonance\Container
+ * @package Symbiotic\Container
  *
  */
 interface MultipleAccessInterface

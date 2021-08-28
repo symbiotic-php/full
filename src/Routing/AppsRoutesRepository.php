@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 
 class AppsRoutesRepository

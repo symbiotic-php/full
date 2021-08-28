@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 use \Closure;
 
@@ -18,7 +18,7 @@ interface CachedContainerInterface extends DIContainerInterface, \Serializable
      * @param string $abstract - ключ сервиса для кеширования, использовать интерфейс с которым был добавлен сервис
      *
      */
-    public function cached(string $abstract,  $concrete = null, string $alias = null);
+    public function cached(string $abstract, Closure|string $concrete = null, string $alias = null);
 
     public function addToCache(string $abstract);
 }

@@ -1,13 +1,13 @@
 <?php
 
-namespace Dissonance\Routing;
+namespace Symbiotic\Routing;
 
 
-use Dissonance\Container\DIContainerInterface;
+use Symbiotic\Container\DIContainerInterface;
 
 /**
  * Class RouterFactory
- * @package Dissonance\Routing
+ * @package Symbiotic\Routing
  */
 class RouterFactory implements RouterFactoryInterface
 {

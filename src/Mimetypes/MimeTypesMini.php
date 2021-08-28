@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Dissonance\Mimetypes;
+namespace Symbiotic\Mimetypes;
 /**
  * abbreviating standard names
  */
@@ -16,7 +16,7 @@ const T = 'text/';
 class MimeTypesMini
 {
 
-    protected static $mime_types = [
+    protected static array $mime_types = [
 
         'txt' => T . 'plain',
         'htm' => T . 'html',

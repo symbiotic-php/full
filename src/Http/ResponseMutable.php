@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Http;
+namespace Symbiotic\Http;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;

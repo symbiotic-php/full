@@ -1,16 +1,16 @@
 <?php
 
-namespace Dissonance\Core\Bootstrap;
+namespace Symbiotic\Core\Bootstrap;
 
-use Dissonance\Core\AbstractBootstrap;
-use Dissonance\Core\ProvidersRepository;
+use Symbiotic\Core\AbstractBootstrap;
+use Symbiotic\Core\ProvidersRepository;
 
 use function _DS\config;
 
 class ProvidersBootstrap extends AbstractBootstrap
 {
     /**
-     * @param \Dissonance\Container\DIContainerInterface | \Dissonance\Container\ServiceContainerInterface $app
+     * @param \Symbiotic\Container\DIContainerInterface | \Symbiotic\Container\ServiceContainerInterface $app
      */
     public function bootstrap($app):void
     {

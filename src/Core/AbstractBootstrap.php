@@ -1,13 +1,13 @@
 <?php
-namespace Dissonance\Core;
+namespace Symbiotic\Core;
 
-use Dissonance\Container\CachedContainerInterface;
+use Symbiotic\Container\CachedContainerInterface;
 
 
 abstract class AbstractBootstrap implements BootstrapInterface
 {
 
-    protected function cached($app, string $abstract, $concrete = null, string $alias = null)
+    protected function cached($app, string $abstract, \Closure|string $concrete = null, string $alias = null)
     {
         $app instanceof CachedContainerInterface
             ? $app->cached($abstract, $concrete, $alias)

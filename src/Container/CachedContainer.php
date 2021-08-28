@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 
 class CachedContainer extends Container implements CachedContainerInterface {

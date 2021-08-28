@@ -1,25 +1,25 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
-use Dissonance\Container\BaseContainerInterface;
-use Dissonance\Core\Support\Str;
+use Symbiotic\Container\BaseContainerInterface;
+use Symbiotic\Core\Support\Str;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
 /**
  * Trait DeepGetter
- * @package Dissonance\Container
+ * @package Symbiotic\Container
  */
 trait DeepGetterTrait /* implements ContainerInterface*/
 {
 
-    private $deep_delimiter = '::';
+    private string $deep_delimiter = '::';
 
     /**
      * @param string $key - Возможно использование доступа внутри объекта через точку ,
      * если объект использует {@see \ArrayAccess,\Psr\Container\ContainerInterface}
-     * Например: 'config::providers' вернет массив провайдеров из объекта \Dissonance\Config
+     * Например: 'config::providers' вернет массив провайдеров из объекта \Symbiotic\Config
      *
      * @return mixed
      *

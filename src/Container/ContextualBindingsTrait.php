@@ -1,10 +1,10 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 /**
  * Trait ConceptualBindingsTrait
- * @package Dissonance\Container
+ * @package Symbiotic\Container
  *
  * Use only in @see DIContainerInterface
  */
@@ -15,7 +15,7 @@ trait ContextualBindingsTrait /*implements ContextualBindingsInterface*/
      *
      * @var string[][]
      */
-    public $contextual = [];
+    public array $contextual = [];
 
     /**
      * Define a contextual binding.
@@ -23,7 +23,7 @@ trait ContextualBindingsTrait /*implements ContextualBindingsInterface*/
      * @param array|string $concrete
      * @return ContextualBindingBuilder
      */
-    public function when($concrete): ContextualBindingBuilder
+    public function when(string|array $concrete): ContextualBindingBuilder
     {
         /**
          * @var DIContainerInterface $this

@@ -1,12 +1,12 @@
 <?php
 
-namespace Dissonance\Packages;
+namespace Symbiotic\Packages;
 
 use Psr\Http\Message\StreamInterface;
 
 /**
  * Interface ResourcesRepositoryInterface
- * @package Dissonance\Packages
+ * @package Symbiotic\Packages
  */
 interface ResourcesRepositoryInterface
 {

@@ -1,30 +1,30 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 
 /**
  * Trait ArrayAccessTrait
  *
- * @package dissonance/container-traits
+ * @package symbiotic/container-traits
  *
  * @method bool has(string $key)
- * @uses \Dissonance\Container\BaseContainerInterface::has()
+ * @uses \Symbiotic\Container\BaseContainerInterface::has()
  * @uses BaseContainerTrait::has()
  *
  * @method mixed|null get(string $key)
- * @uses \Dissonance\Container\BaseContainerInterface::get()
+ * @uses \Symbiotic\Container\BaseContainerInterface::get()
  * @uses BaseContainerTrait::get()
  *
  * @method void set(string $key, $value)
- * @uses \Dissonance\Container\BaseContainerInterface::set()
+ * @uses \Symbiotic\Container\BaseContainerInterface::set()
  * @uses BaseContainerTrait::set()
  *
  * @method bool delete(string $key)
- * @uses \Dissonance\Container\BaseContainerInterface::delete()
+ * @uses \Symbiotic\Container\BaseContainerInterface::delete()
  * @uses BaseContainerTrait::delete()
  */
-trait ArrayAccessTrait /*implements \Dissonance\Container\ArrayContainerInterface */
+trait ArrayAccessTrait /*implements \Symbiotic\Container\ArrayContainerInterface */
 {
 
     /**

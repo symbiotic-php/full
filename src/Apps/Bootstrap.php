@@ -1,12 +1,12 @@
 <?php
 
-namespace Dissonance\Apps;
+namespace Symbiotic\Apps;
 
 
-use Dissonance\Packages\PackagesRepositoryInterface;
-use Dissonance\Core\AbstractBootstrap;
-use Dissonance\Routing\AppsRoutesRepository;
-use Dissonance\Core\CoreInterface;
+use Symbiotic\Packages\PackagesRepositoryInterface;
+use Symbiotic\Core\AbstractBootstrap;
+use Symbiotic\Routing\AppsRoutesRepository;
+use Symbiotic\Core\CoreInterface;
 
 
 class Bootstrap extends AbstractBootstrap
@@ -27,9 +27,9 @@ class Bootstrap extends AbstractBootstrap
         }, 'apps');
 
         /**
-         * @used-by  \Dissonance\Routing\Provider::boot()
+         * @used-by  \Symbiotic\Routing\Provider::boot()
          * or
-         * @used-by  \Dissonance\Routing\SettlementsRoutingProvider::register()
+         * @used-by  \Symbiotic\Routing\SettlementsRoutingProvider::register()
          */
         $app['listeners']->add(AppsRoutesRepository::class, function (AppsRoutesRepository $event, AppsRepositoryInterface $appsRepository) {
             foreach ($appsRepository->enabled() as $v) {

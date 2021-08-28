@@ -1,13 +1,13 @@
 <?php
 
-namespace Dissonance\View\Blade;
+namespace Symbiotic\View\Blade;
 
 # Use: Blade::compile( $string);
 # visit: http://araujo.cc
 # original class from http://cutlasswp.com
 
 
-use Dissonance\Packages\TemplateCompilerInterface;
+use Symbiotic\Packages\TemplateCompilerInterface;
 
 class Blade implements TemplateCompilerInterface
 {
@@ -303,7 +303,7 @@ class Blade implements TemplateCompilerInterface
 
         $pattern = $this->matcher('include');
 
-        return preg_replace($pattern, '$1<?php echo \Dissonance\Core\View\View::make$2->with(get_defined_vars())->render(); ?>', $value);
+        return preg_replace($pattern, '$1<?php echo \Symbiotic\Core\View\View::make$2->with(get_defined_vars())->render(); ?>', $value);
     }
 
     /**

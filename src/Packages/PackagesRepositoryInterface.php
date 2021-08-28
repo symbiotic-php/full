@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Packages;
+namespace Symbiotic\Packages;
 
 
 interface PackagesRepositoryInterface

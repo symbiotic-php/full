@@ -1,20 +1,20 @@
 <?php
 
-namespace Dissonance\Session;
+namespace Symbiotic\Session;
 
-use Dissonance\Container\ArrayAccessTrait;
+use Symbiotic\Container\ArrayAccessTrait;
 
 class SessionStorageNative implements SessionStorageInterface
 {
     use ArrayAccessTrait;
 
-    protected $items = [];
+    protected array $items = [];
 
-    protected $started = false;
+    protected bool $started = false;
     /**
      * @var string|null
      */
-    protected $session_namespace;
+    protected ?string $session_namespace;
 
     public function __construct(string $session_namespace = null)
     {

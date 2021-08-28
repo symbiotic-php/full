@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Container;
+namespace Symbiotic\Container;
 
 use \Closure;
 
@@ -17,22 +17,22 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
      */
     protected $app = null;
 
-    protected $aliases = [];
+    protected array $aliases = [];
 
-    protected $instances = [];
+    protected array $instances = [];
 
-    protected $abstractAliases = [];
+    protected array $abstractAliases = [];
 
-    protected $reboundCallbacks = [];
+    protected array $reboundCallbacks = [];
 
-    protected $bindings = [];
+    protected array $bindings = [];
 
-    protected $resolved = [];
+    protected array $resolved = [];
 
-    protected $extenders = [];
+    protected array $extenders = [];
 
 
-    public function call($callback, array $parameters = [], string $defaultMethod = null)
+    public function call(callable|string $callback, array $parameters = [], string $defaultMethod = null)
     {
         return BoundMethod::call($this, $callback, $this->bindParameters($parameters), $defaultMethod);
     }
@@ -122,7 +122,7 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
      * @param bool $shared
      * @return void
      */
-    public function bind(string $abstract,  $concrete = null, bool $shared = false): void
+    public function bind(string $abstract, Closure|string $concrete = null, bool $shared = false): void
     {
         unset($this->instances[$abstract], $this->aliases[$abstract]);
         if (!$concrete) {
@@ -205,19 +205,19 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
         return $this->app->resolve($alias, $this->bindParameters($parameters), $raiseEvents);
     }
 
-    public function build($concrete)
+    public function build(string|Closure $concrete)
     {
         return $this->app->build($concrete);
     }
 
-    public function bindIf(string $abstract,  $concrete = null, bool $shared = false)
+    public function bindIf(string $abstract, Closure|string $concrete = null, bool $shared = false)
     {
         if (!$this->bound($abstract)) {
             $this->bind($abstract, $concrete, $shared);
         }
     }
 
-    public function singleton(string $abstract,  $concrete = null, string $alias = null)
+    public function singleton(string $abstract, Closure|string $concrete = null, string $alias = null)
     {
         $this->bind($abstract, $concrete, true);
         if (is_string($alias)) {
@@ -334,7 +334,7 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
         $this->app->addContextualBinding($concrete, $abstract, $implementation);
     }
 
-    public function when($concrete): ContextualBindingBuilder
+    public function when(string|array $concrete): ContextualBindingBuilder
     {
         return $this->app->when($concrete);
     }

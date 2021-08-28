@@ -1,7 +1,7 @@
 <?php
-namespace Dissonance\Core;
+namespace Symbiotic\Core;
 
-use Dissonance\Core\Support\Collection;
+use Symbiotic\Core\Support\Collection;
 
 class Config extends Collection
 {

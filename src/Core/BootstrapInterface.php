@@ -1,36 +1,36 @@
 <?php
 
-namespace Dissonance\Core;
+namespace Symbiotic\Core;
 
 /**
  * Allowed only in Core container!
  * Interface BootstrapInterface
- * @package Dissonance\Contracts
+ * @package Symbiotic\Contracts
  */
 interface BootstrapInterface
 {
     /**
-     * @param CoreInterface|\Dissonance\Core\Core | array $app = [
+     * @param CoreInterface|\Symbiotic\Core\Core | array $app = [
      *   // Сервисы доступные сразу
      *
-     *       'config' => new \Dissonance\Config(),
-     *       'events' => new \Dissonance\Contracts\Events\Dispatcher(), //{@see \Dissonance\Core\Bootstrap\EventBootstrap::bootstrap()}
-     *       'listeners' => new \Dissonance\Events\ListenerProvider(),  //{@see \Dissonance\Core\Bootstrap\EventBootstrap::bootstrap()}
+     *       'config' => new \Symbiotic\Config(),
+     *       'events' => new \Symbiotic\Contracts\Events\Dispatcher(), //{@see \Symbiotic\Core\Bootstrap\EventBootstrap::bootstrap()}
+     *       'listeners' => new \Symbiotic\Events\ListenerProvider(),  //{@see \Symbiotic\Core\Bootstrap\EventBootstrap::bootstrap()}
      *
      *   // Сервисы которых может еще не быть, но они доступны сразу после отработки всех бутстраперов
      *
-     *       'apps' => new \Dissonance\Contracts\Appss\AppsRepository(),  //{@see \Dissonance\Apps\Bootstrap::bootstrap()}
-     *       'cache' => new \Dissonance\SimpleCacheFilesystem\Cache(),             // может и не быть пакета
-     *       'resources' => new \Dissonance\Packages\Resources(),        //{@see \Dissonance\Packages\ResourcesBootstrap::bootstrap()}
-     *       'http_factory' => new \Dissonance\Http\PsrHttpFactory(),    //{@see \Dissonance\Http\Bootstrap::bootstrap()}
+     *       'apps' => new \Symbiotic\Contracts\Appss\AppsRepository(),  //{@see \Symbiotic\Apps\Bootstrap::bootstrap()}
+     *       'cache' => new \Symbiotic\SimpleCacheFilesystem\Cache(),             // может и не быть пакета
+     *       'resources' => new \Symbiotic\Packages\Resources(),        //{@see \Symbiotic\Packages\ResourcesBootstrap::bootstrap()}
+     *       'http_factory' => new \Symbiotic\Http\PsrHttpFactory(),    //{@see \Symbiotic\Http\Bootstrap::bootstrap()}
      *
      *   // Сервисы из провайдеров, доступны после бутстрапа ядра {@see HttpRunner::run(), HttpKernel::bootstrap()}
      *        // Http сервисы
-     *       'router' => new \Dissonance\Contracts\Routing\Router(),    //{@see \Dissonance\Routing\Provider::registerRouter()}
-     *       'request' => new \Dissonance\Http\ServerRequest(),         //{@see \Dissonance\Http\Bootstrap::bootstrap()}
-     *       'cookie' => new \Dissonance\Http\Cookie\CookiesInterface(),
+     *       'router' => new \Symbiotic\Contracts\Routing\Router(),    //{@see \Symbiotic\Routing\Provider::registerRouter()}
+     *       'request' => new \Symbiotic\Http\ServerRequest(),         //{@see \Symbiotic\Http\Bootstrap::bootstrap()}
+     *       'cookie' => new \Symbiotic\Http\Cookie\CookiesInterface(),
      *       // Доступен только при обработке в контроллерах
-     *       'route' => new \Dissonance\Http\ServerRequest(),           //{@see \Dissonance\Http\Bootstrap::bootstrap()}
+     *       'route' => new \Symbiotic\Http\ServerRequest(),           //{@see \Symbiotic\Http\Bootstrap::bootstrap()}
      * ]
      */
     public function bootstrap(CoreInterface $app) : void;

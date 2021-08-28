@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\SimpleCacheFilesystem;
+namespace Symbiotic\SimpleCacheFilesystem;
 
 
 

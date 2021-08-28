@@ -1,10 +1,10 @@
 <?php
 
-namespace Dissonance\Filesystem\Adapter;
+namespace Symbiotic\Filesystem\Adapter;
 
 
 
-use Dissonance\Filesystem\FilesystemInterface;
+use Symbiotic\Filesystem\FilesystemInterface;
 
 class Local extends AbstractAdapter implements FilesystemInterface {
 

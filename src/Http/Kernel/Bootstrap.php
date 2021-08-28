@@ -1,9 +1,9 @@
 <?php
 
-namespace Dissonance\Http\Kernel;
+namespace Symbiotic\Http\Kernel;
 
 
-use Dissonance\Core\{CoreInterface, BootstrapInterface, HttpKernelInterface};
+use Symbiotic\Core\{CoreInterface, BootstrapInterface, HttpKernelInterface};
 
 
 class Bootstrap implements BootstrapInterface

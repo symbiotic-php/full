@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Event;
+namespace Symbiotic\Event;
 
 use \Psr\EventDispatcher\ListenerProviderInterface;
 
@@ -12,5 +12,5 @@ interface ListenersInterface extends ListenerProviderInterface
      * The event handler class must implement the handle method  (...$params) or __invoke(...$params)
      * @return void
      */
-    public function add(string $event, $handler): void;
+    public function add(string $event, string|\Closure $handler): void;
 }

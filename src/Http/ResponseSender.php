@@ -1,11 +1,11 @@
 <?php
 
-namespace Dissonance\Http;
+namespace Symbiotic\Http;
 
 
 
 
-use Dissonance\Core\Support\RenderableInterface;
+use Symbiotic\Core\Support\RenderableInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class ResponseSender implements RenderableInterface

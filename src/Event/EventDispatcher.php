@@ -1,6 +1,6 @@
 <?php
 
-namespace Dissonance\Event;
+namespace Symbiotic\Event;
 
 use Psr\EventDispatcher\ListenerProviderInterface;
 use Psr\EventDispatcher\StoppableEventInterface;

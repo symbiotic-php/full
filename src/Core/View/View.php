@@ -363,22 +363,6 @@ class View implements RenderableInterface
         return $view;
     }
 
-    /**
-     * Специальный метод для передачи шаблона в слой
-     *
-     * @param $template
-     * @param $content_template
-     * @param array $vars
-     * @return static
-     */
-    public function action(string $action, $content_template, $vars = [])
-    {
-        $this->template = $content_template;
-        $view = (new static($template, $vars));
-        $view->inject('content', $this);
-        return $view;
-    }
-
 
     /**
      * @param CoreInterface $app

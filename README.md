@@ -68,7 +68,7 @@ composer require symbiotic/develop
  
  Если вы используете уже фреймворк, то необходимо включить режим симбиоза в конфиге
 ```php
-$config['symbiotic'] = true;
+$config['symbiosis'] = true;
 ```
 ##### Инициализация
 ```php
@@ -91,7 +91,7 @@ include_once $basePath. '/vendor/autoload.php';
 
 $config  = [
     'debug' => true,
-    'symbiotic' => true, // Режим симбиоза, если включен и фреймворк не найдет обработчик,
+    'symbiosis' => true, // Режим симбиоза, если включен и фреймворк не найдет обработчик,
     // то он ничего не вернет и основной фреймворк смодет сам обработать запрос
     'default_host' => 'localhost',// для консоли , но ее пока нет
     'uri_prefix' => 'symbiotic', // Префикс в котором работет фреймворк, если пустой то работае от корня
@@ -102,21 +102,21 @@ $config  = [
         $basePath . '/vendor', // Папка для приложений
     ],
     'bootstrappers' => [
-        \Symbiotic\Develop\Bootstrap\DebugBootstrap::class,/// debug only
-        \Symbiotic\Bootstrap\EventBootstrap::class,
+        //\Symbiotic\Develop\Bootstrap\DebugBootstrap::class,/// debug with develop app only
+        \Symbiotic\Core\Bootstrap\EventBootstrap::class,
         \Symbiotic\SimpleCacheFilesystem\Bootstrap::class,
-        \Symbiotic\PackagesLoaderFilesystem\Bootstrap::class,
+        \Symbiotic\Packages\PackagesLoaderFilesystemBootstrap::class,
         \Symbiotic\Packages\PackagesBootstrap::class,
         \Symbiotic\Packages\ResourcesBootstrap::class,
         \Symbiotic\Apps\Bootstrap::class,
         \Symbiotic\Http\Bootstrap::class,
-        \Symbiotic\HttpKernel\Bootstrap::class,
-        \Symbiotic\CacheRouting\Bootstrap::class,
-        \Symbiotic\ViewBlade\Bootstrap::class,
+        \Symbiotic\Http\Kernel\Bootstrap::class,
+        \Symbiotic\Routing\CacheRoutingProvider::class,
+        \Symbiotic\View\Blade\Bootstrap::class,
     ],
     'providers' => [
         \Symbiotic\Http\Cookie\CookiesProvider::class,
-        \Symbiotic\SettlementsRouting\Provider::class,
+        \Symbiotic\Routing\SettlementsRoutingProvider::class,
         \Symbiotic\Session\NativeProvider::class,
     ],
     'providers_exclude' => [
@@ -125,10 +125,10 @@ $config  = [
 ];
 
 // Базовая постройка контейнера
-$core = new \Symbiotic\Core($config);
+$core = new \Symbiotic\Core\Core($config);
 // Или через билдер с кешем
 $cache = new Symbiotic\SimpleCacheFilesystem\SimpleCache($basePath . '/storage/cache/core');
-$core = (new \Symbiotic\CachedContainer\ContainerBuilder($cache))
+$core = (new \Symbiotic\Core\ContainerBuilder($cache))
     ->buildCore($config);
 
 // Запуск 

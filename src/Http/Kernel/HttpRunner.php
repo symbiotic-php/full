@@ -24,7 +24,7 @@ class HttpRunner extends Runner
          * @var CoreInterface $app
          */
         $app = $this->app;
-        $symbiotic = \_DS\config('symbiotic',false);
+        $symbiosis = \_DS\config('symbiosis',true);
         try {
             $request_interface = ServerRequestInterface::class;
             $request = $app[PsrHttpFactory::class]->createServerRequestFromGlobals();
@@ -57,10 +57,10 @@ class HttpRunner extends Runner
             $response = $handler->handle($request);
 
             // Определяем нужно ли отдавать ответ
-            if (!$app('destroy_response', false) || !$symbiotic) {
+            if (!$app('destroy_response', false) || !$symbiosis) {
                 $this->sendResponse($response);
                 // при режиме симбиоза не даем другим скриптам продолжить работу, т.к. отдали наш ответ
-                if ($symbiotic) {
+                if ($symbiosis) {
                     exit;// завершаем работу
                 }
             } else {
@@ -69,8 +69,9 @@ class HttpRunner extends Runner
 
         } catch (\Throwable $e) {
             // при режиме симбиоза не отдаем ответ с ошибкой, запишем выше в лог
-            if (!$symbiotic) {
+            if (!$symbiosis) {
                 $this->sendResponse($app[HttpKernelInterface::class]->response(500, $e));
+                exit;// отключаем выполнение других скриптов, они могут очистить буфер вывода
             } else {
                 // TODO:log
             }

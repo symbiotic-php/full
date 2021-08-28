@@ -49,7 +49,7 @@ trait ItemsContainerTrait /*implements \Dissonance\Container\BaseContainerInterf
      * @return bool
      * @info
      */
-    private function hasBy(string|int $key, \ArrayAccess|array &$items): bool
+    private function hasBy(string|int $key, array &$items): bool
     {
         return isset($items[$key]) // isset в 4 раза быстрее array_key_exists
             ||  (is_array($items) && array_key_exists($key, $items))

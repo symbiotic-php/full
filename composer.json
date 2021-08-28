@@ -2,7 +2,7 @@
   "name": "dissonance/full",
   "description": "Полная сборка пакетов фреймворка Dissonance.",
   "license": "BSD-3-Clause",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "authors": [{
     "name": "Surkov Sergey",
     "role": "creator"

@@ -24,6 +24,7 @@ class HttpRunner extends Runner
          * @var CoreInterface $app
          */
         $app = $this->app;
+        $symbiosis = \_DS\config('symbiosis',false);
         try {
             $request_interface = ServerRequestInterface::class;
             $request = $app[PsrHttpFactory::class]->createServerRequestFromGlobals();
@@ -54,24 +55,48 @@ class HttpRunner extends Runner
                 })
             );
             $response = $handler->handle($request);
+
             // Определяем нужно ли отдавать ответ
-            if (!$app('destroy_response', false) || !\_DS\config('symbiosis')) {
+            if (!$app('destroy_response', false) || !$symbiosis) {
                 $this->sendResponse($response);
                 // при режиме симбиоза не даем другим скриптам продолжить работу, т.к. отдали наш ответ
-                if (\_DS\config('symbiosis')) {
+                if ($symbiosis) {
                     exit;// завершаем работу
                 }
+            } else {
+                // Открываем проксирование буфера через нас
             }
+
         } catch (\Throwable $e) {
             // при режиме симбиоза не отдаем ответ с ошибкой, запишем выше в лог
-            if (!\_DS\config('symbiosis')) {
+            if (!$symbiosis) {
                 $this->sendResponse($app[HttpKernelInterface::class]->response(500, $e));
             } else {
-                // TODO:
+                // TODO:log
             }
         }
     }
 
+
+    /**
+     * Laravel close buffers
+     * @param int $targetLevel
+     * @param bool $flush
+     */
+    public static function closeOutputBuffers(int $targetLevel, bool $flush): void
+    {
+        $status = ob_get_status(true);
+        $level = \count($status);
+        $flags = \PHP_OUTPUT_HANDLER_REMOVABLE | ($flush ? \PHP_OUTPUT_HANDLER_FLUSHABLE : \PHP_OUTPUT_HANDLER_CLEANABLE);
+
+        while ($level-- > $targetLevel &&  ($s = $status[$level])  && (!isset($s['del']) ? !isset($s['flags']) || ($s['flags'] & $flags) === $flags : $s['del'])) {
+            if ($flush) {
+                ob_end_flush();
+            } else {
+                ob_end_clean();
+            }
+        }
+    }
 
     protected function prepareBaseUrl(ServerRequestInterface $request): string
     {
@@ -106,6 +131,11 @@ class HttpRunner extends Runner
     {
         $sender = new ResponseSender($response);
         $sender->render();
+        if (\function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request();
+        } elseif (!\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true)) {
+            static::closeOutputBuffers(0, true);
+        }
     }
 
 }

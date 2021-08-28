@@ -23,7 +23,7 @@ class SimpleCache implements SimpleCacheInterface
     {
         if (!is_dir($cache_directory)) {
             $uMask = umask(0);
-            mkdir($cache_directory, 0755, true);
+            @mkdir($cache_directory, 0755, true);
             umask($uMask);
         }
         if (!is_dir($cache_directory) || !is_writable($cache_directory)) {

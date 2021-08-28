@@ -1,4 +1,5 @@
 <?php
+
 namespace _DS;
 
 use Dissonance\Core\Config;
@@ -18,7 +19,8 @@ function app($abstract = null, array $parameters = null)
     }
     return is_null($parameters) ? $core->get($abstract) : $core->make($abstract, $parameters);
 }
-if (! function_exists('config')) {
+
+if (!function_exists('_DS\\config')) {
     /**
      * Get Config data
      * @param string|null $key
@@ -29,15 +31,15 @@ if (! function_exists('config')) {
     function config(string $key = null, $default = null)
     {
         $config = app('config');
-        return is_null($key) ? $config : ($config->has($key)?$config->get($key):$default);
+        return is_null($key) ? $config : ($config->has($key) ? $config->get($key) : $default);
     }
 }
 
-if (! function_exists('event')) {
+if (!function_exists('_DS\\event')) {
     /**
      * Run event
      *
-     * @param  object $event
+     * @param object $event
      *
      * @return object $event
      */
@@ -46,14 +48,14 @@ if (! function_exists('event')) {
         return app('events')->dispatch($event);
     }
 }
-if (! function_exists('route')) {
+if (!function_exists('_DS\\route')) {
 
     /**
      * Generate the URL to a named route.
      *
-     * @param  array|string  $name
-     * @param  mixed  $parameters
-     * @param  bool  $absolute
+     * @param array|string $name
+     * @param mixed $parameters
+     * @param bool $absolute
      * @return string
      */
     function route($name, $parameters = [], $absolute = true)
@@ -63,11 +65,7 @@ if (! function_exists('route')) {
 }
 
 
-
-
-
-
-if (!function_exists('camel_case')) {
+if (!function_exists('_DS\\camel_case')) {
     /**
      * Convert a value to camel case.
      *
@@ -82,7 +80,7 @@ if (!function_exists('camel_case')) {
     }
 }
 
-if (!function_exists('class_basename')) {
+if (!function_exists('_DS\\class_basename')) {
     /**
      * Get the class "basename" of the given object / class.
      *
@@ -97,7 +95,7 @@ if (!function_exists('class_basename')) {
     }
 }
 
-if (!function_exists('collect')) {
+if (!function_exists('_DS\\collect')) {
     /**
      * Create a collection from the given value.
      *
@@ -110,7 +108,7 @@ if (!function_exists('collect')) {
     }
 }
 
-if (!function_exists('data_fill')) {
+if (!function_exists('_DS\\data_fill')) {
     /**
      * Fill in data where it's missing.
      *
@@ -125,7 +123,7 @@ if (!function_exists('data_fill')) {
     }
 }
 
-if (!function_exists('data_get')) {
+if (!function_exists('_DS\\data_get')) {
     /**
      * Get an item from an array or object using "dot" notation.
      *
@@ -172,7 +170,7 @@ if (!function_exists('data_get')) {
     }
 }
 
-if (!function_exists('data_set')) {
+if (!function_exists('_DS\\data_set')) {
     /**
      * Set an item on an array or object using dot notation.
      *
@@ -235,8 +233,7 @@ if (!function_exists('data_set')) {
 }
 
 
-
-if (!function_exists('ends_with')) {
+if (!function_exists('_DS\\ends_with')) {
     /**
      * Determine if a given string ends with a given substring.
      *
@@ -252,7 +249,37 @@ if (!function_exists('ends_with')) {
     }
 }
 
-if (!function_exists('filled')) {
+
+if (! function_exists('_DS\\blank')) {
+    /**
+     * Determine if the given value is "blank".
+     *
+     * @param  mixed  $value
+     * @return bool
+     */
+    function blank($value)
+    {
+        if (is_null($value)) {
+            return true;
+        }
+
+        if (is_string($value)) {
+            return trim($value) === '';
+        }
+
+        if (is_numeric($value) || is_bool($value)) {
+            return false;
+        }
+
+        if ($value instanceof \Countable) {
+            return count($value) === 0;
+        }
+
+        return empty($value);
+    }
+}
+
+if (!function_exists('_DS\\filled')) {
     /**
      * Determine if a value is "filled".
      *
@@ -266,13 +293,7 @@ if (!function_exists('filled')) {
 }
 
 
-
-
-
-
-
-
-if (!function_exists('preg_replace_array')) {
+if (!function_exists('_DS\\preg_replace_array')) {
     /**
      * Replace a given pattern with each value in the array in sequentially.
      *
@@ -292,8 +313,7 @@ if (!function_exists('preg_replace_array')) {
 }
 
 
-
-if (!function_exists('snake_case')) {
+if (!function_exists('_DS\\snake_case')) {
     /**
      * Convert a string to snake case.
      *
@@ -309,7 +329,7 @@ if (!function_exists('snake_case')) {
     }
 }
 
-if (!function_exists('serialize64')) {
+if (!function_exists('_DS\\serialize64')) {
     /**
      * Serialization with base64 encode
      *
@@ -323,7 +343,7 @@ if (!function_exists('serialize64')) {
     }
 }
 
-if (!function_exists('unserialize64')) {
+if (!function_exists('_DS\\unserialize64')) {
     /**
      * unserialization  with base64 decode
      *
@@ -340,13 +360,7 @@ if (!function_exists('unserialize64')) {
 }
 
 
-
-
-
-
-
-
-//if (!function_exists('throw_if')) {
+//if (!function_exists('_DS\\throw_if')) {
 //    /**
 //     * Throw the given exception if the given condition is true.
 //     *
@@ -367,7 +381,7 @@ if (!function_exists('unserialize64')) {
 //    }
 //}
 
-//if (!function_exists('throw_unless')) {
+//if (!function_exists('_DS\\throw_unless')) {
 //    /**
 //     * Throw the given exception unless the given condition is true.
 //     *
@@ -387,7 +401,7 @@ if (!function_exists('unserialize64')) {
 //    }
 //}
 
-//if (!function_exists('title_case')) {
+//if (!function_exists('_DS\\title_case')) {
 //    /**
 //     * Convert a value to title case.
 //     *
@@ -402,7 +416,7 @@ if (!function_exists('unserialize64')) {
 //    }
 //}
 
-if (!function_exists('transform')) {
+if (!function_exists('_DS\\transform')) {
     /**
      * Transform the given value if it is present.
      *
@@ -425,7 +439,7 @@ if (!function_exists('transform')) {
     }
 }
 
-if (!function_exists('value')) {
+if (!function_exists('_DS\\value')) {
     /**
      * Return the default value of the given value.
      *
@@ -439,7 +453,7 @@ if (!function_exists('value')) {
 }
 
 
-if (!function_exists('with')) {
+if (!function_exists('_DS\\with')) {
     /**
      * Return the given value, optionally passed through the given callback.
      *

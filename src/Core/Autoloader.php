@@ -84,7 +84,6 @@ class Autoloader
     protected static function loadPackages($dir)
     {
         /*foreach(new \DirectoryIterator($dir) as $fileInfo) {*/
-
         $iterator = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($dir, \FilesystemIterator::KEY_AS_PATHNAME | \FilesystemIterator::CURRENT_AS_SELF));
         $iterator->setMaxDepth(2);
         foreach ($iterator as $fileInfo) {

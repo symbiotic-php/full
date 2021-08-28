@@ -158,7 +158,8 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
         // If the abstract type was already resolved in this container we'll fire the
         // rebound listener so that any objects which have already gotten resolved
         // can have their copy of the object updated via the listener callbacks.
-        if ($this->resolved($abstract)) {
+        $alias = $this->getAlias($abstract);
+        if (isset($this->resolved[$alias]) || isset($this->instances[$alias])) {
             $this->rebound($abstract);
         }
 
@@ -184,6 +185,16 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
     public function resolve(string $abstract, array $parameters = [], bool $raiseEvents = true)
     {
         $alias = $this->getAlias($abstract);
+        /// сначала получаем по ключу у нас
+        /// иначе вернет из ядра по алиасу
+        /// проблема одноименнных сервисов с алиасами
+        if (!$parameters && isset($this->instances[$abstract])) {
+            return $this->instances[$abstract];
+        }
+        if (isset($this->bindings[$abstract])) {
+            return $this->app->build($this->bindings[$abstract]['concrete']);
+        }
+        // передаем родителю
         if (!$parameters && isset($this->instances[$alias])) {
             return $this->instances[$alias];
         }
@@ -363,8 +374,10 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
         if (is_string($abstract)) {
             $abstract = $this->getAlias($abstract);
         }
-
-        $this->app->resolving($abstract, $callback);
+        // нам не нужен чужой контейнер, ставим текущий
+        $this->app->resolving($abstract, function (object $object, $app) use ($callback) {
+            return $callback($object, $this);
+        });
     }
 
     /**
@@ -380,7 +393,10 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
             $abstract = $this->getAlias($abstract);
         }
 
-        $this->app->afterResolving($abstract, $callback);
+        // нам не нужен чужой контейнер, ставим текущий
+        $this->app->afterResolving($abstract, function (object $object, $app) use ($callback) {
+            return $callback($object, $this);
+        });
     }
 
 

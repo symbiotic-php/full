@@ -54,7 +54,7 @@ class Application implements ApplicationInterface
         return $this['config']->getAppName();
     }
 
-    public function getRoutingProvider(): string
+    public function getRoutingProvider(): ?string
     {
         return $this['config']->getRoutingProvider();
     }
@@ -64,7 +64,7 @@ class Application implements ApplicationInterface
         return $this['config']->hasParentApp();
     }
 
-    public function getParentAppId(): string
+    public function getParentAppId(): ?string
     {
         return $this['config']->getParentAppId();
     }
@@ -117,7 +117,7 @@ class Application implements ApplicationInterface
      * @param string|null $path
      * @return string|null
      */
-    public function getBasePath(string $path = null)
+    public function getBasePath(string $path = null): ?string
     {
         $base = $this('config::base_path');
         return $base ? ($path ? $base . \_DS\DS . ltrim($path) : $base) : null;
@@ -127,7 +127,7 @@ class Application implements ApplicationInterface
      * @return string|null
      * @deprecated
      */
-    public function getAssetsPath()
+    public function getAssetsPath(): ?string
     {
         return $this->getBasePath('assets');
     }
@@ -136,7 +136,7 @@ class Application implements ApplicationInterface
      * @return string|null
      * @deprecated
      */
-    public function getResourcesPath()
+    public function getResourcesPath(): ?string
     {
         return $this->getBasePath('resources');
     }
@@ -144,7 +144,7 @@ class Application implements ApplicationInterface
     /**
      * @return ApplicationInterface|null
      */
-    protected function getParentApp()
+    protected function getParentApp(): ?ApplicationInterface
     {
         return $this->hasParentApp() ? $this[AppsRepositoryInterface::class]->get($this->getParentAppId()) : null;
     }

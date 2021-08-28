@@ -132,7 +132,7 @@ class HttpRunner extends Runner
         $sender = new ResponseSender($response);
         $sender->render();
         if (\function_exists('fastcgi_finish_request')) {
-            fastcgi_finish_request();
+            \fastcgi_finish_request();
         } elseif (!\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true)) {
             static::closeOutputBuffers(0, true);
         }

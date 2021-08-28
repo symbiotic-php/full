@@ -16,19 +16,19 @@ use Dissonance\Container\ServiceContainerInterface;
 interface  ApplicationInterface extends AppConfigInterface, DIContainerInterface, ServiceContainerInterface
 {
 
-    public function getBasePath(string $path = null);
+    public function getBasePath(string $path = null): ?string;
 
     /**
      * @return string|null
      * @deprecated
      */
-    public function getAssetsPath();
+    public function getAssetsPath(): ?string;
 
     /**
      * @return string|null
      * @deprecated
      */
-    public function getResourcesPath();
+    public function getResourcesPath(): ?string;
 
     /**
      * @param array|\Closure[]|null $bootstraps

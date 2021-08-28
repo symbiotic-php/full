@@ -34,7 +34,10 @@ class Bootstrap extends AbstractBootstrap
         $app['listeners']->add(AppsRoutesRepository::class, function (AppsRoutesRepository $event, AppsRepositoryInterface $appsRepository) {
             foreach ($appsRepository->enabled() as $v) {
                 $provider = $v['routing'] ?? null;
-                if ($provider && class_exists($provider)) {
+                if ($provider) {
+                    if(!class_exists($provider)) {
+                        throw new \Exception('Provider ['.$provider.'] class not found!');
+                    }
                     $event->append(new $provider($v['id'], $v['controllers_namespace']));
                 }
             }

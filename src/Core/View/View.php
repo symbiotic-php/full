@@ -473,14 +473,7 @@ class View implements RenderableInterface
 
     protected function getTemplate()
     {
-        return
-            'use function ' . __NAMESPACE__ . '\\app; 
-        use function ' . __NAMESPACE__ . '\\asset; 
-        use function ' . __NAMESPACE__ . '\\route; 
-        use function ' . __NAMESPACE__ . '\\css; 
-        use function ' . __NAMESPACE__ . '\\js; 
-        
-        ?>' . $this->template;
+        return  'use function ' . __NAMESPACE__ . '\\app,asset,route,css,js,adminRoute,apiRoute;'.PHP_EOL.' ?>' . $this->template;
     }
 
     public function __toString()

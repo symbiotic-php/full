@@ -457,7 +457,7 @@ class View implements RenderableInterface
 
     protected function getTemplate()
     {
-        return  'use function ' . __NAMESPACE__ . '\\app,asset,route,css,js,adminRoute,apiRoute;'.PHP_EOL.' ?>' . $this->template;
+        return  'use function ' . __NAMESPACE__ . '\\{app,asset,route,css,js,adminRoute,apiRoute};'.PHP_EOL.' ?>' . $this->template;
     }
 
     public function __toString()

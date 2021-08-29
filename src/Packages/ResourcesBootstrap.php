@@ -53,7 +53,6 @@ class ResourcesBootstrap
                     $app[ResponseFactoryInterface::class]
                 )
             );
-
         });
     }
 }

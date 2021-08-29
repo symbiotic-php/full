@@ -160,9 +160,4 @@ class AppsRepository implements AppsRepositoryInterface
     {
         return $this->apps_config;
     }
-
-    public function __sleep()
-    {
-        return ['apps_config', 'apps_plugins'];
-    }
 }

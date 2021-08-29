@@ -2,7 +2,6 @@
 
 namespace Symbiotic\Apps;
 
-
 use Symbiotic\Packages\PackagesRepositoryInterface;
 use Symbiotic\Core\AbstractBootstrap;
 use Symbiotic\Routing\AppsRoutesRepository;
@@ -15,14 +14,16 @@ class Bootstrap extends AbstractBootstrap
     public function bootstrap(CoreInterface $app): void
     {
 
-        $this->cached($app, AppsRepositoryInterface::class, function ($app) {
+        // todo: занимает 3.5 мс при 700 пакетах, можно в файл писать, будет 2.5
+        $app->singleton( AppsRepositoryInterface::class, function ($app) {
             $apps_repository = new AppsRepository();
             foreach ($app[PackagesRepositoryInterface::class]->getPackages() as $config) {
-                $app = isset($config['app']) ? $config['app'] : null;
-                if (is_array($app)) {
-                    $apps_repository->addApp($app);
+                $app_c = isset($config['app']) ? $config['app'] : null;
+                if (is_array($app_c)) {
+                    $apps_repository->addApp($app_c);
                 }
             }
+
             return $apps_repository;
         }, 'apps');
 

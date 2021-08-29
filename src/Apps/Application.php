@@ -49,11 +49,6 @@ class Application implements ApplicationInterface
         return $this['config']->getAppName();
     }
 
-    public function getAppTitle(): string
-    {
-        return $this['config']->getAppName();
-    }
-
     public function getRoutingProvider(): ?string
     {
         return $this['config']->getRoutingProvider();

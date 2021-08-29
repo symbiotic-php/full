@@ -28,8 +28,18 @@ class RoutingHandler implements RequestHandlerInterface
         /**
          * @var \Symbiotic\Routing\RouteInterface|null $route
          */
-        $path = $request->getUri()->getPath();
-        $route = $app['router']->match($request->getMethod(), $path);
+        if($this->app->has('route')) {
+            /**
+             * Для того чтобы не грузить все сервисы ядра,
+             * сначала мы определяем роут если роута нет, нет смысла грузить ядро
+             * Посредник дублирует поведение данного обработчика, но только пр роутинге поселений
+             * @see \Symbiotic\Routing\KernelPreloadFindRouteMiddleware::process()
+             */
+            $route = $app['route'];
+        } else {
+            $path = $request->getUri()->getPath();
+            $route = $app['router']->match($request->getMethod(), $path);
+        }
         if ($route) {
             $middlewares = $route->getMiddlewares();
             if (!empty($middlewares)) {

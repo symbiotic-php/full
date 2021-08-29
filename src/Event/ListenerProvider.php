@@ -7,7 +7,7 @@ class ListenerProvider implements ListenersInterface
 {
     /**󠀄󠀉󠀙󠀙󠀕󠀔󠀁󠀔󠀃󠀅
      * @var \Closure|null
-     * @see \Symbiotic\Bootstrap\EventBootstrap::bootstrap()
+     * @see \Symbiotic\Core\Bootstrap\EventBootstrap::bootstrap()
      */
     protected $listenerWrapper;
 
@@ -19,12 +19,16 @@ class ListenerProvider implements ListenersInterface
     }
 
     /**󠀄󠀉󠀙󠀙󠀕󠀔󠀁󠀔󠀃󠀅
-     * @param string $event class or interface name
-     * @param string |\Closure $handler callback or string class name (if the wrapper is attached {@see ListenerProvider::$listenerWrapper})
+     * @param string $event the class name or an arbitrary event name
+     * (with an arbitrary name, you need a custom dispatcher not for PSR)
+     *
+     * @param \Closure|string $handler function or class name of the handler
+     * The event handler class must implement the handle method  (...$params) or __invoke(...$params)
+     * <Important:> When adding listeners as class names, you will need to adapt them to \Closure when you return them in the getListenersForEvent() method!!!
      *
      * @return void
      */
-    public function add(string $event,string|\Closure $handler): void
+    public function add(string $event, $handler): void
     {
         $this->listeners[$event][] = $handler;
     }

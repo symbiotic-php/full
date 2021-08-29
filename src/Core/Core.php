@@ -6,7 +6,6 @@ namespace Symbiotic\Core;
 use Symbiotic\Container\{DIContainerInterface, ArrayAccessTrait, SingletonTrait, Container, ServiceContainerTrait};
 use Symbiotic\Core\Bootstrap\{BootBootstrap, CoreBootstrap, ProvidersBootstrap};
 
-
 /**
  * Class Core
  * @package Symbiotic/Core
@@ -46,11 +45,26 @@ class Core extends Container implements CoreInterface
         BootBootstrap::class,
     ];
 
+
     /**
-     * Массив ключей разрешенных сервисов для кеширования
-     * @var array|string[]
+     * используется для загрузки других скриптов после неуспешной отработки фреймворка
+     * @var \Closure[]|array
+     * @used-by Core::runNext()
      */
-    protected array $allow_cached = [];
+    protected array $then = [];
+
+    /**
+     * используется после успешной отработки фреймворка
+     * @var \Closure[]|array
+     * @used-by Core::runComplete()
+     * @see Core::onComplete()
+     */
+    protected array $complete = [];
+
+    /**
+     * @var \CLosure[]|array
+     */
+    protected array $before_handle = [];
 
     public function __construct(array $config = [])
     {
@@ -102,9 +116,19 @@ class Core extends Container implements CoreInterface
         }
     }
 
-    public function addRunner(RunnerInterface $runner): void
+    public function addRunner(RunnerInterface $runner, $priority = null, string $name = null): void
     {
-        $this->runners[] = $runner;
+        /**
+         * Для подмены
+         */
+        if(is_null($name)) {
+            $name = \get_class($runner);
+        }
+        /// todo: надо сделать добавление с приоритетом
+        /**
+         * [id => [object,priority],,,,]
+         */
+        $this->runners[$name] = $runner;
     }
 
     public function run(): void
@@ -116,12 +140,74 @@ class Core extends Container implements CoreInterface
              */
             $runner = new $runner($this);
             if ($runner->isHandle()) {
-                $runner->run();
+               $result = $runner->run();
+               if($result) {
+                   $this->runComplete();
+                   exit;
+               } else {
+                   $this->runNext();
+               }
                 break;
             }
         }
     }
 
+    public function beforeHandle(\Closure $loader): void
+    {
+        $this->before_handle = $loader;
+    }
+
+    /**
+     * событие перед обработкой
+     * используется для инклюда файлов необъодимых для отработки контроллера или команды
+     * @used-by  \Symbiotic\Http\Kernel\HttpRunner::run()
+     */
+    public function runBefore(): void
+    {
+        $before = $this->before_handle;
+        if (is_callable($before)) {
+            $this->call($before);
+        }
+    }
+
+    public function onComplete(\Closure $complete): void
+    {
+       $this->complete[] = $complete;
+    }
+
+    /**
+     * событие завершения работы
+     */
+    public function runComplete(): void
+    {
+        foreach ($this->complete as $v) {
+           $this->call($v);
+        }
+    }
+
+    /**
+     *  Используется для загрузки других скриптов после неуспешной отработки фреймворка
+     *  Замыкание должно вернуть true, чтобы прервать цепочку после себя
+     *
+     * @param \Closure $then
+     */
+    public function then(\Closure $then): void
+    {
+        $this->then[] = $then;
+    }
+
+    /**
+     * Запускает отработку скриптов после фреймворка
+     * @used-by Core::run()
+     */
+    public function runNext(): void
+    {
+        foreach ($this->then as $v) {
+            if ($this->call($v)) {
+                return;
+            }
+        }
+    }
 
     /**
      * Get the base path of the Laravel installation.

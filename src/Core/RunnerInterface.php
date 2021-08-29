@@ -7,5 +7,11 @@ interface RunnerInterface
 {
     public function isHandle(): bool;
 
-    public function run(): void;
+    /**
+     * Возвращает результат отработки
+     * при успешной отработке будет завершена работа
+     * при неуспешной будет запущен обработчик {@see CoreInterface::runNext()}  продолжится работа скрипта
+     * @return bool
+     */
+    public function run(): bool;
 }

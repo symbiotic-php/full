@@ -220,9 +220,11 @@ class SettlementsRouter extends Router implements RouterInterface
         if ($settlement) {
             $route = $this->router($settlement->getRouter())
                 ->match($httpMethod, $settlement->getUriWithoutSettlement($uri));
+            /// TODO: $route->setSettlement($settlement);
         }
         if (!$route) {
             $route = $this->router(self::DEFAULT_ROUTER)->match($httpMethod, $uri);
+            /// TODO: $route->setSettlement($settlement);
         }
 
         return $route;

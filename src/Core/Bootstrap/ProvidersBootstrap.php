@@ -2,9 +2,7 @@
 
 namespace Symbiotic\Core\Bootstrap;
 
-use Symbiotic\Core\AbstractBootstrap;
-use Symbiotic\Core\ProvidersRepository;
-
+use Symbiotic\Core\{AbstractBootstrap, ProvidersRepository};
 use function _DS\config;
 
 class ProvidersBootstrap extends AbstractBootstrap

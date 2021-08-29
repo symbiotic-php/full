@@ -58,14 +58,14 @@ trait ServiceContainerTrait /*implements \Symbiotic\Container\ServiceContainerIn
     /**
      * Register a service provider with the application.
      *
-     * @param ServiceProviderInterface|string $provider
+     * @param  \Symbiotic\Core\ServiceProviderInterface|string $provider
      * @param bool $force
-     * @return ServiceProviderInterface
+     * @return \Symbiotic\Core\ServiceProviderInterface
      */
     public function register($provider, $force = false)
     {
         /**
-         * @var ServiceProviderInterface $provider
+         * @var \Symbiotic\Core\ServiceProviderInterface $provider
          */
         if (($registered = $this->getProvider($provider)) && !$force) {
             return $registered;
@@ -136,13 +136,13 @@ trait ServiceContainerTrait /*implements \Symbiotic\Container\ServiceContainerIn
     /**
      * Boot the given service provider.
      *
-     * @param ServiceProvider $provider
+     * @param  \Symbiotic\Core\ServiceProviderInterface $provider
      * @return mixed
      */
     protected function bootProvider(/*allow use all classes ServiceProviderInterface*/ $provider)
     {
         if (method_exists($provider, 'boot')) {
-            return $this->dependencyInjectionContainer->call([$provider, 'boot']);
+            return $provider->boot();
         }
     }
 
@@ -151,7 +151,7 @@ trait ServiceContainerTrait /*implements \Symbiotic\Container\ServiceContainerIn
      * Resolve a service provider instance from the class name.
      *
      * @param string $provider
-     * @return ServiceProvider
+     * @return  \Symbiotic\Core\ServiceProviderInterface
      */
     public function resolveProvider($provider)
     {
@@ -162,7 +162,7 @@ trait ServiceContainerTrait /*implements \Symbiotic\Container\ServiceContainerIn
     /**
      * Mark the given provider as registered.
      *
-     * @param ServiceProvider $provider
+     * @param  \Symbiotic\Core\ServiceProviderInterface $provider
      * @return void
      */
     protected function markAsRegistered($provider)
@@ -175,8 +175,8 @@ trait ServiceContainerTrait /*implements \Symbiotic\Container\ServiceContainerIn
     /**
      * Get the registered service provider instance if it exists.
      *
-     * @param ServiceProvider|string $provider
-     * @return ServiceProvider|null
+     * @param  \Symbiotic\Core\ServiceProviderInterface|string $provider
+     * @return  \Symbiotic\Core\ServiceProviderInterface|null
      */
     public function getProvider($provider)
     {
@@ -197,7 +197,7 @@ trait ServiceContainerTrait /*implements \Symbiotic\Container\ServiceContainerIn
     /**
      * Get the registered service provider instances if any exist.
      *
-     * @param ServiceProvider|string $provider
+     * @param  \Symbiotic\Core\ServiceProviderInterface|string $provider
      * @return array
      */
     public function getProviders($provider)

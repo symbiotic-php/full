@@ -19,7 +19,7 @@ class UriHelper
 
     }
 
-    public  function normalizePrefix(string $prefix) : string
+    public function normalizePrefix(string $prefix) : string
     {
         $prefix = trim($prefix, ' \\/');
 

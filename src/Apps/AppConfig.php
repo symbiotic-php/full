@@ -38,7 +38,7 @@ class AppConfig implements AppConfigInterface
      */
     public function getAppName(): string
     {
-        return $this->has('name')?$this->get('name'):ucfirst($this->getId());
+        return $this->has('name')?$this->get('name'):\ucfirst($this->getId());
     }
 
     /**

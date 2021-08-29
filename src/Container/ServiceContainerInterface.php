@@ -2,14 +2,15 @@
 
 namespace Symbiotic\Container;
 
+
 interface ServiceContainerInterface
 {
     /**
      * Register a service provider with the application.
      *
-     * @param ServiceProviderInterface|string $provider
+     * @param  \Symbiotic\Core\ServiceProviderInterface|string $provider
      * @param bool $force
-     * @return ServiceProviderInterface
+     * @return \Symbiotic\Core\ServiceProviderInterface
      */
     public function register($provider, $force = false);
 
@@ -24,15 +25,15 @@ interface ServiceContainerInterface
     /**
      * Get the registered service provider instance if it exists.
      *
-     * @param ServiceProviderInterface|string $provider
-     * @return ServiceProviderInterface|null
+     * @param \Symbiotic\Core\ServiceProviderInterface|string $provider
+     * @return \Symbiotic\Core\ServiceProviderInterface|null
      */
     public function getProvider($provider);
 
     /**
      * Get the registered service provider instances if any exist.
      *
-     * @param ServiceProviderInterface|string $provider
+     * @param \Symbiotic\Core\ServiceProviderInterface|string $provider
      * @return array
      */
     public function getProviders($provider);

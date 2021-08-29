@@ -33,45 +33,36 @@ class PsrHttpFactory implements
     {
         $server = $_SERVER;
         $method = $server['REQUEST_METHOD'];
-        $serverRequest = $this->createServerRequest($method, $this->createUriFromGlobals(), $server);
-        foreach ($server as $key => $value) {
-            if ($value) {
-                if (0 === \strpos($key, 'HTTP_')) {
-                    $name = \strtr(\strtolower(\substr($key, 5)), '_', '-');
-                    if (\is_int($name)) {
-                        $name = (string)$name;
+        if(function_exists('getallheaders')) {
+           $headers = \getallheaders();
+        } else {
+            $headers = [];
+            foreach ($server as $key => $value) {
+                if ($value) {
+                    if (0 === \strpos($key, 'HTTP_')) {
+                        $name = \strtr(\strtolower(\substr($key, 5)), '_', '-');
+                        $headers[(string)$name] = $value;
+                    } elseif (0 === \strpos($key, 'CONTENT_')) {
+                        $name = 'content-' . \strtolower(\substr($key, 8));
+                        $headers[$name] = $value;
                     }
-                    $serverRequest->withAddedHeader((string)$name, $value);
-                } elseif (0 === \strpos($key, 'CONTENT_')) {
-                    $name = 'content-' . \strtolower(\substr($key, 8));
-                    $serverRequest->withAddedHeader($name, $value);
-
                 }
             }
-
         }
 
+        $serverRequest =  new ServerRequest($method, $this->createUriFromGlobals(), $headers,
+            null, isset($server['SERVER_PROTOCOL']) ? \str_replace('HTTP/', '', $server['SERVER_PROTOCOL']) : '1.1', $server);
+
         $serverRequest = $serverRequest
-            ->withProtocolVersion(isset($server['SERVER_PROTOCOL']) ? \str_replace('HTTP/', '', $server['SERVER_PROTOCOL']) : '1.1')
             ->withCookieParams($_COOKIE)
             ->withQueryParams($_GET)
-            ->withUploadedFiles($this->normalizeFiles($_FILES));
+        ->withUploadedFiles($this->normalizeFiles($_FILES));
+
         if ($method === 'POST') {
             $serverRequest = $serverRequest->withParsedBody($_POST);
         }
         $body = \fopen('php://input', 'r');
-        if (!$body) {
-            return $serverRequest;
-        }
-        if (\is_resource($body)) {
-            $body = $this->createStreamFromResource($body);
-        } elseif (\is_string($body)) {
-            $body = $this->createStream($body);
-        } elseif (!$body instanceof StreamInterface) {
-            throw new \InvalidArgumentException('The $body parameter to ServerRequestCreator::fromArrays must be string, resource or StreamInterface');
-        }
-
-        return $serverRequest->withBody($body);
+        return !$body ? $serverRequest:$serverRequest->withBody($this->createStreamFromResource($body));
     }
 
     /**

@@ -7,7 +7,6 @@ use Symbiotic\Http\ {ResponseSender, PsrHttpFactory, UriHelper};
 use Psr\Http\Message\ {ResponseFactoryInterface, ServerRequestInterface, ResponseInterface};
 use Symbiotic\Http\Middleware\ {MiddlewareCallback, MiddlewaresHandler, RequestPrefixMiddleware};
 use Psr\Http\Server\RequestHandlerInterface;
-use Symbiotic\Packages\AssetFileMiddleware;
 
 
 class HttpRunner extends Runner
@@ -18,23 +17,27 @@ class HttpRunner extends Runner
         return $this->app['env'] === 'web';
     }
 
-    public function run(): void
+    public function run(): bool
     {
+
         /**
          * @var CoreInterface $app
          */
         $app = $this->app;
-        $symbiosis = \_DS\config('symbiosis',true);
+        $symbiosis = \_DS\config('symbiosis', true);
         try {
             $request_interface = ServerRequestInterface::class;
+           // Занимает половину времени 5.6 мс , видимо из-за инклюда файлов
             $request = $app[PsrHttpFactory::class]->createServerRequestFromGlobals();
             $app->instance($request_interface, $request, 'request');
-            $app->alias($request_interface, get_class($request));
+            $app->alias($request_interface, \get_class($request));
 
+            // удаляем путь до скрипта
             $base_uri = $this->prepareBaseUrl($request);
             $app['base_uri'] = $base_uri;
             $app['original_request'] = $request;
             $request = $request->withUri((new UriHelper())->deletePrefix($base_uri, $request->getUri()));
+
             /**
              * Через событие вы можете добавить посредников до загрузки Http ядра и всех провайдеров
              * удобно когда надо быстро ответить, рекомендуется использовать в крайней необходимости
@@ -42,15 +45,17 @@ class HttpRunner extends Runner
             $handler = $app['events']->dispatch(
                 new PreloadKernelHandler($app->make(HttpKernelInterface::class))
             );
-            $handler->prepend(new RequestPrefixMiddleware($app('config::uri_prefix', null)));
+            $handler->prepend(new RequestPrefixMiddleware($app('config::uri_prefix', null), $app[ResponseFactoryInterface::class]));
             $handler->append(
-                new MiddlewareCallback(function (ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface {
+                new MiddlewareCallback(function (ServerRequestInterface $request, RequestHandlerInterface $handler)use($app): ResponseInterface {
+                    $app->runBefore();
                     if ($handler instanceof MiddlewaresHandler) {
                         $real = $handler->getRealHandler();
                         if ($real instanceof HttpKernelInterface) {
                             $real->bootstrap();
                         }
                     }
+
                     return $handler->handle($request);
                 })
             );
@@ -60,9 +65,7 @@ class HttpRunner extends Runner
             if (!$app('destroy_response', false) || !$symbiosis) {
                 $this->sendResponse($response);
                 // при режиме симбиоза не даем другим скриптам продолжить работу, т.к. отдали наш ответ
-                if ($symbiosis) {
-                    exit;// завершаем работу
-                }
+                return true;
             } else {
                 // Открываем проксирование буфера через нас
             }
@@ -71,11 +74,12 @@ class HttpRunner extends Runner
             // при режиме симбиоза не отдаем ответ с ошибкой, запишем выше в лог
             if (!$symbiosis) {
                 $this->sendResponse($app[HttpKernelInterface::class]->response(500, $e));
-                exit;// отключаем выполнение других скриптов, они могут очистить буфер вывода
+                return true;
             } else {
                 // TODO:log
             }
         }
+        return false;
     }
 
 
@@ -86,7 +90,7 @@ class HttpRunner extends Runner
      */
     public static function closeOutputBuffers(int $targetLevel, bool $flush): void
     {
-        $status = ob_get_status(true);
+        $status = \ob_get_status(true);
         $level = \count($status);
         $flags = \PHP_OUTPUT_HANDLER_REMOVABLE | ($flush ? \PHP_OUTPUT_HANDLER_FLUSHABLE : \PHP_OUTPUT_HANDLER_CLEANABLE);
 
@@ -133,7 +137,7 @@ class HttpRunner extends Runner
         $sender = new ResponseSender($response);
         $sender->render();
         if (\function_exists('fastcgi_finish_request')) {
-            fastcgi_finish_request();
+            \fastcgi_finish_request();
         } elseif (!\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true)) {
             static::closeOutputBuffers(0, true);
         }

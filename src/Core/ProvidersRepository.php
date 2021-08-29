@@ -7,9 +7,9 @@ use Symbiotic\Packages\PackagesRepositoryInterface;
 
 class ProvidersRepository
 {
-    const EXCLUDE = 0;
-    const ACTIVE = 1;
-    const DEFER = 2;
+    const EXCLUDE = 1;
+    const ACTIVE = 3;
+    const DEFER = 5;
     /**
      * @var array
      * [class => bool (active flag),... ]
@@ -87,7 +87,6 @@ class ProvidersRepository
                 $this->exclude(isset($config['providers_exclude']) ? (array)$config['providers_exclude'] : []);
             }
         }
-
         $this->exclude($force_exclude);
         foreach ($force_providers as $v) {
             $this->providers[ltrim($v, '\\')] = self::ACTIVE;
@@ -100,7 +99,6 @@ class ProvidersRepository
                 $app->register($provider);
             }
         }
-
         $app->setDeferred($this->defer_services);
     }
 

@@ -21,26 +21,26 @@ class Core extends Container implements CoreInterface
      * Class names Runners {@see \Symbiotic\Core\Runner}
      * @var string[]
      */
-    protected array $runners = [];
+    protected $runners = [];
 
     /**
      * @var string|null
      */
-    protected ?string $base_path;
+    protected $base_path = null;
 
     /**
      * The bootstrap classes for the application.
      *
      * @var array
      */
-    protected array $bootstraps = [];
+    protected $bootstraps = [];
 
     /**
      * The bootstrap classes for the application.
      *
      * @var array
      */
-    protected array $last_bootstraps = [
+    protected $last_bootstraps = [
         ProvidersBootstrap::class,
         BootBootstrap::class,
     ];
@@ -51,7 +51,7 @@ class Core extends Container implements CoreInterface
      * @var \Closure[]|array
      * @used-by Core::runNext()
      */
-    protected array $then = [];
+    protected $then = [];
 
     /**
      * используется после успешной отработки фреймворка
@@ -59,12 +59,12 @@ class Core extends Container implements CoreInterface
      * @used-by Core::runComplete()
      * @see Core::onComplete()
      */
-    protected array $complete = [];
+    protected $complete = [];
 
     /**
      * @var \CLosure[]|array
      */
-    protected array $before_handle = [];
+    protected $before_handle = [];
 
     public function __construct(array $config = [])
     {
@@ -80,7 +80,7 @@ class Core extends Container implements CoreInterface
     /**
      * @param string| string[] $bootstraps
      */
-    public function addBootstraps(string|array $bootstraps): void
+    public function addBootstraps($bootstraps): void
     {
         foreach ((array)$bootstraps as $v) {
             $this->bootstraps[] = $v;

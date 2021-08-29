@@ -14,7 +14,7 @@ interface CoreInterface extends DIContainerInterface, ServiceContainerInterface
      * @param string | string[] $bootstraps class name implemented {@see BootstrapInterface}
      * @return mixed
      */
-    public function addBootstraps(string|array $bootstraps);
+    public function addBootstraps($bootstraps);
 
     /**
      * Determine if the application has booted.

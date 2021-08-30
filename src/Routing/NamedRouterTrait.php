@@ -9,7 +9,7 @@ namespace Symbiotic\Routing;
  */
 trait NamedRouterTrait
 {
-    protected string $name = '';
+    protected $name = '';
 
     public function setName(string $name)
     {

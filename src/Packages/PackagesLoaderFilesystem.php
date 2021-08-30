@@ -11,11 +11,11 @@ class PackagesLoaderFilesystem implements PackagesLoaderInterface
     /**
      * @var array
      */
-    protected array $scan_dirs = [];
+    protected $scan_dirs = [];
     /**
      * @var int
      */
-    protected int  $max_depth = 3;
+    protected $max_depth = 3;
 
     /**
      * @var null |CacheInterface

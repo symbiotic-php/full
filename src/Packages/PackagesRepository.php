@@ -23,7 +23,7 @@ class PackagesRepository implements PackagesRepositoryInterface
      */
     protected $loaders = [];
 
-    protected array $items = [];
+    protected $items = [];
 
     protected $loaded = false;
 

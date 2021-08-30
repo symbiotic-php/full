@@ -16,7 +16,7 @@ const T = 'text/';
 class MimeTypesMini
 {
 
-    protected static array $mime_types = [
+    protected static $mime_types = [
 
         'txt' => T . 'plain',
         'htm' => T . 'html',

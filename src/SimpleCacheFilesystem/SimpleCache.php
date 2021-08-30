@@ -9,9 +9,9 @@ class SimpleCache implements SimpleCacheInterface
     /**󠀄󠀉󠀙󠀙󠀕󠀔󠀁󠀔󠀃󠀅
      * @var string
      */
-    protected string $cache_directory;
+    protected $cache_directory;
 
-    protected int  $ttl = 600;
+    protected $ttl = 600;
 
     /**
      * Cache constructor.

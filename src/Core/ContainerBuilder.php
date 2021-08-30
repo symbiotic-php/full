@@ -11,7 +11,7 @@ class ContainerBuilder
     /**
      * @var CacheInterface |null
      */
-    protected ?CacheInterface $cache;
+    protected $cache;
 
     public function __construct(CacheInterface $cache = null)
     {

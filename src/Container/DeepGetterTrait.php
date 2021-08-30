@@ -14,7 +14,7 @@ use Psr\Container\NotFoundExceptionInterface;
 trait DeepGetterTrait /* implements ContainerInterface*/
 {
 
-    private string $deep_delimiter = '::';
+    private $deep_delimiter = '::';
 
     /**
      * @param string $key - Возможно использование доступа внутри объекта через точку ,

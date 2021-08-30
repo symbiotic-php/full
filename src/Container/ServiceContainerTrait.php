@@ -14,16 +14,16 @@ trait ServiceContainerTrait /*implements \Symbiotic\Container\ServiceContainerIn
      *
      * @var \Symbiotic\Core\ServiceProvider[]
      */
-    protected array $serviceProviders = [];
+    protected $serviceProviders = [];
 
     /**
      * The names of the loaded service providers.
      *
      * @var array
      */
-    protected array  $loadedProviders = [];
+    protected $loadedProviders = [];
 
-    protected array $defer_services = [];
+    protected $defer_services = [];
 
     /**
      * Indicates if the application has "booted".
@@ -189,7 +189,7 @@ trait ServiceContainerTrait /*implements \Symbiotic\Container\ServiceContainerIn
      * @param string |object $provider
      * @return false|string
      */
-    protected function getClass(string|object $provider)
+    protected function getClass($provider)
     {
         return  \is_string($provider) ? \ltrim($provider, '\\') : \get_class($provider);
     }

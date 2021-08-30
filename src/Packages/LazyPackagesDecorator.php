@@ -14,9 +14,9 @@ class LazyPackagesDecorator implements PackagesRepositoryInterface, RememberingI
      */
     protected $repository;
 
-    protected ?array $meta = null;
+    protected $meta = null;
 
-    protected ?array $packages = null;
+    protected $packages = null;
 
     public function __construct(PackagesRepositoryInterface $repository, string $storage_path = null)
     {

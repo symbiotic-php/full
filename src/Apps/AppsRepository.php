@@ -11,21 +11,21 @@ class AppsRepository implements AppsRepositoryInterface
     /**
      * @var ApplicationInterface[]
      */
-    protected array $apps = [];
+    protected $apps = [];
     /**
      * @var array
      */
-    protected array $apps_plugins = [];
+    protected $apps_plugins = [];
 
     /**
      * @var array
      */
-    protected array $apps_config = [];
+    protected $apps_config = [];
 
     /**
      * @var array
      */
-    protected array $disabled_apps = [];
+    protected $disabled_apps = [];
 
     /**
      * @param array $ids

@@ -15,7 +15,7 @@ class AssetFileMiddleware implements MiddlewareInterface
     /**
      * @var string
      */
-    protected string $path;
+    protected $path;
     /**
      * @var AssetsRepositoryInterface
      */

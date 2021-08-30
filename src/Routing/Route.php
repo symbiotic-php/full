@@ -7,7 +7,7 @@ class Route implements RouteInterface
 {
 
 
-    protected array $action = [];
+    protected $action = [];
 
     protected $pattern = '';
 

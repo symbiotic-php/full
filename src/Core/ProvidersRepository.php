@@ -14,14 +14,14 @@ class ProvidersRepository
      * @var array
      * [class => bool (active flag),... ]
      */
-    protected array $providers = [];
+    protected $providers = [];
 
     /**
      * @var array [serviceClassName => ProviderClassName]
      */
-    protected array $defer_services = [];
+    protected $defer_services = [];
 
-    protected bool $loaded = false;
+    protected $loaded = false;
 
     /**
      * @param string|string[] $items

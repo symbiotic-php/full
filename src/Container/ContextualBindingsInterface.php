@@ -11,7 +11,7 @@ interface ContextualBindingsInterface
      *
      * @return ContextualBindingBuilder
      */
-    public function when(string|array $concrete): ContextualBindingBuilder;
+    public function when($concrete): ContextualBindingBuilder;
 
 
     /**

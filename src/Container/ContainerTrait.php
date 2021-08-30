@@ -208,7 +208,7 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
      * @param bool $shared
      * @return void
      */
-    public function bind(string $abstract, Closure|string $concrete = null, bool $shared = false): void
+    public function bind(string $abstract, $concrete = null, bool $shared = false): void
     {
         unset($this->instances[$abstract], $this->aliases[$abstract]);
 
@@ -277,7 +277,7 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
      * @param bool $shared
      * @return $this
      */
-    public function bindIf(string $abstract, Closure|string $concrete = null, bool $shared = false)
+    public function bindIf(string $abstract, $concrete = null, bool $shared = false)
     {
         if (!$this->bound($abstract)) {
             $this->bind($abstract, $concrete, $shared);
@@ -294,7 +294,7 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
      * @param string|null $alias
      * @return static
      */
-    public function singleton(string $abstract, Closure|string $concrete = null, string $alias = null)
+    public function singleton(string $abstract, $concrete = null, string $alias = null)
     {
         $this->bind($abstract, $concrete, true);
         if (is_string($alias)) {
@@ -459,7 +459,7 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
      * @param string|null $defaultMethod
      * @return mixed
      */
-    public function call(callable|string $callback, array $parameters = [], string $defaultMethod = null)
+    public function call($callback, array $parameters = [], string $defaultMethod = null)
     {
         return BoundMethod::call($this, $callback, $parameters, $defaultMethod);
     }
@@ -625,7 +625,7 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
      * @param string $abstract
      * @return bool
      */
-    protected function isBuildable(string|\Closure $concrete, string $abstract)
+    protected function isBuildable($concrete, string $abstract)
     {
         return $concrete === $abstract || $concrete instanceof \Closure;
     }
@@ -638,7 +638,7 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
      *
      * @throws BindingResolutionException|ContainerException
      */
-    public function build(string|Closure $concrete)
+    public function build($concrete)
     {
         // If the concrete type is actually a Closure, we will just execute it and
         // hand back the results of the functions, which allows functions to be
@@ -831,7 +831,7 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
      * @param callable|null $callback closure or Invokable object
      * @return void
      */
-    public function resolving(string|\Closure $abstract, callable $callback = null)
+    public function resolving($abstract, callable $callback = null)
     {
         if (is_string($abstract)) {
             $abstract = $this->getAlias($abstract);
@@ -851,7 +851,7 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
      * @param callable|null $callback closure or Invokable object
      * @return void
      */
-    public function afterResolving(\Closure|string $abstract, callable $callback = null)
+    public function afterResolving($abstract, callable $callback = null)
     {
         if (is_string($abstract)) {
             $abstract = $this->getAlias($abstract);

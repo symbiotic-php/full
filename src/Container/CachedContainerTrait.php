@@ -14,14 +14,14 @@ trait CachedContainerTrait /*implements CachedContainerInterface*/
     /**
      * @var null|CacheInterface
      */
-    protected ?CacheInterface $container_cache = null;
+    protected $container_cache = null;
 
-    protected string $container_key = '';
+    protected $container_key = '';
     /**
      * Массив ключей разрешенных сервисов для кеширования
      * @var array|string[]
      */
-    protected array $allow_cached = [];
+    protected $allow_cached = [];
 
     /**
      * set cache storage
@@ -47,7 +47,7 @@ trait CachedContainerTrait /*implements CachedContainerInterface*/
      * @param string $abstract - ключ сервиса для кеширования
      *
      */
-    public function cached(string $abstract, Closure|string $concrete = null, string $alias = null)
+    public function cached(string $abstract, $concrete = null, string $alias = null)
     {
 
         /**

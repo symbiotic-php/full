@@ -13,9 +13,9 @@ use Symbiotic\Core\Support\Collection;
 class Settlements  implements SettlementsInterface
 {
 
-    protected array $items = [];
+    protected $items = [];
 
-    protected array $find_patterns = [];
+    protected $find_patterns = [];
     /**
      * Settlements constructor.
      *

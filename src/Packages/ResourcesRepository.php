@@ -13,7 +13,7 @@ use Psr\Http\Message\StreamInterface;
 class ResourcesRepository implements ResourcesRepositoryInterface, AssetsRepositoryInterface, TemplatesRepositoryInterface
 {
 
-    protected array $packages = [];
+    protected $packages = [];
 
     /**
      * @var TemplateCompiler

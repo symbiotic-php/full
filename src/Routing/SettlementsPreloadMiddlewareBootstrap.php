@@ -2,11 +2,10 @@
 
 namespace Symbiotic\Routing;
 
-
-
 use Symbiotic\Core\BootstrapInterface;
 use Symbiotic\Core\CoreInterface;
 use Symbiotic\Http\Kernel\PreloadKernelHandler;
+
 
 class SettlementsPreloadMiddlewareBootstrap implements BootstrapInterface
 {
@@ -16,6 +15,4 @@ class SettlementsPreloadMiddlewareBootstrap implements BootstrapInterface
             $event->append(new KernelPreloadFindRouteMiddleware($app));
         });
     }
-
-
 }

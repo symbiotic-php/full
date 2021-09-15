@@ -6,6 +6,7 @@ namespace Symbiotic\Http\Kernel;
 use Symbiotic\Http\Middleware\ {MiddlewaresCollection, MiddlewaresDispatcher};
 use Psr\Http\Message\ {ResponseInterface, ServerRequestInterface};
 use Psr\Http\Server\RequestHandlerInterface;
+use Symbiotic\Apps\AppsRepositoryInterface;
 use Symbiotic\Core\CoreInterface;
 
 
@@ -32,7 +33,7 @@ class RoutingHandler implements RequestHandlerInterface
             /**
              * Для того чтобы не грузить все сервисы ядра,
              * сначала мы определяем роут если роута нет, нет смысла грузить ядро
-             * Посредник дублирует поведение данного обработчика, но только пр роутинге поселений
+             * Посредник дублирует поведение данного обработчика, но только при роутинге поселений
              * @see \Symbiotic\Routing\KernelPreloadFindRouteMiddleware::process()
              */
             $route = $app['route'];
@@ -41,9 +42,19 @@ class RoutingHandler implements RequestHandlerInterface
             $route = $app['router']->match($request->getMethod(), $path);
         }
         if ($route) {
+            /**
+             * @todo наверно надо перенести отработку в {@see RouteHandler::handle()} после бута самого приложения
+             */
             $middlewares = $route->getMiddlewares();
             if (!empty($middlewares)) {
-                $app[MiddlewaresDispatcher::class]->factoryCollection($middlewares);
+                $action = $route->getAction();
+                if(isset($action['app'])) {
+                    $app[AppsRepositoryInterface::class]->getBootedApp($action['app']);
+                }
+
+                $middlewares = $app[MiddlewaresDispatcher::class]->factoryCollection($middlewares);
+            } else {
+                $middlewares = [];
             }
             return (new MiddlewaresCollection($middlewares))->process($request, new RouteHandler($app, $route));
         } else {

@@ -15,5 +15,6 @@ interface SimpleCacheInterface extends \Psr\SimpleCache\CacheInterface
      * @return mixed - Если в кеше будет найден ключ, то вернет из кеша или вернет результат фнукции $value и запишет в кеш
      */
     public function remember($key, \Closure $value, $ttl = null);
+
 }
 

@@ -45,7 +45,9 @@ class HttpRunner extends Runner
             $handler = $app['events']->dispatch(
                 new PreloadKernelHandler($app->make(HttpKernelInterface::class))
             );
+            // ставим в начало проверку префикса
             $handler->prepend(new RequestPrefixMiddleware($app('config::uri_prefix', null), $app[ResponseFactoryInterface::class]));
+            // ставим в конец загрузку провайдеров Http Ядра.
             $handler->append(
                 new MiddlewareCallback(function (ServerRequestInterface $request, RequestHandlerInterface $handler)use($app): ResponseInterface {
                     $app->runBefore();
@@ -137,7 +139,7 @@ class HttpRunner extends Runner
         $sender = new ResponseSender($response);
         $sender->render();
         if (\function_exists('fastcgi_finish_request')) {
-            \fastcgi_finish_request();
+           \register_shutdown_function(function(){\fastcgi_finish_request();});
         } elseif (!\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true)) {
             static::closeOutputBuffers(0, true);
         }

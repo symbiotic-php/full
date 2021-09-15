@@ -82,10 +82,6 @@ class PackagesRepository implements PackagesRepositoryInterface
      */
     public function getPackages(): array
     {
-        $time = microtime();
-        if (is_null($this->items)) {
-            $this->items = ($this->cache && ($data = $this->cache->get('core.packages', $time)) && $data !== $time) ? $data : [];
-        }
         return $this->items;
     }
 

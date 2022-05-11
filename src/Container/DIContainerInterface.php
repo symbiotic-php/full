@@ -2,7 +2,7 @@
 
 namespace Symbiotic\Container;
 
-use \Closure;
+use Closure;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -18,7 +18,7 @@ interface DIContainerInterface extends ArrayContainerInterface, ContainerInterfa
      * @param string $abstract
      * @return bool
      */
-    public function bound(string $abstract);
+    public function bound(string $abstract): bool;
 
     /**
      * Alias a type to a different name.
@@ -40,7 +40,7 @@ interface DIContainerInterface extends ArrayContainerInterface, ContainerInterfa
      * @param bool $shared
      * @return void
      */
-    public function bind(string $abstract, $concrete = null, bool $shared = false): void;
+    public function bind(string $abstract, Closure|string $concrete = null, bool $shared = false): void;
 
     /**
      * Bind a new callback to an abstract's rebind event.
@@ -59,7 +59,7 @@ interface DIContainerInterface extends ArrayContainerInterface, ContainerInterfa
      * @param bool $shared
      * @return void
      */
-    public function bindIf(string $abstract, $concrete = null, bool $shared = false);
+    public function bindIf(string $abstract, Closure|string $concrete = null, bool $shared = false);
 
     /**
      * Register a shared binding in the container.
@@ -69,7 +69,7 @@ interface DIContainerInterface extends ArrayContainerInterface, ContainerInterfa
      * @param string|null $alias
      * @return static
      */
-    public function singleton(string $abstract, $concrete = null, string $alias = null);
+    public function singleton(string $abstract, Closure|string $concrete = null, string $alias = null);
 
     /**
      * "Extend" an abstract type in the container.
@@ -109,7 +109,7 @@ interface DIContainerInterface extends ArrayContainerInterface, ContainerInterfa
      * @return mixed
      * @example function(DependencyInjectionInterface $container, array $params = []){.... return $object;}
      */
-    public function build($concrete);
+    public function build(string|Closure $concrete);
 
 
     /**
@@ -125,7 +125,7 @@ interface DIContainerInterface extends ArrayContainerInterface, ContainerInterfa
      *
      * @return void
      */
-    public function clear():void;
+    public function clear(): void;
 
     /**
      * Call the given Closure or 'className@methodName' and inject its dependencies.
@@ -135,7 +135,7 @@ interface DIContainerInterface extends ArrayContainerInterface, ContainerInterfa
      * @param string|null $defaultMethod
      * @return mixed
      */
-    public function call($callback, array $parameters = [], string $defaultMethod = null);
+    public function call(callable|string $callback, array $parameters = [], string $defaultMethod = null);
 
     /**
      * Determine if the given abstract type has been resolved.
@@ -143,7 +143,7 @@ interface DIContainerInterface extends ArrayContainerInterface, ContainerInterfa
      * @param string $abstract
      * @return bool
      */
-    public function resolved(string $abstract);
+    public function resolved(string $abstract): bool;
 
     /**
      * Register a new resolving callback.
@@ -152,7 +152,7 @@ interface DIContainerInterface extends ArrayContainerInterface, ContainerInterfa
      * @param callable|null $callback
      * @return void
      */
-    public function resolving($abstract, callable $callback = null);
+    public function resolving(string|Closure $abstract, callable $callback = null);
 
     /**
      * Register a new after resolving callback.
@@ -161,7 +161,7 @@ interface DIContainerInterface extends ArrayContainerInterface, ContainerInterfa
      * @param callable|null $callback
      * @return void
      */
-    public function afterResolving($abstract, callable $callback = null);
+    public function afterResolving(string|Closure $abstract, callable $callback = null);
 
     /**
      * Determine if a given string is an alias.
@@ -169,7 +169,7 @@ interface DIContainerInterface extends ArrayContainerInterface, ContainerInterfa
      * @param string $name
      * @return bool
      */
-    public function isAlias(string $name);
+    public function isAlias(string $name): bool;
 
     /**
      * Get aliases for abstract binding
@@ -185,7 +185,7 @@ interface DIContainerInterface extends ArrayContainerInterface, ContainerInterfa
      * @param string $abstract
      * @return string
      */
-    public function getAlias(string $abstract):string;
+    public function getAlias(string $abstract): string;
 
 
     /**

@@ -2,7 +2,7 @@
 
 namespace Symbiotic\Container;
 
-use \Closure;
+use Closure;
 
 trait ContainerTrait /* implements DependencyInjectionInterface*/
 {
@@ -11,34 +11,35 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
         MultipleAccessTrait;
 
     /**
+     * The contextual binding map.
+     *
+     * @var array[]
+     */
+    public array $contextual = [];
+    /**
      * An array of the types that have been resolved.
      *
      * @var bool[]
      */
-    protected $resolved = [];
-
+    protected array $resolved = [];
     /**
      * The container's bindings.
      *
      * @var array[]
      */
-    protected $bindings = [];
-
-
+    protected array $bindings = [];
     /**
      * The container's shared instances.
      *
      * @var object[]
      */
-    protected $instances = [];
-
+    protected array $instances = [];
     /**
      * The registered type aliases.
      *
      * @var string[]
      */
-    protected $aliases = [];
-
+    protected array $aliases = [];
     /**
      * The registered aliases keyed by the abstract name.
      *
@@ -46,105 +47,75 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
      *
      * @used-by alias()
      */
-    protected $abstractAliases = [];
-
+    protected array $abstractAliases = [];
     /**
      * The extension closures for services.
      *
      * @var array[]
      */
-    protected $extenders = [];
-
-    /**
-     * All of the registered tags.
-     *
-     * @var array[]
-     */
-    protected $tags = [];
-
+    protected array $extenders = [];
     /**
      * The stack of concretions currently being built.
      *
      * @var array[]
      */
-    protected $buildStack = [];
-
+    protected array $buildStack = [];
     /**
      * The parameter override stack.
      *
      * @var array[]
      */
-    protected $with = [];
-
-    /**
-     * The contextual binding map.
-     *
-     * @var array[]
-     */
-    public $contextual = [];
-
+    protected array $with = [];
     /**
      * @var string |null
      */
-    protected $current_build = null;
+    protected ?string $current_build = null;
 
     /**
      * All of the registered rebound callbacks.
      *
      * @var array[]
      */
-    protected $reboundCallbacks = [];
+    protected array $reboundCallbacks = [];
 
     /**
      * All of the global resolving callbacks.
      *
-     * @var \Closure[]
+     * @var Closure[]
      */
-    protected $globalResolvingCallbacks = [];
+    protected array $globalResolvingCallbacks = [];
 
     /**
      * All of the global after resolving callbacks.
      *
-     * @var \Closure[]
+     * @var Closure[]
      */
-    protected $globalAfterResolvingCallbacks = [];
+    protected array $globalAfterResolvingCallbacks = [];
 
     /**
      * All of the resolving callbacks by class type.
      *
      * @var array[]
      */
-    protected $resolvingCallbacks = [];
+    protected array $resolvingCallbacks = [];
 
     /**
      * All of the after resolving callbacks by class type.
      *
      * @var array[]
      */
-    protected $afterResolvingCallbacks = [];
+    protected array $afterResolvingCallbacks = [];
 
 
     /**
      * @var DIContainerInterface[]
      */
-    protected $containersStack = [];
+    protected array $containersStack = [];
 
 
     public function has(string $key): bool
     {
         return $this->bound($key);
-    }
-
-    public function set(string $key, $value): void
-    {
-        $this->bind($key, $value instanceof \Closure ? $value : function () use ($value) {
-            return $value;
-        });
-    }
-
-    public function delete(string $key): bool
-    {
-        unset($this->bindings[$key], $this->instances[$key], $this->resolved[$key]);
     }
 
     /**
@@ -153,40 +124,11 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
      * @param string $abstract
      * @return bool
      */
-    public function bound(string $abstract)
+    public function bound(string $abstract): bool
     {
         return isset($this->bindings[$abstract]) ||
             isset($this->instances[$abstract]) ||
             $this->isAlias($abstract);
-    }
-
-
-    /**
-     * Determine if the given abstract type has been resolved.
-     *
-     * @param string $abstract
-     * @return bool
-     */
-    public function resolved(string $abstract)
-    {
-
-        $abstract = $this->getAlias($abstract);
-
-        return isset($this->resolved[$abstract]) ||
-            isset($this->instances[$abstract]);
-    }
-
-    /**
-     * Determine if a given type is shared.
-     *
-     * @param string $abstract
-     * @return bool
-     */
-    public function isShared(string $abstract)
-    {
-        return isset($this->instances[$abstract]) ||
-            (isset($this->bindings[$abstract]['shared']) &&
-                $this->bindings[$abstract]['shared'] === true);
     }
 
     /**
@@ -195,20 +137,27 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
      * @param string $name
      * @return bool
      */
-    public function isAlias(string $name)
+    public function isAlias(string $name): bool
     {
         return isset($this->aliases[$name]);
+    }
+
+    public function set(string $key, $value): void
+    {
+        $this->bind($key, $value instanceof Closure ? $value : function () use ($value) {
+            return $value;
+        });
     }
 
     /**
      * Register a binding with the container.
      *
      * @param string $abstract
-     * @param \Closure|string|null $concrete
+     * @param Closure|string|null $concrete
      * @param bool $shared
      * @return void
      */
-    public function bind(string $abstract, $concrete = null, bool $shared = false): void
+    public function bind(string $abstract, Closure|string $concrete = null, bool $shared = false): void
     {
         unset($this->instances[$abstract], $this->aliases[$abstract]);
 
@@ -222,7 +171,7 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
         // If the factory is not a Closure, it means it is just a class name which is
         // bound into this container to the abstract type and we will just wrap it
         // up inside its own Closure to give us more convenience when extending.
-        if (!$concrete instanceof \Closure) {
+        if (!$concrete instanceof Closure) {
             $concrete = $this->getClosure($abstract, $concrete);
         }
 
@@ -236,23 +185,16 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
         }
     }
 
-    /*
-     *  public function bindClosure(string $abstract, $concrete = null, bool $shared = false)
-     {
-         $this->bind($abstract, $concrete, $shared);
-     }
-    */
-
     /**
      * Get the Closure to be used when building a type.
      *
      * @param string $abstract
      * @param string $concrete
-     * @return \Closure
+     * @return Closure
      *
      * @todo protected?
      */
-    public function getClosure(string $abstract, string $concrete)
+    public function getClosure(string $abstract, string $concrete): Closure
     {
         return function ($container, $parameters = []) use ($abstract, $concrete) {
 
@@ -268,157 +210,46 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
         };
     }
 
-
     /**
-     * Register a binding if it hasn't already been registered.
+     * Determine if the given abstract type has been resolved.
      *
      * @param string $abstract
-     * @param \Closure|string|null $concrete
-     * @param bool $shared
-     * @return $this
+     * @return bool
      */
-    public function bindIf(string $abstract, $concrete = null, bool $shared = false)
+    public function resolved(string $abstract): bool
     {
-        if (!$this->bound($abstract)) {
-            $this->bind($abstract, $concrete, $shared);
-        }
 
-        return $this;
-    }
-
-    /**
-     * Register a shared binding in the container.
-     *
-     * @param string $abstract
-     * @param \Closure|string|null $concrete
-     * @param string|null $alias
-     * @return static
-     */
-    public function singleton(string $abstract, $concrete = null, string $alias = null)
-    {
-        $this->bind($abstract, $concrete, true);
-        if (is_string($alias)) {
-            $this->alias($abstract, $alias);
-        }
-
-        return $this;
-    }
-
-    /**
-     * "Extend" an abstract type in the container.
-     *
-     * @param string $abstract
-     * @param \Closure $closure
-     * @return void
-     *
-     * @throws \InvalidArgumentException
-     */
-    public function extend(string $abstract, Closure $closure): void
-    {
         $abstract = $this->getAlias($abstract);
 
-        if (isset($this->instances[$abstract])) {
-            $this->instances[$abstract] = $closure($this->instances[$abstract], $this);
-            $this->rebound($abstract);
-        } else {
-            $this->extenders[$abstract][] = $closure;
-            if ($this->resolved($abstract)) {
-                $this->rebound($abstract);
-            }
-        }
+        return isset($this->resolved[$abstract]) ||
+            isset($this->instances[$abstract]);
     }
 
     /**
-     * Register an existing instance as shared in the container.
+     * Get the alias for an abstract if available.
      *
      * @param string $abstract
-     * @param mixed $instance
-     * @param null|string $alias
-     * @return mixed
+     * @return string
      */
-    public function instance(string $abstract, $instance, string $alias = null)
+    public function getAlias(string $abstract): string
     {
-        if (isset($this->aliases[$abstract])) {
-            foreach ($this->abstractAliases as $abstr => $aliases) {
-                foreach ($aliases as $index => $alias) {
-                    if ($alias == $abstract) {
-                        unset($this->abstractAliases[$abstr][$index]);
-                    }
-                }
-            }
+
+        /*  if (!is_string($abstract) || !isset($this->aliases[$abstract])) {
+              return $abstract;
+          }*/
+        while (isset($this->aliases[$abstract])) {
+            $abstract = $this->aliases[$abstract];
         }
-        $isBound = $this->bound($abstract);
-
-        unset($this->aliases[$abstract]);
-
-        // We'll check to determine if this type has been bound before, and if it has
-        // we will fire the rebound callbacks registered with the container and it
-        // can be updated with consuming classes that have gotten resolved here.
-        $this->instances[$abstract] = $instance;
-
-        if ($isBound) {
-            $this->rebound($abstract);
-        }
-        if ($alias) {
-            $this->alias($abstract, $alias);
-        }
-
-        return $instance;
+        return $abstract;
+        //return $this->getAlias($this->aliases[$abstract]);
     }
 
-
-    public function alias(string $abstract, string $alias)
-    {
-        if ($alias === $abstract) {
-            throw new \LogicException("[{$abstract}] is aliased to itself.");
-        }
-
-        $this->aliases[$alias] = $abstract;
-
-        $this->abstractAliases[$abstract][] = $alias;
-    }
-
-    /**
-     * Get aliases for abstract binding
-     *
-     * @param string $abstract
-     * @return array|null
-     */
-    public function getAbstractAliases(string $abstract): ?array
-    {
-        return $this->abstractAliases[$abstract] ?? null;
-    }
-
-    /**
-     * Bind a new callback to an abstract's rebind event.
-     *
-     * @param string $abstract
-     * @param \Closure $callback
-     * @return mixed
-     */
-    public function rebinding(string $abstract, Closure $callback)
-    {
-        $this->reboundCallbacks[$abstract = $this->getAlias($abstract)][] = $callback;
-
-        if ($this->bound($abstract)) {
-            return $this->make($abstract);
-        }
-    }
-
-    /**
-     * Refresh an instance on the given target and method.
-     *
-     * @param string $abstract
-     * @param mixed $target
-     * @param string $method
-     * @return mixed
-     */
-    public function refresh($abstract, $target, $method)
-    {
-        return $this->rebinding($abstract, function ($app, $instance) use ($target, $method) {
-            $target->{$method}($instance);
-        });
-    }
+    /*
+     *  public function bindClosure(string $abstract, $concrete = null, bool $shared = false)
+     {
+         $this->bind($abstract, $concrete, $shared);
+     }
+    */
 
     /**
      * Fire the "rebound" callbacks for the given abstract type.
@@ -435,71 +266,17 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
         }
     }
 
-
-    /**
-     * Wrap the given closure such that its dependencies will be injected when executed.
-     *
-     * @param \Closure $callback
-     * @param array $parameters
-     * @param string|null $defaultMethod
-     * @return \Closure
-     */
-    public function wrap(\Closure $callback, array $parameters = [], $defaultMethod = null)
-    {
-        return function () use ($callback, $parameters, $defaultMethod) {
-            return $this->call($callback, $parameters, $defaultMethod);
-        };
-    }
-
-    /**
-     * Call the given Closure / class@method and inject its dependencies.
-     *
-     * @param callable|string $callback
-     * @param array $parameters
-     * @param string|null $defaultMethod
-     * @return mixed
-     */
-    public function call($callback, array $parameters = [], string $defaultMethod = null)
-    {
-        return BoundMethod::call($this, $callback, $parameters, $defaultMethod);
-    }
-
-    /**
-     * Get a closure to resolve the given type from the container.
-     *
-     * @param string $abstract
-     * @return \Closure
-     */
-    public function factory(string $abstract): Closure
-    {
-        return function () use ($abstract) {
-            return $this->make($abstract);
-        };
-    }
-
-
     /**
      * Resolve the given type from the container.
      *
      * @param string $abstract
      * @param array $parameters
      * @return mixed
-     *
+     * @-throws
      */
     public function make(string $abstract, array $parameters = [])
     {
         return $this->resolve($abstract, $parameters);
-    }
-
-
-    public function setContainersStack(DIContainerInterface $container)
-    {
-        $this->containersStack[] = $container;
-    }
-
-    public function popCurrentContainer()
-    {
-        array_pop($this->containersStack);
     }
 
     /**
@@ -551,15 +328,15 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
 
 
         $this->with[] = $parameters;
-
+        $alias_abstr = $this->getAlias($abstract);
         $concrete = !empty($conceptual_concrete) ?
             $conceptual_concrete :
             (isset($this->bindings[$abstract])
                 ? $this->bindings[$abstract]['concrete'] :
                 ((($this instanceof ServiceContainerInterface
                         && $this->loadDefer($abstract))
-                    && isset($this->bindings[$this->getAlias($abstract)])
-                ) ? $this->bindings[$this->getAlias($abstract)/*todo: два раза дергаем*/]['concrete'] :
+                    && isset($this->bindings[$alias_abstr])
+                ) ? $this->bindings[$alias_abstr]['concrete'] :
                     $abstract)
             );
 
@@ -568,8 +345,8 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
         // the binding. This will instantiate the types, as well as resolve any of
         // its "nested" dependencies recursively until all have gotten resolved.
         if ($this->isBuildable($concrete, $abstract)) {
-            if(\is_string($concrete) && \strpos($concrete,'\\')===false) {
-                throw new NotFoundException($concrete,$this);
+            if (\is_string($concrete) && \strpos($concrete, '\\') === false) {
+                throw new NotFoundException($concrete, $this);
             }
             $object = $this->build($concrete);
         } else {
@@ -604,13 +381,12 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
         return $object;
     }
 
-
     /**
      * Get the contextual concrete binding for the given abstract.
      *
      * @param string $for_building
      * @param string $need The name of the class ('\MySpace\ClassName') or variable ('$var_name') to build the dependency on.
-     * @return \Closure|mixed|null
+     * @return Closure|mixed|null
      */
     protected function getContextualConcrete(string $for_building, string $need)
     {
@@ -621,29 +397,30 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
     /**
      * Determine if the given concrete is buildable.
      *
-     * @param string|\Closure $concrete
+     * @param string|Closure $concrete
      * @param string $abstract
      * @return bool
      */
-    protected function isBuildable($concrete, string $abstract)
+    protected function isBuildable(string|Closure $concrete, string $abstract)
     {
-        return $concrete === $abstract || $concrete instanceof \Closure;
+        return $concrete === $abstract || $concrete instanceof Closure;
     }
 
     /**
      * Instantiate a concrete instance of the given type.
      *
-     * @param string $concrete
+     * @param Closure|string $concrete
      * @return mixed
      *
-     * @throws BindingResolutionException|ContainerException
+     * @throws BindingResolutionException
+     * @throws ContainerException
      */
-    public function build($concrete)
+    public function build(string|Closure $concrete)
     {
         // If the concrete type is actually a Closure, we will just execute it and
         // hand back the results of the functions, which allows functions to be
         // used as resolvers for more fine-tuned resolution of these objects.
-        if ($concrete instanceof \Closure) {
+        if ($concrete instanceof Closure) {
             return $concrete($this, $this->getLastParameterOverride());
         }
 
@@ -692,6 +469,16 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
         array_pop($this->buildStack);
         $this->current_build = end($this->buildStack);
         return $reflector->newInstanceArgs($instances);
+    }
+
+    /**
+     * Get the last parameter override.
+     *
+     * @return array
+     */
+    protected function getLastParameterOverride()
+    {
+        return !empty($this->with) ? end($this->with) : [];
     }
 
     /**
@@ -766,16 +553,6 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
     }
 
     /**
-     * Get the last parameter override.
-     *
-     * @return array
-     */
-    protected function getLastParameterOverride()
-    {
-        return !empty($this->with) ? end($this->with) : [];
-    }
-
-    /**
      * Resolve a non-class hinted primitive dependency.
      *
      * @param \ReflectionParameter $parameter
@@ -786,7 +563,7 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
     protected function resolvePrimitive(\ReflectionParameter $parameter)
     {
         if ($this->current_build && !is_null($concrete = $this->getContextualConcrete($this->current_build, '$' . $parameter->name))) {
-            return $concrete instanceof \Closure ? $concrete($this) : $concrete;
+            return $concrete instanceof Closure ? $concrete($this) : $concrete;
         }
 
         if ($parameter->isDefaultValueAvailable()) {
@@ -823,45 +600,34 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
         }
     }
 
-
     /**
-     * Register a new resolving callback.
+     * Get the extender callbacks for a given type.
      *
-     * @param \Closure|string $abstract
-     * @param callable|null $callback closure or Invokable object
-     * @return void
+     * @param string $abstract
+     * @return array
      */
-    public function resolving($abstract, callable $callback = null)
+    public function getExtenders(string $abstract)
     {
-        if (is_string($abstract)) {
-            $abstract = $this->getAlias($abstract);
-        }
+        $container = !empty($this->containersStack) ? end($this->containersStack) : null;
 
-        if (is_null($callback) && is_callable($abstract)) {
-            $this->globalResolvingCallbacks[] = $abstract;
-        } else {
-            $this->resolvingCallbacks[$abstract][] = $callback;
-        }
+        // return \spl_object_id($container) === \spl_object_id($this)
+        return $container instanceof $this
+            ? $this->extenders[$this->getAlias($abstract)] ?? []
+            : $container->getExtenders($abstract);
+
     }
 
     /**
-     * Register a new after resolving callback for all types.
+     * Determine if a given type is shared.
      *
-     * @param \Closure|string $abstract
-     * @param callable|null $callback closure or Invokable object
-     * @return void
+     * @param string $abstract
+     * @return bool
      */
-    public function afterResolving($abstract, callable $callback = null)
+    public function isShared(string $abstract)
     {
-        if (is_string($abstract)) {
-            $abstract = $this->getAlias($abstract);
-        }
-
-        if (is_callable($abstract) && is_null($callback)) {
-            $this->globalAfterResolvingCallbacks[] = $abstract;
-        } else {
-            $this->afterResolvingCallbacks[$abstract][] = $callback;
-        }
+        return isset($this->instances[$abstract]) ||
+            (isset($this->bindings[$abstract]['shared']) &&
+                $this->bindings[$abstract]['shared'] === true);
     }
 
     /**
@@ -892,6 +658,20 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
     }
 
     /**
+     * Fire an array of callbacks with an object.
+     *
+     * @param mixed $object
+     * @param array $callbacks
+     * @return void
+     */
+    protected function fireCallbackArray($object, array $callbacks)
+    {
+        foreach ($callbacks as $callback) {
+            $callback($object, $this);
+        }
+    }
+
+    /**
      * Get all callbacks for a given type.
      *
      * @param string $abstract
@@ -913,17 +693,250 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
         return $results;
     }
 
+    public function delete(string $key): bool
+    {
+        unset($this->bindings[$key], $this->instances[$key], $this->resolved[$key]);
+        return true;
+    }
+
     /**
-     * Fire an array of callbacks with an object.
+     * Register a binding if it hasn't already been registered.
      *
-     * @param mixed $object
-     * @param array $callbacks
+     * @param string $abstract
+     * @param Closure|string|null $concrete
+     * @param bool $shared
+     * @return $this
+     */
+    public function bindIf(string $abstract, Closure|string $concrete = null, bool $shared = false)
+    {
+        if (!$this->bound($abstract)) {
+            $this->bind($abstract, $concrete, $shared);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Register a shared binding in the container.
+     *
+     * @param string $abstract
+     * @param Closure|string|null $concrete
+     * @param string|null $alias
+     * @return static
+     */
+    public function singleton(string $abstract, Closure|string $concrete = null, string $alias = null)
+    {
+        $this->bind($abstract, $concrete, true);
+        if (is_string($alias)) {
+            $this->alias($abstract, $alias);
+        }
+
+        return $this;
+    }
+
+    public function alias(string $abstract, string $alias)
+    {
+        if ($alias === $abstract) {
+            throw new \LogicException("[{$abstract}] is aliased to itself.");
+        }
+
+        $this->aliases[$alias] = $abstract;
+
+        $this->abstractAliases[$abstract][] = $alias;
+    }
+
+    /**
+     * "Extend" an abstract type in the container.
+     *
+     * @param string $abstract
+     * @param Closure $closure
+     * @return void
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function extend(string $abstract, Closure $closure): void
+    {
+        $abstract = $this->getAlias($abstract);
+
+        if (isset($this->instances[$abstract])) {
+            $this->instances[$abstract] = $closure($this->instances[$abstract], $this);
+            $this->rebound($abstract);
+        } else {
+            $this->extenders[$abstract][] = $closure;
+            if ($this->resolved($abstract)) {
+                $this->rebound($abstract);
+            }
+        }
+    }
+
+    /**
+     * Register an existing instance as shared in the container.
+     *
+     * @param string $abstract
+     * @param mixed $instance
+     * @param null|string $alias
+     * @return mixed
+     */
+    public function instance(string $abstract, $instance, string $alias = null)
+    {
+        if (isset($this->aliases[$abstract])) {
+            foreach ($this->abstractAliases as $abstr => $aliases) {
+                foreach ($aliases as $index => $alias) {
+                    if ($alias == $abstract) {
+                        unset($this->abstractAliases[$abstr][$index]);
+                    }
+                }
+            }
+        }
+        $isBound = $this->bound($abstract);
+
+        unset($this->aliases[$abstract]);
+
+        // We'll check to determine if this type has been bound before, and if it has
+        // we will fire the rebound callbacks registered with the container and it
+        // can be updated with consuming classes that have gotten resolved here.
+        $this->instances[$abstract] = $instance;
+
+        if ($isBound) {
+            $this->rebound($abstract);
+        }
+        if ($alias) {
+            $this->alias($abstract, $alias);
+        }
+
+        return $instance;
+    }
+
+    /**
+     * Get aliases for abstract binding
+     *
+     * @param string $abstract
+     * @return array|null
+     */
+    public function getAbstractAliases(string $abstract): ?array
+    {
+        return $this->abstractAliases[$abstract] ?? null;
+    }
+
+    /**
+     * Refresh an instance on the given target and method.
+     *
+     * @param string $abstract
+     * @param mixed $target
+     * @param string $method
+     * @return mixed
+     */
+    public function refresh(string $abstract, $target, string $method)
+    {
+        return $this->rebinding($abstract, function ($app, $instance) use ($target, $method) {
+            $target->{$method}($instance);
+        });
+    }
+
+    /**
+     * Bind a new callback to an abstract's rebind event.
+     *
+     * @param string $abstract
+     * @param Closure $callback
+     * @return mixed
+     */
+    public function rebinding(string $abstract, Closure $callback)
+    {
+        $this->reboundCallbacks[$abstract = $this->getAlias($abstract)][] = $callback;
+
+        if ($this->bound($abstract)) {
+            return $this->make($abstract);
+        }
+    }
+
+    /**
+     * Wrap the given closure such that its dependencies will be injected when executed.
+     *
+     * @param Closure $callback
+     * @param array $parameters
+     * @param string|null $defaultMethod
+     * @return Closure
+     */
+    public function wrap(Closure $callback, array $parameters = [], $defaultMethod = null)
+    {
+        return function () use ($callback, $parameters, $defaultMethod) {
+            return $this->call($callback, $parameters, $defaultMethod);
+        };
+    }
+
+    /**
+     * Call the given Closure | 'class@method' and inject its dependencies.
+     *
+     * @param callable|string $callback
+     * @param array $parameters
+     * @param string|null $defaultMethod
+     * @return mixed
+     */
+    public function call(callable|string $callback, array $parameters = [], string $defaultMethod = null)
+    {
+        return BoundMethod::call($this, $callback, $parameters, $defaultMethod);
+    }
+
+    /**
+     * Get a closure to resolve the given type from the container.
+     *
+     * @param string $abstract
+     * @return Closure
+     */
+    public function factory(string $abstract): Closure
+    {
+        return function () use ($abstract) {
+            return $this->make($abstract);
+        };
+    }
+
+    public function setContainersStack(DIContainerInterface $container)
+    {
+        $this->containersStack[] = $container;
+    }
+
+    public function popCurrentContainer()
+    {
+        array_pop($this->containersStack);
+    }
+
+    /**
+     * Register a new resolving callback.
+     *
+     * @param Closure|string $abstract
+     * @param callable|null $callback closure or Invokable object
      * @return void
      */
-    protected function fireCallbackArray($object, array $callbacks)
+    public function resolving(string|Closure $abstract, callable $callback = null)
     {
-        foreach ($callbacks as $callback) {
-            $callback($object, $this);
+        if (is_string($abstract)) {
+            $abstract = $this->getAlias($abstract);
+        }
+
+        if (is_null($callback) && is_callable($abstract)) {
+            $this->globalResolvingCallbacks[] = $abstract;
+        } else {
+            $this->resolvingCallbacks[$abstract][] = $callback;
+        }
+    }
+
+    /**
+     * Register a new after resolving callback for all types.
+     *
+     * @param Closure|string $abstract
+     * @param callable|null $callback closure or Invokable object
+     * @return void
+     */
+    public function afterResolving(Closure|string $abstract, callable $callback = null)
+    {
+        if (is_string($abstract)) {
+            $abstract = $this->getAlias($abstract);
+        }
+
+        if (is_callable($abstract) && is_null($callback)) {
+            $this->globalAfterResolvingCallbacks[] = $abstract;
+        } else {
+            $this->afterResolvingCallbacks[$abstract][] = $callback;
         }
     }
 
@@ -938,42 +951,6 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
     }
 
     /**
-     * Get the alias for an abstract if available.
-     *
-     * @param string $abstract
-     * @return string
-     */
-    public function getAlias(string $abstract): string
-    {
-
-        /*  if (!is_string($abstract) || !isset($this->aliases[$abstract])) {
-              return $abstract;
-          }*/
-        while (isset($this->aliases[$abstract])) {
-            $abstract = $this->aliases[$abstract];
-        }
-        return $abstract;
-        //return $this->getAlias($this->aliases[$abstract]);
-    }
-
-    /**
-     * Get the extender callbacks for a given type.
-     *
-     * @param string $abstract
-     * @return array
-     */
-    public function getExtenders(string $abstract)
-    {
-        $container = !empty($this->containersStack) ? end($this->containersStack) : null;
-
-       // return \spl_object_id($container) === \spl_object_id($this)
-        return $container instanceof $this
-            ? $this->extenders[$this->getAlias($abstract)] ?? []
-            : $container->getExtenders($abstract);
-
-    }
-
-    /**
      * Remove all of the extender callbacks for a given type.
      *
      * @param string $abstract
@@ -985,23 +962,12 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
     }
 
     /**
-     * Drop all of the stale instances and aliases.
-     *
-     * @param string $abstract
-     * @return void
-     */
-    protected function dropStaleInstances($abstract)
-    {
-        unset($this->instances[$abstract], $this->aliases[$abstract]);
-    }
-
-    /**
      * Remove a resolved instance from the instance cache.
      *
      * @param string $abstract
      * @return void
      */
-    public function forgetInstance($abstract)
+    public function forgetInstance(string $abstract)
     {
         unset($this->instances[$abstract]);
     }
@@ -1028,6 +994,17 @@ trait ContainerTrait /* implements DependencyInjectionInterface*/
         $this->bindings = [];
         $this->instances = [];
         $this->abstractAliases = [];
+    }
+
+    /**
+     * Drop all of the stale instances and aliases.
+     *
+     * @param string $abstract
+     * @return void
+     */
+    protected function dropStaleInstances(string $abstract)
+    {
+        unset($this->instances[$abstract], $this->aliases[$abstract]);
     }
 
 }

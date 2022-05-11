@@ -5,11 +5,11 @@ namespace Symbiotic\Core;
 /**
  * Class DummyClass
  * @package DummyNamespace
- * @property CoreInterface | array $app = [
+ * @property CoreInterface | array $core = [
  *  // ДАННЫЕ СЕРВИСЫ БЕРУТСЯ ИЗ КОРНЕВОГО КОНТЕЙНЕРА {@see CoreInterface}
  *   // Сервисы доступные сразу
  *
- *       'config' => new \Symbiotic\Config(), {@used-by \_DS\config()}
+ *       'config' => new \Symbiotic\Config(), {@used-by \_S\config()}
  *       'events' => new \Symbiotic\Event\EventDispatcher(), //{@see \Symbiotic\Core\Bootstrap\EventBootstrap::bootstrap()}
  *       'listeners' => new \Symbiotic\Events\ListenerProvider(),  //{@see \Symbiotic\Core\Bootstrap\EventBootstrap::bootstrap()}
  *
@@ -36,11 +36,11 @@ abstract class Runner implements RunnerInterface
     /**
      * @var CoreInterface
      */
-    protected $app;
+    protected CoreInterface $core;
 
     public function __construct(CoreInterface $container)
     {
-        $this->app = $container;
+        $this->core = $container;
     }
 
 }

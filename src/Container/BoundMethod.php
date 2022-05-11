@@ -2,17 +2,17 @@
 
 namespace Symbiotic\Container;
 
-use \ReflectionMethod;
-use \ReflectionFunction;
-use \InvalidArgumentException;
+use InvalidArgumentException;
+use ReflectionFunction;
+use ReflectionMethod;
 
 class BoundMethod
 {
     /**
      * Call the given \Closure or className@methodName and inject its dependencies.
      *
-     * @param \Symbiotic\Container\DIContainerInterface $container
-     * @param callable|string $callback
+     * @param DIContainerInterface $container
+     * @param callable|string $callback ????array
      * @param array $parameters
      * @param string|null $defaultMethod
      * @return mixed
@@ -20,7 +20,7 @@ class BoundMethod
      * @throws \ReflectionException
      * @throws \InvalidArgumentException
      */
-    public static function call($container, $callback, array $parameters = [], $defaultMethod = null)
+    public static function call($container, $callback, array $parameters = [], string|null $defaultMethod = null)
     {
         if (static::isCallableWithAtSign($callback) || $defaultMethod) {
             return static::callClass($container, $callback, $parameters, $defaultMethod);
@@ -34,15 +34,26 @@ class BoundMethod
     }
 
     /**
+     * Determine if the given string is in Class@method syntax.
+     *
+     * @param mixed $callback
+     * @return bool
+     */
+    public static function isCallableWithAtSign($callback)
+    {
+        return is_string($callback) && strpos($callback, '@') !== false;
+    }
+
+    /**
      * Call a string reference to a class using Class@method syntax.
      *
-     * @param \Symbiotic\Container\DIContainerInterface $container
+     * @param DIContainerInterface $container
      * @param string $target
      * @param array $parameters
      * @param string|null $defaultMethod
      * @return mixed
      *
-     * @throws \InvalidArgumentException
+     * @throws \InvalidArgumentException|\ReflectionException
      */
     protected static function callClass($container, $target, array $parameters = [], $defaultMethod = null)
     {
@@ -53,7 +64,7 @@ class BoundMethod
         $method = count($segments) === 2
             ? $segments[1] : $defaultMethod;
 
-        if (null===$method) {
+        if (null === $method) {
             throw new InvalidArgumentException('Method not provided.');
         }
 
@@ -65,12 +76,12 @@ class BoundMethod
     /**
      * Call a method that has been bound to the container.
      *
-     * @param \Symbiotic\Container\DIContainerInterface $container
-     * @param callable $callback
+     * @param DIContainerInterface|MethodBindingsTrait $container
+     * @param \Closure|array $callback
      * @param mixed $default
      * @return mixed
      */
-    protected static function callBoundMethod($container, $callback, $default)
+    protected static function callBoundMethod(DIContainerInterface $container, array|\Closure $callback, $default)
     {
         if (!is_array($callback)) {
             return $default instanceof \Closure ? $default() : $default;
@@ -91,10 +102,10 @@ class BoundMethod
     /**
      * Normalize the given callback into a Class@method string.
      *
-     * @param callable $callback
+     * @param array $callback
      * @return string
      */
-    protected static function normalizeMethod($callback)
+    protected static function normalizeMethod(array $callback)
     {
         $class = is_string($callback[0]) ? $callback[0] : get_class($callback[0]);
 
@@ -104,18 +115,29 @@ class BoundMethod
     /**
      * Get all dependencies for a given method.
      *
-     * @param \Symbiotic\Container\DIContainerInterface $container
+     * @param DIContainerInterface $container
      * @param callable|string $callback
      * @param array $parameters
      * @return array
      *
      * @throws \ReflectionException
      */
-    protected static function getMethodDependencies($container, $callback, array $parameters = [])
+    protected static function getMethodDependencies(DIContainerInterface $container, $callback, array $parameters = [])
     {
         $dependencies = [];
+        /**
+         * Сделано для передачи объектов с неправильным именем парамера
+         * @warning Возможна Коллизия параметров: method(CLass1 $p1, Class1 $p2) !!!! один случай на миллион
+         * @used-by addDependencyForCallParameter()
+         */
+        $classes = [];
+        foreach ($parameters as $p) {
+            if (\is_object($p)) {
+                $classes[\get_class($p)] = $p;
+            }
+        }
         foreach (static::getCallReflector($callback)->getParameters() as $parameter) {
-            static::addDependencyForCallParameter($container, $parameter, $parameters, $dependencies);
+            static::addDependencyForCallParameter($container, $parameter, $parameters, $dependencies, $classes);
         }
 
         return array_merge(array_values($dependencies), array_values($parameters));
@@ -125,7 +147,7 @@ class BoundMethod
     /**
      * Get the proper reflection instance for the given callback.
      *
-     * @param callable|string $callback
+     * @param array|string|\Closure $callback
      * @return \ReflectionFunctionAbstract
      *
      * @throws \ReflectionException
@@ -144,13 +166,17 @@ class BoundMethod
     /**
      * Get the dependency for the given call parameter.
      *
-     * @param \Symbiotic\Container\DIContainerInterface $container
+     * @param DIContainerInterface $container
      * @param \ReflectionParameter $parameter
      * @param array $parameters
      * @param array $dependencies
+     * @param array $classes
      * @return void
+     * @throws BindingResolutionException
+     * @throws NotFoundException
+     * @throws \ReflectionException
      */
-    protected static function addDependencyForCallParameter(DIContainerInterface $container, \ReflectionParameter $parameter, array &$parameters, &$dependencies)
+    protected static function addDependencyForCallParameter(DIContainerInterface $container, \ReflectionParameter $parameter, array &$parameters, array &$dependencies, array $classes = [])
     {
         if (array_key_exists($parameter->name, $parameters)) {
             $dependencies[] = $parameters[$parameter->name];
@@ -160,24 +186,22 @@ class BoundMethod
             if (array_key_exists($class, $parameters)) {
                 $dependencies[] = $parameters[$class];
                 unset($parameters[$class]);
+            } elseif (isset($classes[$class])) {
+                /**
+                 * @warning Возможна Коллизия параметров: method(CLass1 $p1, Class1 $p2) !!!! один случай на миллион
+                 */
+                $dependencies[] = $classes[$class];
+                unset($parameters[$class]);
             } else {
+                // todo : Если стоит значение по умолчанию null создавать?
                 $dependencies[] = $container->make($class);
             }
+
+
         } elseif ($parameter->isDefaultValueAvailable()) {
             $dependencies[] = $parameter->getDefaultValue();
         } else {
-            throw new BindingResolutionException('Parameter ['.$parameter->getName().'] is not find!');
+            throw new BindingResolutionException('Parameter [' . $parameter->getName() . '] is not find!');
         }
-    }
-
-    /**
-     * Determine if the given string is in Class@method syntax.
-     *
-     * @param mixed $callback
-     * @return bool
-     */
-    public static function isCallableWithAtSign($callback)
-    {
-        return is_string($callback) && strpos($callback, '@') !== false;
     }
 }

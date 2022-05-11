@@ -2,16 +2,13 @@
 
 namespace Symbiotic\Apps;
 
-use Symbiotic\Container\{DIContainerInterface, SubContainerTrait, ServiceContainerTrait};
+use Symbiotic\Container\{DIContainerInterface, ServiceContainerTrait, SubContainerTrait};
 
 
 /**
  * Class Application
  * @package Symbiotic\App
  * @property AppConfigInterface $config
- * @property $this = [
- *     'config' => new AppConfig()
- * ]
  */
 class Application implements ApplicationInterface
 {
@@ -39,11 +36,6 @@ class Application implements ApplicationInterface
 
     }
 
-    public function getId(): string
-    {
-        return $this['config']->getId();
-    }
-
     public function getAppName(): string
     {
         return $this['config']->getAppName();
@@ -52,24 +44,6 @@ class Application implements ApplicationInterface
     public function getRoutingProvider(): ?string
     {
         return $this['config']->getRoutingProvider();
-    }
-
-    public function hasParentApp(): bool
-    {
-        return $this['config']->hasParentApp();
-    }
-
-    public function getParentAppId(): ?string
-    {
-        return $this['config']->getParentAppId();
-    }
-
-    protected function getBootstrapCallback()
-    {
-        return function () {
-            $this->registerProviders();
-            $this->boot();
-        };
     }
 
     /**
@@ -100,6 +74,14 @@ class Application implements ApplicationInterface
         $this->booted = true;
     }
 
+    protected function getBootstrapCallback()
+    {
+        return function () {
+            $this->registerProviders();
+            $this->boot();
+        };
+    }
+
     protected function registerProviders()
     {
         foreach ($this('config::providers', []) as $provider) {
@@ -107,15 +89,37 @@ class Application implements ApplicationInterface
         }
     }
 
+    /**
+     * @return ApplicationInterface|null
+     */
+    protected function getParentApp(): ?ApplicationInterface
+    {
+        return $this->hasParentApp() ? $this[AppsRepositoryInterface::class]->get($this->getParentAppId()) : null;
+    }
+
+    public function hasParentApp(): bool
+    {
+        return $this['config']->hasParentApp();
+    }
+
+    public function getParentAppId(): ?string
+    {
+        return $this['config']->getParentAppId();
+    }
 
     /**
-     * @param string|null $path
-     * @return string|null
+     * Возвращает адрес файла
+     * @param string $uri_path
+     * @return mixed
      */
-    public function getBasePath(string $path = null): ?string
+    public function asset(string $uri_path)
     {
-        $base = $this('config::base_path');
-        return $base ? ($path ? $base . \_DS\DS . ltrim($path) : $base) : null;
+        return \_S\asset($this->getId() . '::' . $uri_path);
+    }
+
+    public function getId(): string
+    {
+        return $this['config']->getId();
     }
 
     /**
@@ -128,20 +132,22 @@ class Application implements ApplicationInterface
     }
 
     /**
+     * @param string|null $path
+     * @return string|null
+     */
+    public function getBasePath(string $path = null): ?string
+    {
+        $base = $this('config::base_path');
+        return $base ? ($path ? $base . \_S\DS . ltrim($path) : $base) : null;
+    }
+
+    /**
      * @return string|null
      * @deprecated
      */
     public function getResourcesPath(): ?string
     {
         return $this->getBasePath('resources');
-    }
-
-    /**
-     * @return ApplicationInterface|null
-     */
-    protected function getParentApp(): ?ApplicationInterface
-    {
-        return $this->hasParentApp() ? $this[AppsRepositoryInterface::class]->get($this->getParentAppId()) : null;
     }
 
 }

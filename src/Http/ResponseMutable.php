@@ -11,7 +11,7 @@ class ResponseMutable implements ResponseInterface
     /**
      * @var ResponseInterface
      */
-    protected $response;
+    protected ResponseInterface $response;
 
     public function __construct(ResponseInterface $response)
     {

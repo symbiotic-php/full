@@ -2,7 +2,7 @@
 
 namespace Symbiotic\Core;
 
-use Symbiotic\Container\{CachedContainerInterface,CachedContainerTrait};
+use Symbiotic\Container\{CachedContainerInterface, CachedContainerTrait};
 
 class CachedCore extends Core implements CachedContainerInterface
 {
@@ -11,11 +11,11 @@ class CachedCore extends Core implements CachedContainerInterface
         CachedContainerTrait::getSerializeData as traitGetSerializeData;
     }
 
-    public function getSerializeData():array
+    public function getSerializeData(): array
     {
-       $data = $this->traitGetSerializeData();
-       $data['config'] = $this['bootstrap_config'];
-       return $data;
+        $data = $this->traitGetSerializeData();
+        $data['config'] = $this['bootstrap_config'];
+        return $data;
     }
 
     protected function unserialized(array $data)

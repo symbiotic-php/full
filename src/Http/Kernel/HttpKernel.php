@@ -14,26 +14,26 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use function _DS\config;
+use function _S\config;
 
 
 class HttpKernel implements HttpKernelInterface
 {
     /**
-     * @var ContainerInterface|CoreInterface
+     * @var CoreInterface
      */
-    protected $app;
+    protected CoreInterface $core;
     /**
      * @var string[]  Names of classes implements from {@uses \Symbiotic\Core\BootstrapInterface}
      */
-    protected $bootstrappers = [];
+    protected array $bootstrappers = [];
 
-    protected $mod_rewrite = null;
+    protected ?bool $mod_rewrite = null;
 
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(CoreInterface $container)
     {
-        $this->app = $container;
+        $this->core = $container;
         if ($container->has('config')) {
             $config = $container->get('config');
             $this->mod_rewrite = $config->has('mod_rewrite') ? $config->get('mod_rewrite') : null;
@@ -46,34 +46,32 @@ class HttpKernel implements HttpKernelInterface
      */
     public function bootstrap(): void
     {
-        if (!$this->app->isBooted()) {
-            $this->app->addBootstraps($this->bootstrappers);
-            $this->app->bootstrap();
+        if (!$this->core->isBooted()) {
+            $this->core->addBootstraps($this->bootstrappers);
+            $this->core->bootstrap();
         }
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
 
-        /**
-         * @var ContainerInterface|CoreInterface $app
-         */
-        $app = $this->app;
+
+        $core = $this->core;
 
 
-        $dispatcher = $app->instance(MiddlewaresDispatcher::class, new MiddlewaresDispatcher());
-        $dispatcher->setDefaultCallback(function ($class) use ($app) {
+        $dispatcher = $core->instance(MiddlewaresDispatcher::class, new MiddlewaresDispatcher());
+        $dispatcher->setDefaultCallback(function ($class) use ($core) {
             /**
-             * @var ContainerInterface|FactoryInterface $app
+             * @var ContainerInterface|FactoryInterface $core
              */
-            return $app->make($class);
+            return $core->make($class);
         });
 
         return (new MiddlewaresCollection(
-                \_DS\event($dispatcher)
+                \_S\event($dispatcher)
                     ->factoryGroup(MiddlewaresDispatcher::GROUP_GLOBAL)
 
-                ))->process($request, $app->make(RoutingHandler::class));
+                ))->process($request, $core->make(RoutingHandler::class));
     }
 
 
@@ -84,7 +82,7 @@ class HttpKernel implements HttpKernelInterface
      */
     public function response(int $code = 200, \Throwable $exception = null): ResponseInterface
     {
-        $app = $this->app;
+        $app = $this->core;
         /**
          * @var ResponseInterface $response
          */

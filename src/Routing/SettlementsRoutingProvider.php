@@ -6,7 +6,6 @@ namespace Symbiotic\Routing;
 
 use Symbiotic\Container\CachedContainerInterface;
 use Symbiotic\Container\DIContainerInterface;
-use Symbiotic\Apps\AppConfigInterface;
 use Symbiotic\Packages\PackagesRepositoryInterface;
 
 
@@ -22,12 +21,12 @@ class SettlementsRoutingProvider extends Provider
 
 
         //TODO: Надо сравнить, кешировать или нет, ориентировочно на 600 пакетов
-
-        if ($this->app instanceof CachedContainerInterface) {
+        $core = $this->app;
+        if ($core instanceof CachedContainerInterface) {
             // $this->app->cached(SettlementsInterface::class);
         }
-        if (!$this->app->bound(SettlementsInterface::class)) {
-            $this->app->singleton(SettlementsInterface::class, function ($app) {
+        if (!$core->bound(SettlementsInterface::class)) {
+            $core->singleton(SettlementsInterface::class, function ($app) {
                 $generator = function () use ($app) {
                     $settlements = $app('config::settlements', []);
 
@@ -56,13 +55,18 @@ class SettlementsRoutingProvider extends Provider
                 $factory = $app[SettlementFactory::class];
                 $settlements = new Settlements($generator, $factory);
                 if ($app('config::packages_settlements', true)) {
-                    $settlements = new PackagesSettlements($settlements, $app[PackagesRepositoryInterface::class], $factory);
+                    $settlements = new PackagesSettlements(
+                        $settlements,
+                        $app[PackagesRepositoryInterface::class],
+                        $factory,
+                        \trim($app('config::backend_prefix', 'backend'), '/')
+                    );
                 }
 
                 return $settlements;
             }, 'settlements');
         }
-        $this->app->alias(SettlementsInterface::class, 'settlements');
+        $core->alias(SettlementsInterface::class, 'settlements');
 
 
     }
@@ -107,7 +111,7 @@ class SettlementsRoutingProvider extends Provider
 
             if ($provider = $repo->getByAppId($router_name)) {
                 $provider->loadFrontendRoutes($router);
-            } else if (preg_match('~^(backend|api):([0-9a-z_\-\.]+)~', $router_name, $m)) {
+            } else if (preg_match('~^(backend|api):([0-9a-z_@\-\.]+)~', $router_name, $m)) {
                 $action = $m[1];
                 $app_id = $m[2];
                 $provider = $repo->getByAppId($app_id);
@@ -115,7 +119,6 @@ class SettlementsRoutingProvider extends Provider
                     return;
                 }
                 if ($action === 'backend') {
-                    // TODO: Нужно сделать и прокинуть Auth Middleware!!!
                     $provider->loadBackendRoutes($router);
                 } elseif ($action === 'api') {
                     $provider->loadApiRoutes($router);

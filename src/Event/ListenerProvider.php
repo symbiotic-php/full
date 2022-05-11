@@ -11,11 +11,12 @@ class ListenerProvider implements ListenersInterface
      */
     protected $listenerWrapper;
 
-    protected $listeners = [];
+    protected array $listeners = [];
 
-    public function __construct(\Closure $listenerWrapper = null)
+    public function __construct(\Closure $listenerWrapper = null, array $listeners = [])
     {
         $this->listenerWrapper = $listenerWrapper;
+        $this->listeners = $listeners;
     }
 
     /**󠀄󠀉󠀙󠀙󠀕󠀔󠀁󠀔󠀃󠀅
@@ -49,8 +50,8 @@ class ListenerProvider implements ListenersInterface
         }
         $wrapper = $this->listenerWrapper;
 
-        return $wrapper ? array_map(function ($v) use ($wrapper) {
-            return $wrapper($v);
+        return $wrapper ? array_map(function ($item) use ($wrapper) {
+            return $wrapper($item);
         }, $listeners) : $listeners;
 
     }

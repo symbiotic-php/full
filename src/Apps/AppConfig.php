@@ -7,7 +7,6 @@ use Symbiotic\Container\{ArrayAccessTrait, ItemsContainerTrait};
 /**
  * Class AppConfig
  * @package Symbiotic\Apps
- * @deprecated  не нужная прослойка, все есть в самом приложении
  */
 class AppConfig implements AppConfigInterface
 {
@@ -28,17 +27,17 @@ class AppConfig implements AppConfigInterface
     /**
      * @return string
      */
-    public function getId(): string
+    public function getAppName(): string
     {
-        return $this->id;
+        return $this->has('name') ? $this->get('name') : \ucfirst($this->getId());
     }
 
     /**
      * @return string
      */
-    public function getAppName(): string
+    public function getId(): string
     {
-        return $this->has('name')?$this->get('name'):\ucfirst($this->getId());
+        return $this->id;
     }
 
     /**

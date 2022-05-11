@@ -2,13 +2,16 @@
 
 namespace Symbiotic\Core\Bootstrap;
 
-class BootBootstrap
+use Symbiotic\Core\BootstrapInterface;
+use Symbiotic\Core\CoreInterface;
+
+class BootBootstrap implements BootstrapInterface
 {
     /**
      * @param \Symbiotic\Container\ServiceContainerInterface|\Symbiotic\Core\Core $app
      */
-    public function bootstrap($app)
+    public function bootstrap(CoreInterface $core): void
     {
-       $app->boot();
+        $core->boot();
     }
 }

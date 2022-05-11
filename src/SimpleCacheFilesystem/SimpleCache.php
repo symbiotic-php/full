@@ -3,15 +3,14 @@
 namespace Symbiotic\SimpleCacheFilesystem;
 
 
-
 class SimpleCache implements SimpleCacheInterface
 {
     /**󠀄󠀉󠀙󠀙󠀕󠀔󠀁󠀔󠀃󠀅
      * @var string
      */
-    protected $cache_directory;
+    protected string $cache_directory;
 
-    protected $ttl = 600;
+    protected int  $ttl = 600;
 
     /**
      * Cache constructor.
@@ -21,11 +20,7 @@ class SimpleCache implements SimpleCacheInterface
      */
     public function __construct(string $cache_directory, int $default_ttl = 600)
     {
-        if (!is_dir($cache_directory)) {
-            $uMask = umask(0);
-            @mkdir($cache_directory, 0755, true);
-            umask($uMask);
-        }
+        $this->ensureDirectory($cache_directory);
         if (!is_dir($cache_directory) || !is_writable($cache_directory)) {
             throw new Exception("The cache path ($cache_directory) is not writeable.");
         }
@@ -35,6 +30,15 @@ class SimpleCache implements SimpleCacheInterface
         $this->ttl = $default_ttl;
     }
 
+
+    private function ensureDirectory(string $dir)
+    {
+        if (!is_dir($dir)) {
+            $uMask = umask(0);
+            @mkdir($dir, 0755, true);
+            umask($uMask);
+        }
+    }
 
     /**
      * @inheritdoc
@@ -64,7 +68,7 @@ class SimpleCache implements SimpleCacheInterface
         $file = $this->getKeyFilePath($key);
 
         if (\is_readable($file) && ($data = @\unserialize(file_get_contents($file)))) {
-            if (!empty($data) && isset($data['ttl']) && $data['ttl'] >= time()+1) {
+            if (!empty($data) && isset($data['ttl']) && $data['ttl'] >= time() + 1) {
                 return $data['data'];
             } else {
                 $this->delete($key);
@@ -75,24 +79,27 @@ class SimpleCache implements SimpleCacheInterface
         return $default;
     }
 
+    /**
+     * @param string $key
+     * @return string
+     * @throws InvalidArgumentException
+     */
+    protected function getKeyFilePath(string $key)
+    {
+        $this->validateKey($key);
+        return $this->cache_directory . DIRECTORY_SEPARATOR . \md5($key) . '.cache';
+    }
 
     /**
      * @param string $key
-     * @param mixed $value
-     * @param int $ttl
-     * @return bool
-     * @throws \Symbiotic\SimpleCacheFilesystem\InvalidArgumentException
+     * @throws InvalidArgumentException
      */
-    public function set($key, $value, $ttl = null)
+    protected function validateKey(string $key)
     {
-        $file = $this->getKeyFilePath($key);
-        if ($data = \serialize(['ttl' => time() + (is_int($ttl) ? $ttl : $this->ttl), 'data' => $value])) {
-            return (\file_put_contents($file, $data) !== false);
+        if (false === preg_match('/[^A-Za-z_\.0-9]/i', $key)) {
+            throw new InvalidArgumentException('Key is not valid string!');
         }
-
-        return false;
     }
-
 
     /**
      * @param string $key
@@ -109,6 +116,24 @@ class SimpleCache implements SimpleCacheInterface
             clearstatcache(true, $file);
         }
         return true;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed $value
+     * @param int $ttl
+     * @return bool
+     * @throws \Symbiotic\SimpleCacheFilesystem\InvalidArgumentException
+     */
+    public function set($key, $value, $ttl = null)
+    {
+        $file = $this->getKeyFilePath($key);
+        $this->ensureDirectory(dirname($file));
+        if ($data = \serialize(['ttl' => time() + (is_int($ttl) ? $ttl : $this->ttl), 'data' => $value])) {
+            return (\file_put_contents($file, $data) !== false);
+        }
+
+        return false;
     }
 
     /**
@@ -155,6 +180,20 @@ class SimpleCache implements SimpleCacheInterface
     }
 
     /**
+     * @param $keys
+     * @return mixed
+     * @throws InvalidArgumentException
+     */
+    protected function getValidatedIterable($keys)
+    {
+        if (!\is_iterable($keys)) {
+            throw new InvalidArgumentException('Keys is not Iterable!');
+        }
+
+        return $keys;
+    }
+
+    /**
      * @param iterable $values
      * @param null $ttl
      * @return bool
@@ -198,42 +237,6 @@ class SimpleCache implements SimpleCacheInterface
         $file = $this->getKeyFilePath($key);
 
         return \is_readable($file);
-    }
-
-    /**
-     * @param string $key
-     * @return string
-     * @throws InvalidArgumentException
-     */
-    protected function getKeyFilePath(string $key)
-    {
-        $this->validateKey($key);
-        return $this->cache_directory . DIRECTORY_SEPARATOR . \md5($key) . '.cache';
-    }
-
-    /**
-     * @param string $key
-     * @throws InvalidArgumentException
-     */
-    protected function validateKey(string $key)
-    {
-        if (false === preg_match('/[^A-Za-z_\.0-9]/i', $key)) {
-            throw new InvalidArgumentException('Key is not valid string!');
-        }
-    }
-
-    /**
-     * @param $keys
-     * @return mixed
-     * @throws InvalidArgumentException
-     */
-    protected function getValidatedIterable($keys)
-    {
-        if (!\is_iterable($keys)) {
-            throw new InvalidArgumentException('Keys is not Iterable!');
-        }
-
-        return $keys;
     }
 
 }

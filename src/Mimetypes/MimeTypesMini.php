@@ -16,7 +16,7 @@ const T = 'text/';
 class MimeTypesMini
 {
 
-    protected static $mime_types = [
+    protected static array $mime_types = [
 
         'txt' => T . 'plain',
         'htm' => T . 'html',
@@ -31,6 +31,9 @@ class MimeTypesMini
         'flv' => 'video/x-flv',
         'csv' => T . 'csv',
 
+
+        //fonts
+        'woff' => A . 'font-woff',
         // images
         'png' => I . 'png',
         'jpe' => I . 'jpeg',
@@ -76,14 +79,14 @@ class MimeTypesMini
         'ods' => A . 'vnd.oasis.opendocument.spreadsheet',
     ];
 
-    public function getExtensionsPattern(array $extensions)
+    /**
+     * @param string $path
+     * @return string | null если найден
+     */
+    public function getMimeType(string $path): ?string
     {
-        $pattern = '';
-        foreach ($extensions as $v) {
-            $pattern .= preg_quote($v, '/') . '|';
-        }
-
-        return trim($pattern, '|');
+        $ext = $this->findExtension($path);
+        return ($ext && isset(static::$mime_types[$ext])) ? static::$mime_types[$ext] : null;
     }
 
     /**
@@ -99,17 +102,17 @@ class MimeTypesMini
             return substr_count($a, '.') <=> substr_count($b, '.');
         });
 
-        return preg_match('/(' . $this->getExtensionsPattern($allowed_extensions) . ')$/i', $path, $m) ? $m[1] : false;
+        return preg_match('/.+\.(' . $this->getExtensionsPattern($allowed_extensions) . ')$/i', $path, $m) ? $m[1] : false;
     }
 
-    /**
-     * @param string $path
-     * @return string | null если найден
-     */
-    public function getMimeType(string $path): ?string
+    public function getExtensionsPattern(array $extensions)
     {
-        $ext = $this->findExtension($path);
-        return ($ext && isset(static::$mime_types[$ext])) ? static::$mime_types[$ext] : null;
+        $pattern = '';
+        foreach ($extensions as $v) {
+            $pattern .= preg_quote($v, '/') . '|';
+        }
+
+        return trim($pattern, '|');
     }
 
 

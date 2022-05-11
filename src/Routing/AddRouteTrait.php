@@ -6,7 +6,7 @@ namespace Symbiotic\Routing;
 /**
  * Trait HttpMethodsTrait
  * @package Symbiotic\Routing
- * @method RouteInterface addRoute($httpMethods, string $uri, $action)
+ * @method RouteInterface addRoute($httpMethods, string $uri,  string|array|\Closure $action)
  *
  * @uses \Symbiotic\Routing\RouterInterface::addRoute()
  */
@@ -33,7 +33,7 @@ trait AddRouteTrait
      * Add HEAD method route
      *
      * @param string $uri pattern
-     * @param array|string|\Closure $action
+     * @param mixed|array|string|\Closure $action
      *
      * @return Route
      *@see addRoute()

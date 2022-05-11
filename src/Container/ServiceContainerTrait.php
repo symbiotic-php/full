@@ -8,61 +8,60 @@ trait ServiceContainerTrait /*implements \Symbiotic\Container\ServiceContainerIn
     /**
      * @var DIContainerInterface
      */
-    protected $dependencyInjectionContainer;
+    protected DIContainerInterface $dependencyInjectionContainer;
     /**
      * All of the registered service providers.
      *
-     * @var \Symbiotic\Core\ServiceProvider[]
+     * @var \Symbiotic\Core\ServiceProvider[]|object[]
      */
-    protected $serviceProviders = [];
+    protected array $serviceProviders = [];
 
     /**
      * The names of the loaded service providers.
      *
-     * @var array
+     * @var string[]
      */
-    protected $loadedProviders = [];
+    protected array $loadedProviders = [];
 
-    protected $defer_services = [];
+    /**
+     * @var string[]
+     */
+    protected array $defer_services = [];
 
     /**
      * Indicates if the application has "booted".
      *
      * @var bool
      */
-    protected $booted = false;
+    protected bool $booted = false;
 
-    public function isDeferService(string $service):bool
+    public function isDeferService(string $service): bool
     {
         return isset($this->defer_services[\ltrim($service)]);
     }
 
-    public function loadDefer(string $service):bool
+    /**
+     * @param string $service
+     * @return bool
+     */
+    public function loadDefer(string $service): bool
     {
         $class = \ltrim($service);
-        if(isset($this->defer_services[$class])) {
+        if (isset($this->defer_services[$class])) {
             $this->register($this->defer_services[$class]);
             return true;
         }
         return false;
     }
-    /**
-     * @param array $services
-     * @used-by \Symbiotic\Core\ProvidersRepository::load()
-     */
-    public function setDeferred(array $services)
-    {
-        $this->defer_services = $services;
-    }
 
     /**
      * Register a service provider with the application.
      *
-     * @param  \Symbiotic\Core\ServiceProviderInterface|string $provider
+     * @param \Symbiotic\Core\ServiceProviderInterface|string|object $provider
      * @param bool $force
      * @return \Symbiotic\Core\ServiceProviderInterface
      */
-    public function register($provider, $force = false)
+    public function register(object|string $provider, $force = false)
     {
         /**
          * @var \Symbiotic\Core\ServiceProviderInterface $provider
@@ -114,6 +113,75 @@ trait ServiceContainerTrait /*implements \Symbiotic\Container\ServiceContainerIn
         return $provider;
     }
 
+    /**
+     * Get the registered service provider instance if it exists.
+     *
+     * @param object|string|\Symbiotic\Core\ServiceProviderInterface $provider
+     * @return  \Symbiotic\Core\ServiceProviderInterface|null
+     */
+    public function getProvider(string|object $provider)
+    {
+        $providers = &$this->serviceProviders;
+        $name = $this->getClass($provider);
+        return isset($providers[$name]) ? $providers[$name] : null;
+    }
+
+    /**
+     * @param string |object $provider
+     * @return false|string
+     */
+    protected function getClass(string|object $provider)
+    {
+        return \is_string($provider) ? \ltrim($provider, '\\') : \get_class($provider);
+    }
+
+    /**
+     * Resolve a service provider instance from the class name.
+     *
+     * @param string $provider
+     * @return  \Symbiotic\Core\ServiceProviderInterface
+     */
+    public function resolveProvider(string $provider)
+    {
+        return new $provider($this->dependencyInjectionContainer);
+
+
+    }
+
+    /**
+     * Mark the given provider as registered.
+     *
+     * @param \Symbiotic\Core\ServiceProviderInterface|object $provider
+     * @return void
+     */
+    protected function markAsRegistered(object $provider)
+    {
+        $class = $this->getClass($provider);
+        $this->serviceProviders[$class] = $provider;
+        $this->loadedProviders[$class] = true;
+    }
+
+    /**
+     * Boot the given service provider.
+     *
+     * @param \Symbiotic\Core\ServiceProviderInterface|object $provider
+     * @return void
+     */
+    protected function bootProvider(/*allow use all classes ServiceProviderInterface*/ object $provider)
+    {
+        if (method_exists($provider, 'boot')) {
+            $provider->boot();
+        }
+    }
+
+    /**
+     * @param array $services
+     * @used-by \Symbiotic\Core\ProvidersRepository::load()
+     */
+    public function setDeferred(array $services)
+    {
+        $this->defer_services = $services;
+    }
 
     /**
      * Boot the application's service providers.
@@ -134,73 +202,12 @@ trait ServiceContainerTrait /*implements \Symbiotic\Container\ServiceContainerIn
     }
 
     /**
-     * Boot the given service provider.
-     *
-     * @param  \Symbiotic\Core\ServiceProviderInterface $provider
-     * @return mixed
-     */
-    protected function bootProvider(/*allow use all classes ServiceProviderInterface*/ $provider)
-    {
-        if (method_exists($provider, 'boot')) {
-            return $provider->boot();
-        }
-    }
-
-
-    /**
-     * Resolve a service provider instance from the class name.
-     *
-     * @param string $provider
-     * @return  \Symbiotic\Core\ServiceProviderInterface
-     */
-    public function resolveProvider($provider)
-    {
-        return new $provider($this->dependencyInjectionContainer);
-    }
-
-
-    /**
-     * Mark the given provider as registered.
-     *
-     * @param  \Symbiotic\Core\ServiceProviderInterface $provider
-     * @return void
-     */
-    protected function markAsRegistered($provider)
-    {
-        $class = $this->getClass($provider);
-        $this->serviceProviders[$class] = $provider;
-        $this->loadedProviders[$class] = true;
-    }
-
-    /**
-     * Get the registered service provider instance if it exists.
-     *
-     * @param  \Symbiotic\Core\ServiceProviderInterface|string $provider
-     * @return  \Symbiotic\Core\ServiceProviderInterface|null
-     */
-    public function getProvider($provider)
-    {
-        $providers = &$this->serviceProviders;
-        $name = $this->getClass($provider);
-        return isset($providers[$name]) ? $providers[$name] : null;
-    }
-
-    /**
-     * @param string |object $provider
-     * @return false|string
-     */
-    protected function getClass($provider)
-    {
-        return  \is_string($provider) ? \ltrim($provider, '\\') : \get_class($provider);
-    }
-
-    /**
      * Get the registered service provider instances if any exist.
      *
-     * @param  \Symbiotic\Core\ServiceProviderInterface|string $provider
+     * @param \Symbiotic\Core\ServiceProviderInterface|object|string $provider
      * @return array
      */
-    public function getProviders($provider)
+    public function getProviders(object|string $provider):array
     {
         $name = $this->getClass($provider);
         return \array_filter($this->serviceProviders, function ($value) use ($name) {

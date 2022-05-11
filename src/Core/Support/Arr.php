@@ -4,7 +4,7 @@ namespace Symbiotic\Core\Support;
 
 use \ArrayAccess;
 use \InvalidArgumentException;
-use function \_DS\value;
+use function \_S\value;
 
 class Arr
 {

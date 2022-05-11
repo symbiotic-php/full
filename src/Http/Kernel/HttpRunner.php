@@ -2,55 +2,59 @@
 
 namespace Symbiotic\Http\Kernel;
 
-use Symbiotic\Core\{CoreInterface, HttpKernelInterface, Runner};
-use Symbiotic\Http\ {ResponseSender, PsrHttpFactory, UriHelper};
-use Psr\Http\Message\ {ResponseFactoryInterface, ServerRequestInterface, ResponseInterface};
-use Symbiotic\Http\Middleware\ {MiddlewareCallback, MiddlewaresHandler, RequestPrefixMiddleware};
+use Psr\Http\Message\{ResponseFactoryInterface, ResponseInterface, ServerRequestInterface};
 use Psr\Http\Server\RequestHandlerInterface;
+use Symbiotic\Core\{CoreInterface, HttpKernelInterface, Runner};
+use Symbiotic\Http\{PsrHttpFactory, ResponseSender, UriHelper};
+use Symbiotic\Http\Middleware\{MiddlewareCallback, MiddlewaresHandler, RequestPrefixMiddleware};
 
 
 class HttpRunner extends Runner
 {
 
+    protected string $public_path = '';
+
     public function isHandle(): bool
     {
-        return $this->app['env'] === 'web';
+        return $this->core['env'] === 'web';
     }
 
     public function run(): bool
     {
 
         /**
-         * @var CoreInterface $app
+         * @var CoreInterface $core
          */
-        $app = $this->app;
-        $symbiosis = \_DS\config('symbiosis', true);
+        $core = $this->core;
+        $symbiosis = \_S\config('symbiosis', true);
         try {
             $request_interface = ServerRequestInterface::class;
-           // Занимает половину времени 5.6 мс , видимо из-за инклюда файлов
-            $request = $app[PsrHttpFactory::class]->createServerRequestFromGlobals();
-            $app->instance($request_interface, $request, 'request');
-            $app->alias($request_interface, \get_class($request));
+            // Занимает половину времени , видимо из-за инклюда файлов
+            $request = $core[PsrHttpFactory::class]->createServerRequestFromGlobals();
+            $core->instance($request_interface, $request, 'request');
+            $core->alias($request_interface, \get_class($request));
 
             // удаляем путь до скрипта
             $base_uri = $this->prepareBaseUrl($request);
-            $app['base_uri'] = $base_uri;
-            $app['original_request'] = $request;
+            $core['base_uri'] = $base_uri;
+            $core['public_path'] = $this->public_path;
+            $core['original_request'] = $request;
             $request = $request->withUri((new UriHelper())->deletePrefix($base_uri, $request->getUri()));
 
             /**
              * Через событие вы можете добавить посредников до загрузки Http ядра и всех провайдеров
              * удобно когда надо быстро ответить, рекомендуется использовать в крайней необходимости
              */
-            $handler = $app['events']->dispatch(
-                new PreloadKernelHandler($app->make(HttpKernelInterface::class))
-            );
+            $handler = \_S\event(new PreloadKernelHandler($this->getHttpKernel()));
             // ставим в начало проверку префикса
-            $handler->prepend(new RequestPrefixMiddleware($app('config::uri_prefix', null), $app[ResponseFactoryInterface::class]));
+            $handler->prepend(new RequestPrefixMiddleware(
+                $core[ResponseFactoryInterface::class],
+                $core('config::uri_prefix', null)
+            ));
             // ставим в конец загрузку провайдеров Http Ядра.
             $handler->append(
-                new MiddlewareCallback(function (ServerRequestInterface $request, RequestHandlerInterface $handler)use($app): ResponseInterface {
-                    $app->runBefore();
+                new MiddlewareCallback(function (ServerRequestInterface $request, RequestHandlerInterface $handler) use ($core): ResponseInterface {
+                    $core->runBefore();
                     if ($handler instanceof MiddlewaresHandler) {
                         $real = $handler->getRealHandler();
                         if ($real instanceof HttpKernelInterface) {
@@ -64,18 +68,18 @@ class HttpRunner extends Runner
             $response = $handler->handle($request);
 
             // Определяем нужно ли отдавать ответ
-            if (!$app('destroy_response', false) || !$symbiosis) {
+            if (!$core('destroy_response', false) || !$symbiosis) {
                 $this->sendResponse($response);
                 // при режиме симбиоза не даем другим скриптам продолжить работу, т.к. отдали наш ответ
                 return true;
             } else {
-                // Открываем проксирование буфера через нас
+                // Todo: Открываем проксирование буфера через нас
             }
 
         } catch (\Throwable $e) {
             // при режиме симбиоза не отдаем ответ с ошибкой, запишем выше в лог
             if (!$symbiosis) {
-                $this->sendResponse($app[HttpKernelInterface::class]->response(500, $e));
+                $this->sendResponse($core[HttpKernelInterface::class]->response(500, $e));
                 return true;
             } else {
                 // TODO:log
@@ -84,6 +88,54 @@ class HttpRunner extends Runner
         return false;
     }
 
+    protected function prepareBaseUrl(ServerRequestInterface $request): string
+    {
+        $server = $request->getServerParams();
+        $baseUrl = '/';
+        $app = $this->core;
+        if (PHP_SAPI !== 'cli') {
+            foreach (['PHP_SELF', 'SCRIPT_NAME', 'ORIG_SCRIPT_NAME'] as $v) {
+                $value = $server[$v];
+
+                if (!empty($value) && basename($value) == basename($server['SCRIPT_FILENAME'])) {
+                    //  $this->file = basename($value);
+                    $this->public_path = str_replace($value, '', $server['SCRIPT_FILENAME']);
+                    $request_uri = $request->getUri()->getPath();
+                    $value = '/' . ltrim($value, '/');
+                    if ($request_uri === preg_replace('~^' . preg_quote($value, '~') . '~i', '', $request_uri)) {
+
+                        if (is_null($app('mod_rewrite'))) {
+                            $app['mod_rewrite'] = true;
+                        }
+                        $value = dirname($value);
+                    }
+                    $baseUrl = $value;
+                    break;
+                }
+            }
+        }
+
+        return rtrim($baseUrl, '/\\');
+    }
+
+    protected function getHttpKernel(): HttpKernelInterface
+    {
+        return $this->core->make(HttpKernelInterface::class);
+    }
+
+    public function sendResponse(ResponseInterface $response)
+    {
+        $sender = new ResponseSender($response);
+        $sender->render();
+        if (\function_exists('fastcgi_finish_request')) {
+            \register_shutdown_function(function () {
+                \fastcgi_finish_request();
+            });
+
+        } elseif (!\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true)) {
+            static::closeOutputBuffers(0, true);
+        }
+    }
 
     /**
      * Laravel close buffers
@@ -96,7 +148,7 @@ class HttpRunner extends Runner
         $level = \count($status);
         $flags = \PHP_OUTPUT_HANDLER_REMOVABLE | ($flush ? \PHP_OUTPUT_HANDLER_FLUSHABLE : \PHP_OUTPUT_HANDLER_CLEANABLE);
 
-        while ($level-- > $targetLevel &&  ($s = $status[$level])  && (!isset($s['del']) ? !isset($s['flags']) || ($s['flags'] & $flags) === $flags : $s['del'])) {
+        while ($level-- > $targetLevel && ($s = $status[$level]) && (!isset($s['del']) ? !isset($s['flags']) || ($s['flags'] & $flags) === $flags : $s['del'])) {
             if ($flush) {
                 ob_end_flush();
             } else {
@@ -105,44 +157,9 @@ class HttpRunner extends Runner
         }
     }
 
-    protected function prepareBaseUrl(ServerRequestInterface $request): string
+    protected function preparePublicPath()
     {
-        $server = $request->getServerParams();
-        $baseUrl = '/';
-        if (PHP_SAPI !== 'cli') {
-            foreach (['PHP_SELF', 'SCRIPT_NAME', 'ORIG_SCRIPT_NAME'] as $v) {
-                $value = $server[$v];
 
-                if (!empty($value) && basename($value) == basename($server['SCRIPT_FILENAME'])) {
-                    $this->file = basename($value);
-                    $request_uri = $request->getUri()->getPath();
-                    $value = '/' . ltrim($value, '/');
-                    if ($request_uri === preg_replace('~^' . preg_quote($value, '~') . '~i', '', $request_uri)) {
-                        $app = $this->app;
-                        if (is_null($app('mod_rewrite'))) {
-                            $this->app['mod_rewrite'] = true;
-                        }
-                        $value = dirname($value);
-                    }
-                    $baseUrl = $value;
-                    break;
-                }
-            }
-        }
-
-        return rtrim($baseUrl, '/' . \DIRECTORY_SEPARATOR);
-    }
-
-
-    public function sendResponse(ResponseInterface $response)
-    {
-        $sender = new ResponseSender($response);
-        $sender->render();
-        if (\function_exists('fastcgi_finish_request')) {
-           \register_shutdown_function(function(){\fastcgi_finish_request();});
-        } elseif (!\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true)) {
-            static::closeOutputBuffers(0, true);
-        }
     }
 
 }

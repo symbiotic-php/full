@@ -5,37 +5,6 @@ namespace Symbiotic\Routing;
 interface SettlementsInterface
 {
 
-
-    /**
-     * Settlements constructor.
-     *
-     * @param array $items = [
-     *    [
-     *      'prefix' => '/backend/',
-     *      'router' => 'backend',
-     *       // optional params
-     *      'settings' => [],
-     *      'locale' => ''...
-     *    ],
-     *    [
-     *      'prefix' => '/api/',
-     *      'router' => 'api',
-     *       // .....
-     *    ],
-     *    [
-     *      'prefix' => '/module1_baseurl/',
-     *      'router' => 'module1',
-     *       // .....
-     *    ]
-     * ];
-     *
-     *
-     *
-     */
-
-
-
-
     public function getByRouter(string $router);
 
     public function getByUrl(string $url) : ? Settlement;

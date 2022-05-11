@@ -12,29 +12,29 @@ class SettlementsRouter extends Router implements RouterInterface
     const DEFAULT_ROUTER = 'default';
 
     /**
-     * @var RouterLazy[]|\Symbiotic\Routing\RouterInterface[]
+     * @var RouterLazy[]|RouterInterface[]
      */
-    protected $routers = [];
+    protected array $routers = [];
 
     /**
-     * @var Router|\Symbiotic\Routing\RouterInterface|null
+     * @var RouterInterface|null
      */
-    protected $current_router = null;
+    protected ?RouterInterface $current_router;
 
     /**
-     * @var string
+     * @var string|null
      */
-    protected $current_router_name = null;
+    protected ?string $current_router_name;
 
-    protected $previous_collections_names = [];
+    protected array $previous_collections_names = [];
 
     /**
-     * @var Settlements|Settlement[]
+     * @var SettlementsInterface
      */
-    protected $settlements = null;
+    protected ?SettlementsInterface $settlements;
 
 
-    protected $router_factory = null;
+    protected ?RouterFactoryInterface  $router_factory;
 
     public function __construct(RouterFactoryInterface $routerFactory, SettlementsInterface $settlements)
     {
@@ -43,19 +43,41 @@ class SettlementsRouter extends Router implements RouterInterface
          * @var Settlement[]|Settlements $settlements
          */
         $this->settlements = $settlements;
-        // $this->router(static::DEFAULT_ROUTER);
-        foreach ($settlements as $settlement) {
-            // $this->router($settlement->getRouter());
-        }
-        // $this->selectRouter(static::DEFAULT_ROUTER);
+        $this->router(static::DEFAULT_ROUTER);
     }
 
-    public function group(array $attributes, callable $routes)
+    /**
+     * @param $name
+     * @return Router
+     */
+    public function router($name = null): RouterInterface
+    {
+        $name = $this->castRouterName($name);
+
+        if (!isset($this->routers[$name])) {
+            $this->routers[$name] = $router = $this->router_factory->factoryRouter(['name' => $name]);
+            if (method_exists($router, 'setName')) {
+                $router->setName($name);
+            }
+        }
+        return $this->routers[$name];
+    }
+
+    protected function castRouterName(string $name = null)
+    {
+        if (in_array($name, ['', null])) {
+            $name = static::DEFAULT_ROUTER;
+        }
+
+        return strtolower($name);
+    }
+
+    public function group(array $attributes, \Closure $routes)
     {
         $this->current_router->group($attributes, $routes);
     }
 
-    public function addRoute($httpMethods, string $uri, $action): RouteInterface
+    public function addRoute($httpMethods, string $uri, string|array|\Closure $action): RouteInterface
     {
         return $this->current_router->addRoute($httpMethods, $uri, $action);
     }
@@ -105,7 +127,7 @@ class SettlementsRouter extends Router implements RouterInterface
     {
         $routes = [];
         if (strpos($settlement, 'default:') !== false) {
-            foreach ($this->router('default')->getBySettlement(substr($settlement,8)) as $v) {
+            foreach ($this->router('default')->getBySettlement(substr($settlement, 8)) as $v) {
                 $routes[$v->getName()] = $v;
             }
             return $routes;
@@ -120,6 +142,21 @@ class SettlementsRouter extends Router implements RouterInterface
 
         }
         return $routes;
+    }
+
+    public function collection(string $name, callable $callback)
+    {
+        $current_router = $this->getCurrentRouterName();
+        $this->selectRouter($name);
+        if (is_callable($callback)) {
+            $callback($this);
+        }
+        $this->selectRouter($current_router);
+    }
+
+    public function getCurrentRouterName(): string
+    {
+        return $this->current_router_name;
     }
 
     public function selectRouter(string $name = null): RouterInterface
@@ -141,21 +178,6 @@ class SettlementsRouter extends Router implements RouterInterface
         return $this;
     }
 
-    public function collection(string $name, callable $callback)
-    {
-        $current_router = $this->getCurrentRouterName();
-        $this->selectRouter($name);
-        if (is_callable($callback)) {
-            $callback($this);
-        }
-        $this->selectRouter($current_router);
-    }
-
-    public function getCurrentRouterName(): string
-    {
-        return $this->current_router_name;
-    }
-
     protected function getLastPreviousRouterName()
     {
         return !empty($this->previous_collections_names) ? end($this->previous_collections_names) : null;
@@ -170,15 +192,6 @@ class SettlementsRouter extends Router implements RouterInterface
         return $this;
     }
 
-    protected function castRouterName(string $name = null)
-    {
-        if (in_array($name, ['', null])) {
-            $name = static::DEFAULT_ROUTER;
-        }
-
-        return strtolower($name);
-    }
-
     public function hasRouter($name)
     {
         return !is_null($this->settlements->getByRouter(\strtolower($name)));
@@ -188,24 +201,6 @@ class SettlementsRouter extends Router implements RouterInterface
     {
         return $this->routers;
     }
-
-    /**
-     * @param $name
-     * @return Router
-     */
-    public function router($name = null): RouterInterface
-    {
-        $name = $this->castRouterName($name);
-
-        if (!isset($this->routers[$name])) {
-            $this->routers[$name] = $router = $this->router_factory->factoryRouter(['name' => $name]);
-            if (method_exists($router, 'setName')) {
-                $router->setName($name);
-            }
-        }
-        return $this->routers[$name];
-    }
-
 
     /**
      * @param $httpMethod

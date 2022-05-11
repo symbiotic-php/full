@@ -14,7 +14,7 @@ interface CoreInterface extends DIContainerInterface, ServiceContainerInterface
      * @param string | string[] $bootstraps class name implemented {@see BootstrapInterface}
      * @return mixed
      */
-    public function addBootstraps($bootstraps);
+    public function addBootstraps(string|array $bootstraps);
 
     /**
      * Determine if the application has booted.
@@ -31,7 +31,10 @@ interface CoreInterface extends DIContainerInterface, ServiceContainerInterface
      */
     public function bootstrap(): void;
 
-    public function runBootstrap($class): void;
+    /**
+     * @param string $class
+     */
+    public function runBootstrap(string $class): void;
 
     public function addRunner(RunnerInterface $runner, $priority = null, string $name = null): void;
 
@@ -39,7 +42,7 @@ interface CoreInterface extends DIContainerInterface, ServiceContainerInterface
 
     /**
      * Если будет определено приложение для обработки запроса
-     * то выполнится функция в которой можно заинклюдить файлы
+     * то выполнится функция в которой можно подключить файлы
      *
      * @param \Closure $loader
      */
@@ -48,14 +51,14 @@ interface CoreInterface extends DIContainerInterface, ServiceContainerInterface
     /**
      * Запуск лоадера перед обработкой
      *
-     * @used-by RunnerInterface::run()
+     * @used-by CoreInterface::run()
      */
     public function runBefore():void;
 
     /**
      * Запуск события после успешной отработки фреймворка
      *
-     * @used-by RunnerInterface::run()
+     * @used-by CoreInterface::run()
      */
     public function runComplete():void;
 
@@ -65,6 +68,7 @@ interface CoreInterface extends DIContainerInterface, ServiceContainerInterface
      * @param \Closure $complete
      */
     public function onComplete(\Closure $complete):void;
+
     /**
      *  Используется для загрузки других скриптов после неуспешной отработки фреймворка
      *

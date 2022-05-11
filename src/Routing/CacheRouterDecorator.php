@@ -11,19 +11,19 @@ class CacheRouterDecorator implements RouterInterface
     use AddRouteTrait;
 
     /**
-     * @var RouterFactoryInterface
+     * @var RouterFactoryInterface|null
      */
-    protected $factory = null;
+    protected ?RouterFactoryInterface $factory = null;
 
     /**
-     * @var RouterInterface
+     * @var RouterInterface|null
      */
-    protected $router = null;
+    protected ?RouterInterface $router = null;
 
 
-    protected $cache_key = '';
+    protected string $cache_key = '';
 
-    protected $allowed_cache = true;
+    protected bool $allowed_cache = true;
 
     public function __construct(RouterFactoryInterface $factory, RouterInterface $router, string $cache_key)
     {
@@ -31,7 +31,6 @@ class CacheRouterDecorator implements RouterInterface
         $this->router = $router;
         $this->cache_key = $cache_key;
     }
-
 
 
     public function getCacheKey(): string
@@ -54,8 +53,12 @@ class CacheRouterDecorator implements RouterInterface
         $this->call(__FUNCTION__, func_get_args());
     }
 
+    protected function call($method, $parameters)
+    {
+        return call_user_func_array([$this->router, $method], $parameters);
+    }
 
-    public function addRoute($httpMethods, string $uri, $action): RouteInterface
+    public function addRoute($httpMethods, string $uri, string|array|\Closure $action): RouteInterface
     {
         $this->checkCallbacks($action);
         return $this->call(__FUNCTION__, func_get_args());
@@ -79,7 +82,7 @@ class CacheRouterDecorator implements RouterInterface
         }
     }
 
-    public function group(array $attributes, callable $routes)
+    public function group(array $attributes, \Closure $routes)
     {
         $this->checkCallbacks($attributes);
         $this->router->group($attributes, function ($real_router) use ($routes) {
@@ -92,7 +95,8 @@ class CacheRouterDecorator implements RouterInterface
         return $this->call(__FUNCTION__, func_get_args());
     }
 
-    public function getBySettlement(string $settlement):array{
+    public function getBySettlement(string $settlement): array
+    {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
@@ -104,11 +108,6 @@ class CacheRouterDecorator implements RouterInterface
     public function match(string $httpMethod, string $uri): ?RouteInterface
     {
         return $this->call(__FUNCTION__, func_get_args());
-    }
-
-    protected function call($method, $parameters)
-    {
-        return call_user_func_array([$this->router, $method], $parameters);
     }
 
 

@@ -13,7 +13,7 @@ class CookiesMiddleware implements MiddlewareInterface
     /**
      * @var CookiesInterface
      */
-    protected $cookies;
+    protected CookiesInterface $cookies;
 
     public function __construct(CookiesInterface $cookies)
     {

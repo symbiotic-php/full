@@ -4,8 +4,8 @@ namespace Symbiotic\Core\Bootstrap;
 
 
 use Symbiotic\Core\BootstrapInterface;
-use Symbiotic\Core\CoreInterface;
 use Symbiotic\Core\Config;
+use Symbiotic\Core\CoreInterface;
 use Symbiotic\Core\Events\CacheClear;
 use Symbiotic\Core\View\View;
 
@@ -13,46 +13,54 @@ use Symbiotic\Core\View\View;
 class CoreBootstrap implements BootstrapInterface
 {
     /**
-     * @param CoreInterface $app
+     * @param CoreInterface $core
      */
-    public function bootstrap(CoreInterface $app): void
+    public function bootstrap(CoreInterface $core): void
     {
-        $app->singleton(Config::class, function ($app) {
+        $core->singleton(Config::class, function ($app) {
             return new Config($app['bootstrap_config']);
         }, 'config');
 
 
-        View::setContainer($app);
+        View::setContainer($core);
         // Env settings
         $console_running_key = 'APP_RUNNING_IN_CONSOLE';
         if ((isset($_ENV[$console_running_key]) && $_ENV[$console_running_key] === 'true') ||
             \in_array(\php_sapi_name(), ['cli', 'phpdbg'])) {
-            $app['env'] = 'console';
+            $core['env'] = 'console';
         } else {
-            $app['env'] = 'web';
+            $core['env'] = 'web';
         }
 
-        \date_default_timezone_set($app('config::core.timezone', 'UTC'));
+        \date_default_timezone_set($core('config::core.timezone', 'UTC'));
         \mb_internal_encoding('UTF-8');
 
 
-        $storage_path = $app('config::storage_path');
+        $storage_path = $core('config::storage_path');
+        $cache_path = $core('config::cache_path');
 
         if ($storage_path) {
-            $app['storage_path'] = $storage_path = \rtrim($storage_path, '\\/');
-            $app['cache_path'] = $storage_path . '/cache/';
-            $app['cache_path_core'] = $storage_path . '/cache/core';
+            $core['storage_path'] = $storage_path = \rtrim($storage_path, '\\/');
+            if (empty($cache_path)) {
+                $cache_path = $storage_path . '/cache/';
+            }
         }
-        $start_bootstrappers = $app->get('config::bootstrappers');
+
+        if (!empty($cache_path)) {
+            $core['cache_path'] = $cache_path;
+            $core['cache_path_core'] = rtrim($cache_path, '\\/') . '/core';
+        }
+
+        $start_bootstrappers = $core->get('config::bootstrappers');
         if (\is_array($start_bootstrappers)) {
             foreach ($start_bootstrappers as $class) {
-                $app->runBootstrap($class);
+                $core->runBootstrap($class);
             }
         }
         // При очистке
-        $app['listeners']->add(CacheClear::class, function (CacheClear $event) use ($app) {
+        $core['listeners']->add(CacheClear::class, function (CacheClear $event) use ($core) {
             if ($event->getPath() === 'all' || $event->getPath() === 'core') {
-                $app['cache_cleaned'] = true;
+                $core['cache_cleaned'] = true;
             }
         });
 

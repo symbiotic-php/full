@@ -4,11 +4,11 @@ namespace Symbiotic\Core\Events;
 
 class CacheClear {
 
-    protected $path;
+    protected ?string $path = null;
 
-    public function __construct(string $path)
+    public function __construct(string $path = null)
     {
-        $this->path =  trim($path);
+        $this->path = trim($path);
     }
 
     public function getPath()

@@ -12,11 +12,11 @@ class LazyPackagesDecorator implements PackagesRepositoryInterface, RememberingI
     /**
      * @var PackagesRepositoryInterface
      */
-    protected $repository;
+    protected PackagesRepositoryInterface $repository;
 
-    protected $meta = null;
+    protected ?array $meta = null;
 
-    protected $packages = null;
+    protected ?array $packages = null;
 
     public function __construct(PackagesRepositoryInterface $repository, string $storage_path = null)
     {
@@ -26,9 +26,12 @@ class LazyPackagesDecorator implements PackagesRepositoryInterface, RememberingI
         }
     }
 
-    public function getIds(): array
+    public function getPackageConfig(string $id): ?PackageConfig
     {
-        return $this->getMeta()['ids'];
+        if ($this->has($id)) {
+            return new PackageConfig($this->get($id));
+        }
+        return null;
     }
 
     public function has($id): bool
@@ -36,21 +39,51 @@ class LazyPackagesDecorator implements PackagesRepositoryInterface, RememberingI
         return isset($this->getIds()[$id]);
     }
 
+    public function getIds(): array
+    {
+        return $this->getMeta()['ids'];
+    }
+
+    /**
+     * @return array = ['ids'=>[],'bootstraps' =>[]];
+     */
+    protected function getMeta(): array
+    {
+        if (null === $this->meta) {
+            $this->meta = $this->remember('packages_meta.php', function () {
+                $this->repository->load();
+                return [
+                    'ids' => $this->repository->getIds(),
+                    'bootstraps' => $this->repository->getBootstraps(),
+                    'handlers' => $this->repository->getEventsHandlers(),
+
+                ];
+            });
+        }
+
+        return $this->meta;
+    }
+
+    /**
+     * @param string $id
+     * @return array
+     * @throws \Exception
+     */
     public function get(string $id): array
     {
-        $packages = $this->getPackages();
+        $packages = $this->all();
         if (!isset($this->getIds()[$id])) {
             throw new \Exception("Package [$id] not found!");
         }
         return $packages[$id];
     }
 
-    public function getPackages(): array
+    public function all(): array
     {
         if (null === $this->packages) {
             $this->packages = $this->remember('packages_data.php', function () {
                 $this->repository->load();
-                return $this->repository->getPackages();
+                return $this->repository->all();
             });
         }
 
@@ -72,30 +105,17 @@ class LazyPackagesDecorator implements PackagesRepositoryInterface, RememberingI
         return $this->getMeta()['bootstraps'];
     }
 
+    public function getEventsHandlers(): array
+    {
+        return $this->getMeta()['handlers'];
+    }
+
     public function load(): void
     {
         /**
          * @see LazyPackagesDecorator::getMeta()
-         * @see LazyPackagesDecorator::getPackages()
+         * @see LazyPackagesDecorator::all()
          */
-    }
-
-    /**
-     * @return array = ['ids'=>[],'bootstraps' =>[]];
-     */
-    protected function getMeta(): array
-    {
-        if (null===$this->meta) {
-            $this->meta = $this->remember('packages_meta.php', function () {
-                $this->repository->load();
-                return [
-                    'bootstraps' => $this->repository->getBootstraps(),
-                    'ids' => $this->repository->getIds(),
-                ];
-            });
-        }
-
-        return $this->meta;
     }
 
 }

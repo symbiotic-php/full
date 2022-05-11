@@ -3,15 +3,15 @@
 
 namespace Symbiotic\Core;
 
-use Symbiotic\Core\Bootstrap\LazyPackagesBootstrap;
 use Psr\SimpleCache\CacheInterface;
+use Symbiotic\Core\Bootstrap\LazyPackagesBootstrap;
 
 class ContainerBuilder
 {
     /**
      * @var CacheInterface |null
      */
-    protected $cache;
+    protected ?CacheInterface $cache;
 
     public function __construct(CacheInterface $cache = null)
     {

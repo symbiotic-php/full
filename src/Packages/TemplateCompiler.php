@@ -6,7 +6,11 @@ use Symbiotic\Mimetypes\MimeTypesMini;
 
 class TemplateCompiler {
 
-    protected $extensions = [];
+    /**
+     * ['ext' => compilerObject,...]
+     * @var array
+     */
+    protected array $extensions = [];
 
     /**
      * @param TemplateCompilerInterface $compiler
@@ -24,14 +28,11 @@ class TemplateCompiler {
      * @param string $path путь к файлу или его название для определения компилера
      * @param string $template контент файла для преобразования
      *
-     * @return string  html / php валидный код для выполнения через include {@link https://www.php.net/manual/ru/function.include.php)
+     * @return string  html / php валидный код для выполнения через include или eval {@link https://www.php.net/manual/ru/function.include.php)
      */
     public function compile(string $path, string $template):string
     {
         $ext = (new MimeTypesMini())->findExtension($path, array_keys($this->extensions));
         return ($ext!==false) ?  $this->extensions[$ext]->compile($template):$template;
-
-
-
     }
 }

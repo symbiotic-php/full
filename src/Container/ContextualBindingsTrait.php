@@ -15,7 +15,7 @@ trait ContextualBindingsTrait /*implements ContextualBindingsInterface*/
      *
      * @var string[][]
      */
-    public $contextual = [];
+    public array $contextual = [];
 
     /**
      * Define a contextual binding.
@@ -23,7 +23,7 @@ trait ContextualBindingsTrait /*implements ContextualBindingsInterface*/
      * @param array|string $concrete
      * @return ContextualBindingBuilder
      */
-    public function when($concrete): ContextualBindingBuilder
+    public function when(string|array $concrete): ContextualBindingBuilder
     {
         /**
          * @var DIContainerInterface $this
@@ -48,7 +48,7 @@ trait ContextualBindingsTrait /*implements ContextualBindingsInterface*/
     public function addContextualBinding(string $concrete, string $abstract, $implementation): void
     {
         /**
-         * @var DIContainerInterface|ContextualBindingsInterface $this
+         * @var DIContainerInterface|ContextualBindingsInterface|ContextualBindingsTrait $this
          */
         $this->contextual[$concrete][$this->getAlias($abstract)] = $implementation;
     }
@@ -83,5 +83,6 @@ trait ContextualBindingsTrait /*implements ContextualBindingsInterface*/
                 return $this->contextual[$for_building][$alias];
             }
         }
+        return null;
     }
 }

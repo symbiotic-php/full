@@ -2,9 +2,9 @@
 
 namespace Symbiotic\Routing;
 
-use Psr\Http\Message\{ServerRequestInterface,ResponseInterface};
-use Psr\Http\Server\{MiddlewareInterface,RequestHandlerInterface};
-use Symbiotic\Core\{CoreInterface,ProvidersRepository};
+use Psr\Http\Message\{ResponseInterface, ServerRequestInterface};
+use Psr\Http\Server\{MiddlewareInterface, RequestHandlerInterface};
+use Symbiotic\Core\{CoreInterface, ProvidersRepository};
 
 /**
  * Class Settlements
@@ -14,7 +14,7 @@ use Symbiotic\Core\{CoreInterface,ProvidersRepository};
 class KernelPreloadFindRouteMiddleware implements MiddlewareInterface
 {
 
-    protected $core;
+    protected CoreInterface $core;
 
     public function __construct(CoreInterface $core)
     {
@@ -39,6 +39,7 @@ class KernelPreloadFindRouteMiddleware implements MiddlewareInterface
         foreach ($providers as $class => $v) {
             $v->boot();
         }
+        /// реально можно отменить провайдеры из посредника? вот это прикол
         $app[ProvidersRepository::class]->exclude(array_keys($providers));
 
         $path = $request->getUri()->getPath();
@@ -52,7 +53,7 @@ class KernelPreloadFindRouteMiddleware implements MiddlewareInterface
             return $handler->handle($request);
         } else {
             $app['destroy_response'] = true;
-            return \_DS\response(404, new \Exception('Route not found for path [' . $path . ']', 7623));
+            return \_S\response(404, new \Exception('Route not found for path [' . $path . ']', 7623));
         }
     }
 }

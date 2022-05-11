@@ -2,7 +2,7 @@
 
 namespace Symbiotic\Apps;
 
-use function _DS\app;
+use function _S\core;
 
 
 class AppsRepository implements AppsRepositoryInterface
@@ -11,21 +11,22 @@ class AppsRepository implements AppsRepositoryInterface
     /**
      * @var ApplicationInterface[]
      */
-    protected $apps = [];
+    protected array $apps = [];
     /**
      * @var array
      */
-    protected $apps_plugins = [];
+    protected array $apps_plugins = [];
 
     /**
      * @var array
      */
-    protected $apps_config = [];
+    protected array $apps_config = [];
 
     /**
      * @var array
      */
-    protected $disabled_apps = [];
+    protected array $disabled_apps = [];
+
 
     /**
      * @param array $ids
@@ -38,9 +39,10 @@ class AppsRepository implements AppsRepositoryInterface
     /**
      *
      * Фреймворк принимает пакеты композера в качестве приложений и компонентов или просто архив зарегистрированный
-     * в системе как приложение(будет сайт).
+     * в системе как приложение.
+     *
      * Система предполагает многоуровневую зависимость приложений и пакетов, как пример: есть приложение визуального редактора Tiny,
-     * для него есть плагин для редактирования изображений , для редактора изображений есть фича(кнопка), например размытие  лиц на фото.
+     * для него есть плагин для редактирования изображений , для редактора изображений есть фича (кнопка), например размытие  лиц на фото.
      *
      * @param array $config = [
      *     'id' => 'app_id_string', // Register short app id or use composer package name
@@ -73,21 +75,34 @@ class AppsRepository implements AppsRepositoryInterface
         }
     }
 
+    /**
+     * @param string $id
+     * @return ApplicationInterface
+     * @throws \Exception
+     */
+    public function getBootedApp(string $id): ApplicationInterface
+    {
+        $app = $this->get($id);
+        if ($app) {
+            $app->bootstrap();
+        }
+        return $app;
+    }
 
     /**
      * @param string $id
-     * @return ApplicationInterface|null
+     * @return ApplicationInterface
      * @throws \Exception
      */
-    public function get(string $id): ?ApplicationInterface
+    public function get(string $id): ApplicationInterface
     {
         if (isset($this->apps[$id])) {
             return $this->apps[$id];
         }
         if ($config = $this->getConfig($id)) {
-            $app = app(
-                (isset($config['app_class'])) ? $config['app_class'] : Application::class,
-                ['app' => isset($config['parent_app']) ? $this->get($config['parent_app']) : app(), 'config' => $config]
+            $app = core(
+                (isset($config['app_class'])) ? $config['app_class'] : ApplicationInterface::class,
+                ['app' => isset($config['parent_app']) ? $this->get($config['parent_app']) : core(), 'config' => $config]
             );
             return $this->apps[$id] = $app;
         }
@@ -100,21 +115,10 @@ class AppsRepository implements AppsRepositoryInterface
      */
     public function getConfig(string $id): ?AppConfigInterface
     {
-        return isset($this->apps_config[$id]) ?  new AppConfig($this->apps_config[$id]) : null;
-    }
-
-    /**
-     * @param string $id
-     * @return ApplicationInterface|null
-     * @throws \Exception
-     */
-    public function getBootedApp(string $id): ?ApplicationInterface
-    {
-        $app = $this->get($id);
-        if ($app) {
-            $app->bootstrap();
-        }
-        return $app;
+        return isset($this->apps_config[$id]) ?
+            new AppConfig($this->apps_config[$id])
+            // \_S\core(AppConfigInterface::class, ['config' => $this->apps_config[$id]])
+            : null;
     }
 
     /**
@@ -127,9 +131,9 @@ class AppsRepository implements AppsRepositoryInterface
     }
 
     /**
-     * @return array|string[]
+     * @return string[]
      */
-    public function getIds():array
+    public function getIds(): array
     {
         return array_keys($this->apps_config);
     }
@@ -145,6 +149,14 @@ class AppsRepository implements AppsRepositoryInterface
     }
 
     /**
+     * @return array
+     */
+    public function all(): array
+    {
+        return $this->apps_config;
+    }
+
+    /**
      * @param string $id
      * @return array|[string]
      */
@@ -153,11 +165,8 @@ class AppsRepository implements AppsRepositoryInterface
         return (isset($this->apps_plugins[$id])) ? array_keys($this->apps_plugins[$id]) : [];
     }
 
-    /**
-     * @return array|array[]
-     */
-    public function all(): array
+    public function getCoreHandlers()
     {
-        return $this->apps_config;
+
     }
 }

@@ -7,11 +7,12 @@ use Symbiotic\Core\CoreInterface;
 use Symbiotic\Packages\LazyPackagesDecorator;
 use Symbiotic\Packages\PackagesRepositoryInterface;
 
-class LazyPackagesBootstrap extends AbstractBootstrap {
+class LazyPackagesBootstrap extends AbstractBootstrap
+{
 
-    public function bootstrap(CoreInterface $app): void
+    public function bootstrap(CoreInterface $core): void
     {
-        $app->extend(PackagesRepositoryInterface::class, function (PackagesRepositoryInterface $repo, $app) {
+        $core->extend(PackagesRepositoryInterface::class, function (PackagesRepositoryInterface $repo, $app) {
             return new LazyPackagesDecorator($repo, $app('cache_path_core'));
         });
     }

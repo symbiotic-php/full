@@ -10,7 +10,7 @@ trait MiddlewaresCollectionTrait
     /**
      * @var MiddlewareInterface[]
      */
-    protected $middleware = [];
+    protected array $middleware = [];
 
     /**
      * Add a middleware to the end of the stack.

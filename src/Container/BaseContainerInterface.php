@@ -3,7 +3,6 @@
 namespace Symbiotic\Container;
 
 
-
 /**
  * Interface BaseContainerInterface
  *
@@ -18,6 +17,7 @@ namespace Symbiotic\Container;
  * @see ArrayContainerInterface
  * @see MultipleAccessInterface
  * @see MagicAccessInterface
+ * @see BaseContainerTrait
  *
  */
 interface BaseContainerInterface

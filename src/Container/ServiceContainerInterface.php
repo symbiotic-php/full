@@ -8,11 +8,11 @@ interface ServiceContainerInterface
     /**
      * Register a service provider with the application.
      *
-     * @param  \Symbiotic\Core\ServiceProviderInterface|string $provider
+     * @param \Symbiotic\Core\ServiceProviderInterface|object|string $provider
      * @param bool $force
-     * @return \Symbiotic\Core\ServiceProviderInterface
+     * @return \Symbiotic\Core\ServiceProviderInterface|object
      */
-    public function register($provider, $force = false);
+    public function register(object|string $provider, $force = false);
 
     /**
      * Boot the application's service providers.
@@ -25,22 +25,22 @@ interface ServiceContainerInterface
     /**
      * Get the registered service provider instance if it exists.
      *
-     * @param \Symbiotic\Core\ServiceProviderInterface|string $provider
-     * @return \Symbiotic\Core\ServiceProviderInterface|null
+     * @param \Symbiotic\Core\ServiceProviderInterface|string|object $provider
+     * @return \Symbiotic\Core\ServiceProviderInterface|null|object
      */
-    public function getProvider($provider);
+    public function getProvider(string|object $provider);
 
     /**
      * Get the registered service provider instances if any exist.
      *
-     * @param \Symbiotic\Core\ServiceProviderInterface|string $provider
+     * @param \Symbiotic\Core\ServiceProviderInterface|object|string $provider
      * @return array
      */
-    public function getProviders($provider);
+    public function getProviders(string|object $provider): array;
 
     public function setDeferred(array $services);
 
-    public function isDeferService(string $service):bool;
+    public function isDeferService(string $service): bool;
 
-    public function loadDefer(string $service):bool;
+    public function loadDefer(string $service): bool;
 }

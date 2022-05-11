@@ -45,11 +45,13 @@ class Provider extends ServiceProvider
     protected function routesLoaderCallback()
     {
         return function (RouterInterface $router) {
+            $app = $this->app;
+            $backend_prefix = \trim($app('config::backend_prefix', 'backend'), '/');
             /**
              * @var AppRoutingInterface $provider
              * @var RouterInterface $router
              */
-            foreach ($this->app[AppsRoutesRepository::class]->getProviders() as $provider) {
+            foreach ($app[AppsRoutesRepository::class]->getProviders() as $provider) {
                 $app_id = $provider->getAppId();
 
                 $router->group([
@@ -69,7 +71,7 @@ class Provider extends ServiceProvider
                 });
 
                 $router->group([
-                        'prefix' => 'backend/' . $app_id,
+                        'prefix' => $backend_prefix . '/' . $app_id,
                         'as' => 'backend:' . $app_id . '::',
                         'app' => $app_id]
                     , function ($router) use ($provider) {
@@ -89,12 +91,10 @@ class Provider extends ServiceProvider
 
     protected function registerRoutesRepository()
     {
-        $this->app->singleton(AppsRoutesRepository::class)
-            ->afterResolving(AppsRoutesRepository::class, function (AppsRoutesRepository $repository) {
-                /**
-                 * @var AppsRoutesRepository $repository
-                 */
-                return \_DS\event($repository);
+        $interface = AppsRoutesRepository::class;
+        $this->app->singleton($interface)
+            ->afterResolving($interface, function (AppsRoutesRepository $repository) {
+                return \_S\event($repository);
             });
     }
 
@@ -108,6 +108,7 @@ class Provider extends ServiceProvider
             $f = $app[RouterFactoryInterface::class];
             $router = $f->factoryRouter(['name' => 'default']);
             $f->loadRoutes($router);
+
             return $router;
 
         }, 'router');

@@ -22,21 +22,21 @@ class MiddlewaresDispatcher
      *     ...
      * ]
      */
-    protected $middlewares_groups = [
+    protected array $middlewares_groups = [
         self::GROUP_GLOBAL => []
     ];
 
     /**
      * @var array |\Closure[]
      */
-    protected $binds = [];
+    protected array $binds = [];
 
     /**
      * @uses
      * @used-by factory()
      * @var null|\Closure
      */
-    protected $default_callback;
+    protected ?\Closure $default_callback;
 
 
     public function addMiddlewareGroup(string $name, array $middlewares)
@@ -44,37 +44,64 @@ class MiddlewaresDispatcher
         $this->middlewares_groups[$name] = $middlewares;
     }
 
-    public function appendToGroup($name, $middleware, \Closure $bind = null):self
+    /**
+     * @param string $name
+     * @param string $middleware Class name
+     * @param \Closure|null $bind
+     * @return $this
+     */
+    public function appendToGroup(string $name, string $middleware, \Closure $bind = null): self
     {
-        if(!isset($this->middlewares_groups[$name])) {
+        if (!isset($this->middlewares_groups[$name])) {
             $this->middlewares_groups[$name] = [];
         }
         $this->middlewares_groups[$name][] = $middleware;
-        if($bind) {
+        if ($bind) {
             $this->bind($middleware, $bind);
         }
+
         return $this;
     }
 
-    public function prependToGroup($name, $middleware,\Closure $bind = null):self
+    /**
+     * @param string $middleware_classname
+     * @param \Closure $callback
+     */
+    public function bind(string $middleware_classname, \Closure $callback)
     {
-        if(!isset($this->middlewares_groups[$name])) {
+        $this->binds[$middleware_classname] = $callback;
+    }
+
+    /**
+     * @param string $name
+     * @param string $middleware
+     * @param \Closure|null $bind
+     * @return $this
+     */
+    public function prependToGroup(string $name, string $middleware, \Closure $bind = null): self
+    {
+        if (!isset($this->middlewares_groups[$name])) {
             $this->middlewares_groups[$name] = [];
         }
         array_unshift($this->middlewares_groups[$name], $middleware);
-        if($bind) {
+        if ($bind) {
             $this->bind($middleware, $bind);
         }
         return $this;
     }
 
+    public function factoryGroup($name)
+    {
+        $middlewares = $this->getMiddlewareGroup($name);
+        return $this->factoryCollection($middlewares);
+    }
 
     /**
      * @param string $name
      * @return \Closure[]|string[]
      * @throws \Exception
      */
-    public function getMiddlewareGroup(string $name) : array
+    public function getMiddlewareGroup(string $name): array
     {
         if (!isset($this->middlewares_groups[$name])) {
             throw new \Exception('Middleware group [' . htmlspecialchars($name) . '] not found'); //Группа промежуточного программного обеспечения не найдена
@@ -93,27 +120,21 @@ class MiddlewaresDispatcher
         }, $middlewares);
     }
 
-    public function factoryGroup($name)
-    {
-        $middlewares = $this->getMiddlewareGroup($name);
-        return $this->factoryCollection($middlewares);
-    }
-
     /**
      * @param string|\Closure $middleware
      * @return MiddlewareInterface
      */
-    public function factory($middleware): MiddlewareInterface
+    public function factory(string|\Closure $middleware): MiddlewareInterface
     {
         if ($middleware instanceof \Closure) {
             return new MiddlewareCallback($middleware);
         }
-        if(isset($this->middlewares_groups[$middleware])) {
+        if (isset($this->middlewares_groups[$middleware])) {
             $middlewares = $this->factoryCollection($this->middlewares_groups[$middleware]);
             return new MiddlewaresCollection($middlewares);
         }
-        if(!class_exists($middleware)) {
-            throw new \Exception('Middleware group or class ['.$middleware.'] not found!');
+        if (!class_exists($middleware)) {
+            throw new \Exception('Middleware group or class [' . $middleware . '] not found!');
         }
         $callback = isset($this->binds[$middleware]) ?
             $this->binds[$middleware]
@@ -133,14 +154,5 @@ class MiddlewaresDispatcher
     public function setDefaultCallback(\Closure $callback)
     {
         $this->default_callback = $callback;
-    }
-
-    /**
-     * @param string $middleware_classname
-     * @param \Closure $callback
-     */
-    public function bind(string $middleware_classname, \Closure $callback)
-    {
-        $this->binds[$middleware_classname] = $callback;
     }
 }

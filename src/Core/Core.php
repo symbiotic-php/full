@@ -3,7 +3,7 @@
 namespace Symbiotic\Core;
 
 
-use Symbiotic\Container\{DIContainerInterface, ArrayAccessTrait, SingletonTrait, Container, ServiceContainerTrait};
+use Symbiotic\Container\{ArrayAccessTrait, Container, DIContainerInterface, ServiceContainerTrait, SingletonTrait};
 use Symbiotic\Core\Bootstrap\{BootBootstrap, CoreBootstrap, ProvidersBootstrap};
 
 /**
@@ -21,26 +21,26 @@ class Core extends Container implements CoreInterface
      * Class names Runners {@see \Symbiotic\Core\Runner}
      * @var string[]
      */
-    protected $runners = [];
+    protected array $runners = [];
 
     /**
      * @var string|null
      */
-    protected $base_path = null;
+    protected ?string $base_path;
 
     /**
      * The bootstrap classes for the application.
      *
      * @var array
      */
-    protected $bootstraps = [];
+    protected array $bootstraps = [];
 
     /**
      * The bootstrap classes for the application.
      *
      * @var array
      */
-    protected $last_bootstraps = [
+    protected array $last_bootstraps = [
         ProvidersBootstrap::class,
         BootBootstrap::class,
     ];
@@ -51,20 +51,20 @@ class Core extends Container implements CoreInterface
      * @var \Closure[]|array
      * @used-by Core::runNext()
      */
-    protected $then = [];
+    protected array $then = [];
 
     /**
      * используется после успешной отработки фреймворка
      * @var \Closure[]|array
      * @used-by Core::runComplete()
-     * @see Core::onComplete()
+     * @see     Core::onComplete()
      */
-    protected $complete = [];
+    protected array $complete = [];
 
     /**
      * @var \CLosure[]|array
      */
-    protected $before_handle = [];
+    protected array $before_handle = [];
 
     public function __construct(array $config = [])
     {
@@ -77,26 +77,22 @@ class Core extends Container implements CoreInterface
         $this->runBootstrap(CoreBootstrap::class);
     }
 
+    public function runBootstrap(string $class): void
+    {
+        if (class_exists($class)) {
+            (new $class())->bootstrap($this);
+        }
+    }
+
     /**
      * @param string| string[] $bootstraps
      */
-    public function addBootstraps($bootstraps): void
+    public function addBootstraps(string|array $bootstraps): void
     {
         foreach ((array)$bootstraps as $v) {
             $this->bootstraps[] = $v;
         }
     }
-
-    /**
-     * Determine if the application has booted.
-     *
-     * @return bool
-     */
-    public function isBooted(): bool
-    {
-        return $this->booted;
-    }
-
 
     public function bootstrap(): void
     {
@@ -109,11 +105,14 @@ class Core extends Container implements CoreInterface
         $this->booted = true;
     }
 
-    public function runBootstrap($class): void
+    /**
+     * Determine if the application has booted.
+     *
+     * @return bool
+     */
+    public function isBooted(): bool
     {
-        if (class_exists($class)) {
-            (new $class())->bootstrap($this);
-        }
+        return $this->booted;
     }
 
     public function addRunner(RunnerInterface $runner, $priority = null, string $name = null): void
@@ -121,7 +120,7 @@ class Core extends Container implements CoreInterface
         /**
          * Для подмены
          */
-        if(is_null($name)) {
+        if (is_null($name)) {
             $name = \get_class($runner);
         }
         /// todo: надо сделать добавление с приоритетом
@@ -140,39 +139,16 @@ class Core extends Container implements CoreInterface
              */
             $runner = new $runner($this);
             if ($runner->isHandle()) {
-               $result = $runner->run();
-               if($result) {
-                   $this->runComplete();
-                   exit;
-               } else {
-                   $this->runNext();
-               }
+                $result = $runner->run();
+                if ($result) {
+                    $this->runComplete();
+                    exit;
+                } else {
+                    $this->runNext();
+                }
                 break;
             }
         }
-    }
-
-    public function beforeHandle(\Closure $loader): void
-    {
-        $this->before_handle = $loader;
-    }
-
-    /**
-     * событие перед обработкой
-     * используется для инклюда файлов необъодимых для отработки контроллера или команды
-     * @used-by  \Symbiotic\Http\Kernel\HttpRunner::run()
-     */
-    public function runBefore(): void
-    {
-        $before = $this->before_handle;
-        if (is_callable($before)) {
-            $this->call($before);
-        }
-    }
-
-    public function onComplete(\Closure $complete): void
-    {
-       $this->complete[] = $complete;
     }
 
     /**
@@ -181,8 +157,47 @@ class Core extends Container implements CoreInterface
     public function runComplete(): void
     {
         foreach ($this->complete as $v) {
-           $this->call($v);
+            $this->call($v);
         }
+    }
+
+    /**
+     * Запускает отработку скриптов после фреймворка
+     * @used-by run()
+     */
+    public function runNext(): void
+    {
+        foreach ($this->then as $v) {
+            if ($this->call($v)) {
+                return;
+            }
+        }
+    }
+
+    /**
+     * @param \Closure $loader
+     */
+    public function beforeHandle(\Closure $loader): void
+    {
+        $this->before_handle[] = $loader;
+    }
+
+    /**
+     * событие перед обработкой
+     *
+     * Можно использовать для подключения файлов необходимых для отработки контроллера или команды
+     * @used-by  \Symbiotic\Http\Kernel\HttpRunner::run()
+     */
+    public function runBefore(): void
+    {
+        foreach ($this->before_handle as $v) {
+            $this->call($v);
+        }
+    }
+
+    public function onComplete(\Closure $complete): void
+    {
+        $this->complete[] = $complete;
     }
 
     /**
@@ -197,19 +212,6 @@ class Core extends Container implements CoreInterface
     }
 
     /**
-     * Запускает отработку скриптов после фреймворка
-     * @used-by Core::run()
-     */
-    public function runNext(): void
-    {
-        foreach ($this->then as $v) {
-            if ($this->call($v)) {
-                return;
-            }
-        }
-    }
-
-    /**
      * Get the base path of the Laravel installation.
      *
      * @param string $path Optionally, a path to append to the base path
@@ -219,7 +221,7 @@ class Core extends Container implements CoreInterface
      */
     public function getBasePath($path = '')
     {
-        return $this->base_path . ($path ? \_DS\DS . $path : $path);
+        return $this->base_path . ($path ? \_S\DS . $path : $path);
     }
 
 }

@@ -15,12 +15,12 @@ interface TemplatesRepositoryInterface
      * @param string $package_id
      * @param string $path
      *
-     * @return string php code string for eval
+     * @return string строка кода php для выполнения в eval или сохранения в файл
      *
      * @see \Symbiotic\Packages\TemplateCompiler
      * @uses \Symbiotic\Packages\ResourcesRepositoryInterface::getResourceFileStream()
      *
-     * @throws \Throwable
+     * @throws \Exception|ResourceExceptionInterface
      *
      */
     public function getTemplate(string $package_id, string $path): string;

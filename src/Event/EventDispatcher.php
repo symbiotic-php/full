@@ -31,10 +31,10 @@ class EventDispatcher implements DispatcherInterface
          */
 
         foreach ($this->listenerProvider->getListenersForEvent($event) as $listener) {
-            $listener($event);
             if ($event instanceof StoppableEventInterface && $event->isPropagationStopped()) {
                 return $event;
             }
+            $listener($event);
         }
 
         return $event;

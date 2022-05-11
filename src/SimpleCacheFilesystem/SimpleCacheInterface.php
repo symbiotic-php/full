@@ -2,8 +2,11 @@
 
 namespace Symbiotic\SimpleCacheFilesystem;
 
-
-
+/**
+ * Interface SimpleCacheInterface
+ * @package Symbiotic\SimpleCacheFilesystem
+ * @todo delete
+ */
 interface SimpleCacheInterface extends \Psr\SimpleCache\CacheInterface
 {
     /**

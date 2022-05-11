@@ -14,14 +14,14 @@ trait CachedContainerTrait /*implements CachedContainerInterface*/
     /**
      * @var null|CacheInterface
      */
-    protected $container_cache = null;
+    protected ?CacheInterface $container_cache = null;
 
-    protected $container_key = '';
+    protected string $container_key = '';
     /**
      * Массив ключей разрешенных сервисов для кеширования
      * @var array|string[]
      */
-    protected $allow_cached = [];
+    protected array $allow_cached = [];
 
     /**
      * set cache storage
@@ -45,9 +45,10 @@ trait CachedContainerTrait /*implements CachedContainerInterface*/
      * Если есть сервис кеша {@see \Psr\SimpleCache\CacheInterface} в контейнере , то указанный ключ будет добавлен для кешироваиня
      *
      * @param string $abstract - ключ сервиса для кеширования
-     *
+     * @param Closure|string|null $concrete
+     * @param string|null $alias
      */
-    public function cached(string $abstract, $concrete = null, string $alias = null)
+    public function cached(string $abstract, Closure|string $concrete = null, string $alias = null)
     {
 
         /**
@@ -129,7 +130,6 @@ trait CachedContainerTrait /*implements CachedContainerInterface*/
          * @var \Symbiotic\Container\ContainerTrait|\Symbiotic\Container\SubContainerTrait| $this
          */
         if ($this->container_cache) {
-            // $this->container_cache->has($this->container_key);
             if (!$this->container_cache->has($this->container_key) && !$this->has('cache_cleaned')) {
                 $this->container_cache->set($this->container_key, $this, 60 * 60);
             }

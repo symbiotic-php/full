@@ -3,14 +3,12 @@
 namespace Symbiotic\Container;
 
 
-use Psr\Container\ContainerInterface;
-
-class SubContainer  implements DIContainerInterface, ContextualBindingsInterface
+class SubContainer implements DIContainerInterface, ContextualBindingsInterface
 {
     use SubContainerTrait;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(DIContainerInterface $container)
     {
-        $this->app  = $container;
+        $this->app = $container;
     }
 }

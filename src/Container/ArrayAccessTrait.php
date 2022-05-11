@@ -30,7 +30,7 @@ trait ArrayAccessTrait /*implements \Symbiotic\Container\ArrayContainerInterface
     /**
      * Get an item at a given offset.
      *
-     * @param  mixed  $key
+     * @param mixed $key
      * @return mixed
      */
     public function offsetExists($key)
@@ -41,7 +41,7 @@ trait ArrayAccessTrait /*implements \Symbiotic\Container\ArrayContainerInterface
     /**
      * Get an item at a given offset.
      *
-     * @param  mixed $key
+     * @param mixed $key
      * @return mixed
      */
     public function offsetGet($key)
@@ -52,8 +52,8 @@ trait ArrayAccessTrait /*implements \Symbiotic\Container\ArrayContainerInterface
     /**
      * Set the item at a given offset.
      *
-     * @param  mixed  $key
-     * @param  mixed  $value
+     * @param mixed $key
+     * @param mixed $value
      * @return void
      */
     public function offsetSet($key, $value)
@@ -64,7 +64,7 @@ trait ArrayAccessTrait /*implements \Symbiotic\Container\ArrayContainerInterface
     /**
      * Unset the item at a given offset.
      *
-     * @param  string  $key
+     * @param string $key
      * @return void
      */
     public function offsetUnset($key)

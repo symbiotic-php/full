@@ -2,18 +2,18 @@
 
 namespace Symbiotic\Packages;
 
-use Symbiotic\Core\CoreInterface;
 use Symbiotic\Core\BootstrapInterface;
+use Symbiotic\Core\CoreInterface;
 
 class PackagesLoaderFilesystemBootstrap implements BootstrapInterface
 {
 
-    public function bootstrap(CoreInterface $app): void
+    public function bootstrap(CoreInterface $core): void
     {
-       $app->afterResolving(PackagesRepositoryInterface::class, function(PackagesRepositoryInterface $repository) use($app) {
+        $core->afterResolving(PackagesRepositoryInterface::class, function (PackagesRepositoryInterface $repository) use ($core) {
             $repository->addPackagesLoader(
-                new PackagesLoaderFilesystem($app->get('config::packages_paths'))
+                new PackagesLoaderFilesystem($core->get('config::packages_paths'))
             );
-       });
+        });
     }
 }

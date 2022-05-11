@@ -2,13 +2,19 @@
 
 namespace Symbiotic\Packages;
 
+
 interface TemplateCompilerInterface
 {
 
+    /**
+     * @param string $template
+     * @return string
+     * @throws CompileExceptionInterface
+     */
     public function compile(string $template): string;
 
     /**
-     * @return array|string[] allowed extension
+     * @return string[] allowed extension
      */
     public function getExtensions(): array;
 }

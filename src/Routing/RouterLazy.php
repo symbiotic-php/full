@@ -15,9 +15,9 @@ class RouterLazy extends Router implements NamedRouterInterface,LazyRouterInterf
     /**
      * @var bool
      */
-    protected $loaded_routes = false;
+    protected bool $loaded_routes = false;
 
-    protected $router_factory = null;
+    protected RouterFactoryInterface|null $router_factory = null;
 
 
     public function __construct(RouterFactoryInterface $routerFactory)

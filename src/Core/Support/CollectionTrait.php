@@ -125,7 +125,7 @@ trait CollectionTrait
         }
 
         return function ($item) use ($key, $operator, $value) {
-            $retrieved = \_DS\data_get($item, $key);
+            $retrieved = \_S\data_get($item, $key);
 
             $strings = array_filter([$retrieved, $value], function ($value) {
                 return is_string($value) || (is_object($value) && method_exists($value, '__toString'));

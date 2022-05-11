@@ -5,33 +5,32 @@ namespace Symbiotic\Filesystem\Adapter;
 use Symbiotic\Filesystem\AdapterInterface;
 use Symbiotic\Filesystem\PathPrefixInterface;
 
-abstract class AbstractAdapter implements AdapterInterface,PathPrefixInterface
+abstract class AbstractAdapter implements AdapterInterface, PathPrefixInterface
 {
 
-    protected $path_prefix = '/';
+    protected string $path_prefix = '';
 
-
-    public function setPathPrefix($path)
+    public function applyPathPrefix($path)
     {
-        if(!empty($path)) {
-            $this->path_prefix = rtrim($path,'\\/').'/';
-        }
-        return $this;
+        return $this->getPathPrefix() . ltrim($path, '\\/');
     }
 
     public function getPathPrefix()
     {
-        return  $this->path_prefix;
+        return $this->path_prefix;
     }
 
-    public function applyPathPrefix($path)
+    public function setPathPrefix($path)
     {
-        return $this->getPathPrefix().ltrim($path,'\\/');
+        if (!empty($path)) {
+            $this->path_prefix = rtrim($path, '\\/') . '/';
+        }
+        return $this;
     }
 
     public function removePathPrefix($path)
     {
-        return str_replace($this->getPathPrefix(),'', $path);
+        return str_replace($this->getPathPrefix(), '', $path);
     }
 
     public function normalizePath($path)

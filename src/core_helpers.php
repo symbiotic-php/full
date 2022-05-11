@@ -1,17 +1,18 @@
 <?php
 
-namespace _DS;
+namespace _S;
 
 use Symbiotic\Core\Config;
 use Symbiotic\Core\Core;
-use \Symbiotic\Core\Support\Str;
-use \Symbiotic\Core\Support\Collection;
-use \Symbiotic\Core\Support\Arr;
+use Symbiotic\Core\Support\Arr;
+use Symbiotic\Core\Support\Collection;
+use Symbiotic\Core\Support\Str;
+use Symbiotic\Core\View\View;
 
 
 const DS = DIRECTORY_SEPARATOR;
 
-function app($abstract = null, array $parameters = null)
+function core($abstract = null, array $parameters = null)
 {
     $core = Core::getInstance();
     if (is_null($abstract)) {
@@ -20,7 +21,8 @@ function app($abstract = null, array $parameters = null)
     return is_null($parameters) ? $core->get($abstract) : $core->make($abstract, $parameters);
 }
 
-if (!function_exists('_DS\\config')) {
+
+if (!function_exists('_S\\config')) {
     /**
      * Get Config data
      * @param string|null $key
@@ -30,12 +32,12 @@ if (!function_exists('_DS\\config')) {
      */
     function config(string $key = null, $default = null)
     {
-        $config = app('config');
+        $config = core('config');
         return is_null($key) ? $config : ($config->has($key) ? $config->get($key) : $default);
     }
 }
 
-if (!function_exists('_DS\\event')) {
+if (!function_exists('_S\\event')) {
     /**
      * Run event
      *
@@ -45,10 +47,32 @@ if (!function_exists('_DS\\event')) {
      */
     function event(object $event)
     {
-        return app('events')->dispatch($event);
+        /**
+         * @uses \Symbiotic\Event\EventDispatcher::dispatch()
+         */
+        return core('events')->dispatch($event);
     }
 }
-if (!function_exists('_DS\\route')) {
+
+if (!function_exists('_S\\listen')) {
+    /**󠀄󠀉󠀙󠀙󠀕󠀔󠀁󠀔󠀃󠀅
+     * @param string $event the class name or an arbitrary event name
+     * (with an arbitrary name, you need a custom dispatcher not for PSR)
+     *
+     * @param \Closure|string $handler function or class name of the handler
+     * The event handler class must implement the handle method  (...$params) or __invoke(...$params)
+     * <Important:> When adding listeners as class names, you will need to adapt them to \Closure when you return them in the getListenersForEvent() method!!!
+     *
+     * @return void
+     * @throws \Exception if lisreners Service not found
+     */
+    function listen(string $event, $handler): void
+    {
+        core('listeners')->add($event, $handler);
+    }
+}
+
+if (!function_exists('_S\\route')) {
 
     /**
      * Generate the URL to a named route.
@@ -57,15 +81,56 @@ if (!function_exists('_DS\\route')) {
      * @param mixed $parameters
      * @param bool $absolute
      * @return string
+     * @uses \Symbiotic\Routing\UrlGeneratorInterface
      */
     function route($name, $parameters = [], $absolute = true)
     {
-        return app('url')->route($name, $parameters, $absolute);
+        return core('url')->route($name, $parameters, $absolute);
+    }
+}
+/**
+ * TODO add lang service
+ * @used-by \Symbiotic\Core\View\lang()
+ * @param string $message
+ * @param array|null $vars
+ * @param null $lang
+ * @return string
+ */
+function lang(string $message, array $vars = null, $lang = null): string
+{
+    return $message;
+}
+
+if (!function_exists('_S\\view')) {
+
+    /**
+     * Make View
+     * @param string $path
+     * @param array $vars
+     * @param null $app_id
+     *
+     * @return View
+     * @throws
+     */
+    function view(string $path, array $vars = [], $app_id = null)
+    {
+        return View::make($path, $vars, $app_id);
     }
 }
 
+if (!function_exists('_S\\asset')) {
+    /**
+     * @param string $path
+     * @param bool $absolute
+     * @return string Uri файла приложения
+     */
+    function asset($path = '', $absolute = true)
+    {
+        return \_S\core('url')->asset($path, $absolute);
+    }
+}
 
-if (!function_exists('_DS\\camel_case')) {
+if (!function_exists('_S\\camel_case')) {
     /**
      * Convert a value to camel case.
      *
@@ -80,7 +145,7 @@ if (!function_exists('_DS\\camel_case')) {
     }
 }
 
-if (!function_exists('_DS\\class_basename')) {
+if (!function_exists('_S\\class_basename')) {
     /**
      * Get the class "basename" of the given object / class.
      *
@@ -95,7 +160,7 @@ if (!function_exists('_DS\\class_basename')) {
     }
 }
 
-if (!function_exists('_DS\\collect')) {
+if (!function_exists('_S\\collect')) {
     /**
      * Create a collection from the given value.
      *
@@ -108,7 +173,7 @@ if (!function_exists('_DS\\collect')) {
     }
 }
 
-if (!function_exists('_DS\\data_fill')) {
+if (!function_exists('_S\\data_fill')) {
     /**
      * Fill in data where it's missing.
      *
@@ -123,7 +188,7 @@ if (!function_exists('_DS\\data_fill')) {
     }
 }
 
-if (!function_exists('_DS\\data_get')) {
+if (!function_exists('_S\\data_get')) {
     /**
      * Get an item from an array or object using "dot" notation.
      *
@@ -170,7 +235,7 @@ if (!function_exists('_DS\\data_get')) {
     }
 }
 
-if (!function_exists('_DS\\data_set')) {
+if (!function_exists('_S\\data_set')) {
     /**
      * Set an item on an array or object using dot notation.
      *
@@ -233,7 +298,7 @@ if (!function_exists('_DS\\data_set')) {
 }
 
 
-if (!function_exists('_DS\\ends_with')) {
+if (!function_exists('_S\\ends_with')) {
     /**
      * Determine if a given string ends with a given substring.
      *
@@ -250,11 +315,11 @@ if (!function_exists('_DS\\ends_with')) {
 }
 
 
-if (! function_exists('_DS\\blank')) {
+if (!function_exists('_S\\blank')) {
     /**
      * Determine if the given value is "blank".
      *
-     * @param  mixed  $value
+     * @param mixed $value
      * @return bool
      */
     function blank($value)
@@ -279,7 +344,7 @@ if (! function_exists('_DS\\blank')) {
     }
 }
 
-if (!function_exists('_DS\\filled')) {
+if (!function_exists('_S\\filled')) {
     /**
      * Determine if a value is "filled".
      *
@@ -291,17 +356,17 @@ if (!function_exists('_DS\\filled')) {
         return !blank($value);
     }
 }
+/*
 
-
-if (!function_exists('_DS\\preg_replace_array')) {
-    /**
+if (!function_exists('_S\\preg_replace_array')) {
+    /!!**
      * Replace a given pattern with each value in the array in sequentially.
      *
      * @param string $pattern
      * @param array $replacements
      * @param string $subject
      * @return string
-     */
+     *!!/
     function preg_replace_array($pattern, array $replacements, $subject)
     {
         return preg_replace_callback($pattern, function () use (&$replacements) {
@@ -310,10 +375,10 @@ if (!function_exists('_DS\\preg_replace_array')) {
             }
         }, $subject);
     }
-}
+}*/
 
 
-if (!function_exists('_DS\\snake_case')) {
+if (!function_exists('_S\\snake_case')) {
     /**
      * Convert a string to snake case.
      *
@@ -329,38 +394,10 @@ if (!function_exists('_DS\\snake_case')) {
     }
 }
 
-if (!function_exists('_DS\\serialize64')) {
-    /**
-     * Serialization with base64 encode
-     *
-     * @param mixed $value
-     * @return string serialized and base64 converted string
-     *
-     */
-    function serialize64($value)
-    {
-        return \base64_encode(\serialize($value));
-    }
-}
-
-if (!function_exists('_DS\\unserialize64')) {
-    /**
-     * unserialization  with base64 decode
-     *
-     * @param mixed $str
-     * @param array $options
-     *
-     * @return mixed
-     *
-     */
-    function unserialize64(string $str, array $options = [])
-    {
-        return \unserialize(\base64_decode($str), $options);
-    }
-}
 
 
-//if (!function_exists('_DS\\throw_if')) {
+
+//if (!function_exists('_S\\throw_if')) {
 //    /**
 //     * Throw the given exception if the given condition is true.
 //     *
@@ -381,7 +418,7 @@ if (!function_exists('_DS\\unserialize64')) {
 //    }
 //}
 
-//if (!function_exists('_DS\\throw_unless')) {
+//if (!function_exists('_S\\throw_unless')) {
 //    /**
 //     * Throw the given exception unless the given condition is true.
 //     *
@@ -401,7 +438,7 @@ if (!function_exists('_DS\\unserialize64')) {
 //    }
 //}
 
-//if (!function_exists('_DS\\title_case')) {
+//if (!function_exists('_S\\title_case')) {
 //    /**
 //     * Convert a value to title case.
 //     *
@@ -416,7 +453,7 @@ if (!function_exists('_DS\\unserialize64')) {
 //    }
 //}
 
-if (!function_exists('_DS\\transform')) {
+if (!function_exists('_S\\transform')) {
     /**
      * Transform the given value if it is present.
      *
@@ -439,7 +476,7 @@ if (!function_exists('_DS\\transform')) {
     }
 }
 
-if (!function_exists('_DS\\value')) {
+if (!function_exists('_S\\value')) {
     /**
      * Return the default value of the given value.
      *
@@ -453,7 +490,7 @@ if (!function_exists('_DS\\value')) {
 }
 
 
-if (!function_exists('_DS\\with')) {
+if (!function_exists('_S\\with')) {
     /**
      * Return the given value, optionally passed through the given callback.
      *

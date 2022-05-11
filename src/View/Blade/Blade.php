@@ -17,7 +17,7 @@ class Blade implements TemplateCompilerInterface
      *
      * @var array
      */
-    protected static $compilers = array(
+    protected static array $compilers = array(
         'extensions',
         'comments',
         'php',
@@ -34,12 +34,15 @@ class Blade implements TemplateCompilerInterface
         'includes',
         'render_each',
         'render',
+        'lang',
+        'action',
         'yields',
         'yield_sections',
         'section_start',
         'section_end',
         'url',
         'asset',
+        'hasSection',
         'route',
         'show',
     );
@@ -49,13 +52,7 @@ class Blade implements TemplateCompilerInterface
      *
      * @var array
      */
-    protected static $extensions = array();
-
-
-    public function getExtensions(): array
-    {
-        return ['blade', 'blade.php'];
-    }
+    protected static array $extensions = array();
 
     /**
      * Register a custom Blade compiler.
@@ -75,6 +72,10 @@ class Blade implements TemplateCompilerInterface
         static::$extensions[] = $compiler;
     }
 
+    public function getExtensions(): array
+    {
+        return ['blade', 'blade.php'];
+    }
 
     /**
      * Compiles the given string containing Blade pseudo-code into valid PHP.
@@ -130,7 +131,7 @@ class Blade implements TemplateCompilerInterface
         // We will add a "render" statement to the end of the templates and
         // then slice off the "@layout" shortcut from the start so the
         // sections register before the parent template renders.
-        return '<?php echo $__view->layout("' . $layout . '", \'' . str_replace("'", "\'", $code) . '\', get_defined_vars(), '.($key=='extends'?'true':'') .')->render(); ?>';
+        return '<?php echo $__view->layout("' . $layout . '", \'' . str_replace("'", "\'", $code) . '\', get_defined_vars(), ' . ($key == 'extends' ? 'true' : '') . ')->render(); ?>';
     }
 
     protected function compile_php($value)
@@ -302,8 +303,61 @@ class Blade implements TemplateCompilerInterface
     {
 
         $pattern = $this->matcher('include');
+        /* if(preg_match('~[\\\]+~', $value)) {
+             return preg_replace($pattern, '$1<?php echo \Symbiotic\Core\View\action$2->render(); ?>', $value);
+         }*/
 
-        return preg_replace($pattern, '$1<?php echo \Symbiotic\Core\View\View::make$2->with(get_defined_vars())->render(); ?>', $value);
+        return preg_replace($pattern, '$1<?php echo \Symbiotic\Core\View\View::make$2->with(\get_defined_vars())->render(); ?>', $value);
+    }
+
+    /**
+     * Get the regular expression for a generic Blade function.
+     *
+     * @param string $function
+     * @return string
+     */
+    public function matcher($function)
+    {
+        return '/(\s*)@' . $function . '(\s*\(.*\))/';
+    }
+
+    /**
+     * Rewrites Blade @include statements into valid PHP.
+     *
+     * @param string $value
+     * @return string
+     */
+    protected function compile_action($value)
+    {
+        $pattern = $this->matcher('action');
+
+        return preg_replace($pattern, '$1<?php echo \Symbiotic\Core\View\action$2->render(); ?>', $value);
+    }
+
+    /**
+     * Rewrites Blade @lang statements into valid PHP.
+     *
+     * @param string $value
+     * @return string
+     */
+    protected function compile_lang($value)
+    {
+        $pattern = $this->matcher('lang');
+
+        return preg_replace($pattern, '$1<?php echo \Symbiotic\Core\View\lang$2; ?>', $value);
+    }
+
+    /**
+     * Rewrites Blade @include statements into valid PHP.
+     *
+     * @param string $value
+     * @return string
+     */
+    protected function compile_hasSection($value)
+    {
+        $pattern = $this->matcher('hasSection');
+
+        return preg_replace($pattern, '$1<?php if($__view->hasSection$2): ?>', $value);
     }
 
     /**
@@ -316,11 +370,10 @@ class Blade implements TemplateCompilerInterface
     {
         $pattern = $this->matcher('render');
 
-        return preg_replace($pattern, '$1<?php echo render$2; ?>', $value);
+        return preg_replace($pattern, '$1<?php echo \Symbiotic\Core\View\render$2->render(); ?>', $value);
     }
 
     /**
-     * Rewrites Blade @render statements into valid PHP.
      *
      * @param string $value
      * @return string
@@ -332,7 +385,6 @@ class Blade implements TemplateCompilerInterface
     }
 
     /**
-     * Rewrites Blade @render statements into valid PHP.
      *
      * @param string $value
      * @return string
@@ -344,7 +396,6 @@ class Blade implements TemplateCompilerInterface
     }
 
     /**
-     * Rewrites Blade @render statements into valid PHP.
      *
      * @param string $value
      * @return string
@@ -421,6 +472,7 @@ class Blade implements TemplateCompilerInterface
     {
         return preg_replace('/@endsection|@stop/', '<?php $__view->stop(); ?>', $value);
     }
+
     /**
      * Rewrites Blade @endsection statements into Section statements.
      *
@@ -447,17 +499,6 @@ class Blade implements TemplateCompilerInterface
         }
 
         return $value;
-    }
-
-    /**
-     * Get the regular expression for a generic Blade function.
-     *
-     * @param string $function
-     * @return string
-     */
-    public function matcher($function)
-    {
-        return '/(\s*)@' . $function . '(\s*\(.*\))/';
     }
 
 

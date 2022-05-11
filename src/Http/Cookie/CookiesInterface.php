@@ -2,6 +2,7 @@
 
 namespace Symbiotic\Http\Cookie;
 
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 
@@ -42,7 +43,7 @@ interface CookiesInterface extends \ArrayAccess
     public function setRequestCookies(array $cookies);
 
     /**
-     * @return array[]|\ArrayAccess[]
+     * @return array[]
      * @uses \Symbiotic\Http\Cookie\Cookies::$items
      * @see  CookiesInterface::setCookie()
      * [
@@ -84,6 +85,14 @@ interface CookiesInterface extends \ArrayAccess
      */
     public function toResponse(ResponseInterface $response): ResponseInterface;
 
+    /**
+     * Sending the set cookies to the response headers
+     *
+     * @param RequestInterface $request
+     * @return RequestInterface
+     */
+    public function toRequest(RequestInterface $request): RequestInterface;
+
 
     /**
      * Checks if an a key is present and not null.
@@ -118,6 +127,6 @@ interface CookiesInterface extends \ArrayAccess
      * @param string|string[] $names
      * @return mixed
      */
-    public function remove($names): void;
+    public function remove(array|string $names): void;
 
 }

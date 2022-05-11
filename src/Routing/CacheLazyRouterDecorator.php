@@ -5,11 +5,17 @@ namespace Symbiotic\Routing;
 
 class CacheLazyRouterDecorator extends CacheRouterDecorator implements RouterInterface, NamedRouterInterface, LazyRouterInterface
 {
-    protected $loaded = false;
+    protected bool $loaded = false;
 
     public function isLoadedRoutes(): bool
     {
         return $this->loaded;
+    }
+
+    public function getRoute(string $name): ?RouteInterface
+    {
+        $this->loadRoutes();
+        return parent::getRoute($name);
     }
 
     public function loadRoutes()
@@ -18,13 +24,6 @@ class CacheLazyRouterDecorator extends CacheRouterDecorator implements RouterInt
             $this->factory->loadRoutes($this);
             $this->loaded = true;
         }
-    }
-
-
-    public function getRoute(string $name): ?RouteInterface
-    {
-        $this->loadRoutes();
-        return parent::getRoute($name);
     }
 
     public function getRoutes(string $httpMethod = null): array

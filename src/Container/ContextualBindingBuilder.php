@@ -2,14 +2,12 @@
 
 namespace Symbiotic\Container;
 
-use Symbiotic\Container\DIContainerInterface;
-use Symbiotic\Core\Support\Arr;
 class ContextualBindingBuilder
 {
     /**
      * The underlying container instance.
      *
-     * @var \Symbiotic\Container\DIContainerInterface
+     * @var DIContainerInterface|ContextualBindingsInterface
      */
     protected $container;
 
@@ -18,23 +16,22 @@ class ContextualBindingBuilder
      *
      * @var string|array
      */
-    protected $concrete;
+    protected string|array $concrete;
 
     /**
      * The abstract target.
      *
      * @var string
      */
-    protected $needs;
+    protected string $needs;
 
     /**
      * Create a new contextual binding builder.
      *
-     * @param  \Symbiotic\Container\DIContainerInterface  $container
-     * @param  string|array  $concrete
-     * @return void
+     * @param DIContainerInterface $container
+     * @param string|array $concrete
      */
-    public function __construct(DIContainerInterface $container, $concrete)
+    public function __construct(DIContainerInterface $container, string|array $concrete)
     {
         $this->concrete = $concrete;
         $this->container = $container;
@@ -43,7 +40,7 @@ class ContextualBindingBuilder
     /**
      * Define the abstract target that depends on the context.
      *
-     * @param  string  $abstract
+     * @param string $abstract
      * @return $this
      */
     public function needs(string $abstract)
@@ -56,13 +53,13 @@ class ContextualBindingBuilder
     /**
      * Define the implementation for the contextual binding.
      *
-     * @param  \Closure|mixed  $implementation
+     * @param \Closure|mixed $implementation
      * @return void
      */
     public function give($implementation)
     {
         $concretes = $this->concrete;
-        foreach ((!empty($concretes)?(array)$concretes:[]) as $concrete) {
+        foreach ((!empty($concretes) ? (array)$concretes : []) as $concrete) {
             $this->container->addContextualBinding($concrete, $this->needs, $implementation);
         }
     }

@@ -16,16 +16,16 @@ use Psr\Http\Message\{
 
 class Bootstrap implements BootstrapInterface
 {
-    public function bootstrap(CoreInterface $app): void
+    public function bootstrap(CoreInterface $core): void
     {
         $concrete = PsrHttpFactory::class;
-        $app->singleton($concrete);
-        $app->alias($concrete, 'http_factory');
-        $app->alias($concrete, UriFactoryInterface::class);
-        $app->alias($concrete, StreamFactoryInterface::class);
-        $app->alias($concrete, ResponseFactoryInterface::class);
-        $app->alias($concrete, ServerRequestFactoryInterface::class);
-        $app->alias($concrete, RequestFactoryInterface::class);
+        $core->singleton($concrete);
+        $core->alias($concrete, 'http_factory');
+        $core->alias($concrete, UriFactoryInterface::class);
+        $core->alias($concrete, StreamFactoryInterface::class);
+        $core->alias($concrete, ResponseFactoryInterface::class);
+        $core->alias($concrete, ServerRequestFactoryInterface::class);
+        $core->alias($concrete, RequestFactoryInterface::class);
 
     }
 }

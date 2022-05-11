@@ -12,19 +12,22 @@ use Symbiotic\Container\DIContainerInterface;
 class RouterFactory implements RouterFactoryInterface
 {
 
-    protected $router_class = null;
+    protected ?string $router_class = null;
 
+    /**
+     * @var callable|null
+     */
     protected $routes_loader_callback = null;
 
     /**
      * @var string|null
      */
-    protected $domain = null;
+    protected ?string $domain = null;
 
     /**
      * @var DIContainerInterface
      */
-    protected $app;
+    protected DIContainerInterface $app;
 
     public function __construct(DIContainerInterface $app, string $router_class, callable $routes_loader_callback, string $domain = null)
     {
@@ -36,10 +39,10 @@ class RouterFactory implements RouterFactoryInterface
     }
 
     /**
-     * @param array|null $params
+     * @param array $params
      * @return RouterInterface
      */
-    public function factoryRouter(array $params = []) :  RouterInterface
+    public function factoryRouter(array $params = []): RouterInterface
     {
         $router = new $this->router_class();
         $router->setRoutesDomain($this->domain);
@@ -49,7 +52,7 @@ class RouterFactory implements RouterFactoryInterface
 
     public function loadRoutes(RouterInterface $router)
     {
-        $callable =  $this->routes_loader_callback;
+        $callable = $this->routes_loader_callback;
         $callable($router);
     }
 

@@ -2,27 +2,28 @@
 
 namespace Symbiotic\Packages;
 
-use Symbiotic\Http\Kernel\PreloadKernelHandler;
-use Symbiotic\Http\Middleware\MiddlewaresDispatcher;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Symbiotic\Core\AbstractBootstrap;
+use Symbiotic\Core\CoreInterface;
+use Symbiotic\Http\Kernel\PreloadKernelHandler;
 
-class ResourcesBootstrap
+class ResourcesBootstrap extends AbstractBootstrap
 {
-    protected $cache_key = 'core.resources';
+    protected string $cache_key = 'core.resources';
 
     /**
-     * @param \Symbiotic\Container\ServiceContainerInterface|\Symbiotic\Core\Core $app
+     * @param CoreInterface $core
      */
-    public function bootstrap($app)
+    public function bootstrap(CoreInterface $core): void
     {
 
-        $app->singleton(TemplateCompiler::class);
+        $core->singleton(TemplateCompiler::class);
         $res_interface = ResourcesRepositoryInterface::class;
-        $app->alias($res_interface, TemplatesRepositoryInterface::class);
-        $app->alias($res_interface, AssetsRepositoryInterface::class);
+        $core->alias($res_interface, TemplatesRepositoryInterface::class);
+        $core->alias($res_interface, AssetsRepositoryInterface::class);
 
-        $app->singleton($res_interface, function () use ($app) {
+        $core->singleton($res_interface, function () use ($core) {
             /*$cache = $app('cache');
             if ($cache instanceof CacheInterface
                 && ($object = $cache->get($this->cache_key))
@@ -36,21 +37,21 @@ class ResourcesBootstrap
              */
             // $repository = new ResourcesRepository(...$app->getMultiple([TemplateCompiler::class,StreamFactoryInterface::class,PackagesRepositoryInterface::class]));
             $repository = new ResourcesRepository(
-                $app[TemplateCompiler::class],
-                $app[StreamFactoryInterface::class],
-                $app[PackagesRepositoryInterface::class]
+                $core[TemplateCompiler::class],
+                $core[StreamFactoryInterface::class],
+                $core[PackagesRepositoryInterface::class]
             );
 
             return $repository;
 
         }, 'resources');
 
-        $app['listeners']->add(PreloadKernelHandler::class, function (PreloadKernelHandler $event) use ($app) {
+        $core['listeners']->add(PreloadKernelHandler::class, function (PreloadKernelHandler $event) use ($core) {
             $event->prepend(
                 new AssetFileMiddleware(
-                    $app('config::assets_prefix', 'assets'),
-                    $app['resources'],
-                    $app[ResponseFactoryInterface::class]
+                    $core('config::assets_prefix', 'assets'),
+                    $core['resources'],
+                    $core[ResponseFactoryInterface::class]
                 )
             );
         });

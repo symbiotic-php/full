@@ -3,7 +3,6 @@
 namespace Symbiotic\Container;
 
 
-
 /**
  * Trait MultipleAccessTrait
  *
@@ -64,7 +63,7 @@ trait MultipleAccessTrait /*implements \Symbiotic\Container\MultipleAccessInterf
     {
         $result = true;
         foreach ($keys as $key) {
-            if(!$this->delete($key)){
+            if (!$this->delete($key)) {
                 $result = false;
             }
         }

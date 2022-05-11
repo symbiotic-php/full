@@ -3,6 +3,7 @@
 namespace Symbiotic\Routing;
 
 use Symbiotic\Core\Support\Collection;
+use Symbiotic\Laravel\SettlementsRouter\Contracts\SettlementInterface;
 use Symbiotic\Packages\PackagesRepositoryInterface;
 
 /**
@@ -17,21 +18,24 @@ class PackagesSettlements implements SettlementsInterface
     /**
      * @var SettlementsInterface
      */
-    protected $settlements;
+    protected SettlementsInterface $settlements;
 
     /**
      * @var SettlementFactory
      */
-    protected $factory;
+    protected SettlementFactory $factory;
 
-    protected $packages;
+    protected PackagesRepositoryInterface $packages;
+
+    protected string $backend_prefix;
 
 
-    public function __construct(SettlementsInterface $settlements, PackagesRepositoryInterface $packages, SettlementFactory $factory)
+    public function __construct(SettlementsInterface $settlements, PackagesRepositoryInterface $packages, SettlementFactory $factory, string $backend_prefix)
     {
         $this->settlements = $settlements;
         $this->factory = $factory;
         $this->packages = $packages;
+        $this->backend_prefix = trim($backend_prefix,"\\/");
     }
 
 
@@ -49,7 +53,8 @@ class PackagesSettlements implements SettlementsInterface
     protected function getSettlementByString(string $string): ?Settlement
     {
 
-        if (preg_match('~^(backend|api|default):([0-9a-z_\-\.]+)|/(backend|api|default)/(.[^/]+)~', $string, $m)) {
+        //$backend_prefix = \trim($app('config::backend_prefix', 'backend'), '/');
+        if (preg_match('~^(backend|api|default):([0-9a-z_\-\.]+)|/('.preg_quote($this->backend_prefix,'~').'|api)/(.[^/]+)~', $string, $m)) {
             if (!empty($m[1]) && !empty($m[2])) {
                 $router = $m[1];
                 $app_id = $m[2];
@@ -59,8 +64,8 @@ class PackagesSettlements implements SettlementsInterface
             }
             if ($this->packages->has($app_id)) {
                 return $this->factory->make([
-                    'prefix' => '/' . $router . '/' . $app_id . '/',
-                    'router' => $router . ':' . $app_id
+                    'prefix' => '/' .  ($router === 'backend'?$this->backend_prefix:$router) . '/' . $app_id . '/',
+                    'router' => ($router === $this->backend_prefix?'backend':$router). ':' . $app_id
                 ]);
             }
         }
@@ -84,6 +89,11 @@ class PackagesSettlements implements SettlementsInterface
      */
     public function getByKey(string $key, $value, $all = false)
     {
+        /**
+         * @param $settlement
+         * @return bool
+         * @todo ДОПИСАТЬ
+         */
         $callback = function ($settlement) use ($key, $value) {
             /**
              * @var Settlement $settlement

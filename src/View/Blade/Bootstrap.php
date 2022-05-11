@@ -9,9 +9,9 @@ use Symbiotic\Packages\TemplateCompiler;
 class Bootstrap implements \Symbiotic\Core\BootstrapInterface
 {
 
-    public function bootstrap(CoreInterface $app): void
+    public function bootstrap(CoreInterface $core): void
     {
-        $app->afterResolving(TemplateCompiler::class, function(TemplateCompiler $compiler) {
+        $core->afterResolving(TemplateCompiler::class, function(TemplateCompiler $compiler) {
             $compiler->addCompiler(new Blade());;
         });
     }

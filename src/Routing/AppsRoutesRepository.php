@@ -7,9 +7,9 @@ namespace Symbiotic\Routing;
 class AppsRoutesRepository
 {
     /**
-     * @var array |AppRoutingInterface[]
+     * @var AppRoutingInterface[]
      */
-    protected $providers = [];
+    protected array $providers = [];
 
     public function append(AppRoutingInterface $routing)
     {

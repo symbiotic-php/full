@@ -8,7 +8,7 @@ use Symbiotic\Filesystem\Adapter\Local;
 
 
 
-class FilesystemManager
+class FilesystemManager implements FilesystemManagerInterface
 {
     /**
      * The application instance.
@@ -49,7 +49,7 @@ class FilesystemManager
      * @param  string  $name
      * @return FilesystemInterface
      */
-    public function disk($name = null)
+    public function disk(string $name = null)
     {
         $name = $name ?: $this->getDefaultDriver();
 
@@ -85,7 +85,7 @@ class FilesystemManager
         }
         $driverMethod = 'create'.ucfirst($config['driver']).'Driver';
 
-        if (method_exists($this, $driverMethod)) {
+        if (\is_callable([$this, $driverMethod])) {
             return $this->{$driverMethod}($config);
         } else {
             throw new \InvalidArgumentException("Driver [{$config['driver']}] is not supported.");
@@ -123,7 +123,7 @@ class FilesystemManager
      * @param  mixed  $disk
      * @return $this
      */
-    public function set($name, $disk)
+    public function set(string $name, $disk)
     {
         $this->disks[$name] = $disk;
 
@@ -131,14 +131,24 @@ class FilesystemManager
     }
 
     /**
+     * @return array
+     * @throws \Psr\Container\ContainerExceptionInterface
+     * @throws \Psr\Container\NotFoundExceptionInterface
+     */
+    public function getDisks():array
+    {
+        return $this->app->get('config::filesystems.disks',[]);//todo !
+    }
+
+    /**
      * Get the filesystem connection configuration.
      *
-     * @param  string  $name
+     * @param  string $name
      * @return array
      */
-    protected function getConfig($name)
+    protected function getConfig(string $name)
     {
-        return $this->app['config']["filesystems.disks.{$name}"];
+        return $this->app->get('config::filesystems.disks.'.$name);//todo
     }
 
     /**
@@ -148,7 +158,7 @@ class FilesystemManager
      */
     public function getDefaultDriver()
     {
-        return $this->app['config']['filesystems.default'];
+        return $this->app->get('config::filesystems.default');
     }
 
     /**
@@ -158,7 +168,7 @@ class FilesystemManager
      */
     public function getDefaultCloudDriver()
     {
-        return $this->app['config']['filesystems.cloud'];
+        return $this->app['config::filesystems.cloud'];
     }
 
     /**
@@ -176,6 +186,11 @@ class FilesystemManager
         return $this;
     }
 
+    public function getDrivers(): array
+    {
+       return array_keys($this->customCreators);
+    }
+
     /**
      * Register a custom driver creator Closure.
      *
@@ -183,7 +198,7 @@ class FilesystemManager
      * @param  \Closure  $callback
      * @return $this
      */
-    public function extend($driver, \Closure $callback)
+    public function addDriver(string $driver, \Closure $callback)
     {
         $this->customCreators[$driver] = $callback;
 

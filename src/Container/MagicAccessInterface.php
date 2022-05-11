@@ -12,6 +12,14 @@ interface MagicAccessInterface
 {
 
     /**
+     * @param string $key
+     * @return mixed
+     *
+     * @throws  \Exception
+     */
+    public function __get(string $key);
+
+    /**
      * Set item
      * @param string $key
      * @param mixed $value
@@ -19,14 +27,6 @@ interface MagicAccessInterface
      * @return void
      */
     public function __set(string $key, $value): void;
-
-    /**
-     * @param string $key
-     * @return mixed
-     *
-     * @throws  \Exception
-     */
-    public function __get(string $key);
 
     /**
      * @param string $key
@@ -47,9 +47,9 @@ interface MagicAccessInterface
      * @param $key
      * @param null $default
      *
+     * @return mixed|null
      * @see \Psr\Container\ContainerInterface::get()
      *
-     * @return mixed|null
      */
     public function __invoke($key, $default = null);
 }

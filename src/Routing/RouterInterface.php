@@ -3,8 +3,6 @@
 namespace Symbiotic\Routing;
 
 
-
-
 /**
  * Interface RouterInterface
  * @package Symbiotic\Routing
@@ -13,10 +11,11 @@ interface RouterInterface
 {
 
     public function setRoutesDomain(string $domain);
+
     /**
      * @param array |string $httpMethods
      * @param string $uri Uri pattern
-     * @param array|string|\Closure  $action = [
+     * @param array|string|\Closure $action = [
      *
      *                    'uses' => '\\Module\\Http\\EntityController@edit',// string or \Closure
      *                     // optional params
@@ -27,7 +26,7 @@ interface RouterInterface
      *
      * @return RouteInterface
      */
-    public function addRoute($httpMethods, string $uri, $action): RouteInterface;
+    public function addRoute(string|array $httpMethods, string $uri, string|array|\Closure $action): RouteInterface;
 
     /**
      * Add GET(HEAD) method route
@@ -35,11 +34,11 @@ interface RouterInterface
      * @param string $uri pattern
      * @param array|string|\Closure $action
      *
+     * @return RouteInterface
      * @see addRoute()
      *
-     * @return RouteInterface
      */
-    public function get(string $uri, $action): RouteInterface;
+    public function get(string $uri,  $action): RouteInterface;
 
     /**
      * Add POST method route
@@ -47,9 +46,9 @@ interface RouterInterface
      * @param string $uri pattern
      * @param array|string|\Closure $action
      *
+     * @return RouteInterface
      * @see addRoute()
      *
-     * @return RouteInterface
      */
     public function post(string $uri, $action): RouteInterface;
 
@@ -59,9 +58,9 @@ interface RouterInterface
      * @param string $uri pattern
      * @param array|string|\Closure $action
      *
+     * @return RouteInterface
      * @see addRoute()
      *
-     * @return RouteInterface
      */
     public function head(string $uri, $action): RouteInterface;
 
@@ -71,9 +70,9 @@ interface RouterInterface
      * @param string $uri pattern
      * @param array|string|\Closure $action
      *
+     * @return RouteInterface
      * @see addRoute()
      *
-     * @return RouteInterface
      */
     public function put(string $uri, $action): RouteInterface;
 
@@ -83,9 +82,9 @@ interface RouterInterface
      * @param string $uri pattern
      * @param array|string|\Closure $action
      *
+     * @return RouteInterface
      * @see addRoute()
      *
-     * @return RouteInterface
      */
     public function delete(string $uri, $action): RouteInterface;
 
@@ -95,9 +94,9 @@ interface RouterInterface
      * @param string $uri pattern
      * @param array|string|\Closure $action
      *
+     * @return RouteInterface
      * @see addRoute()
      *
-     * @return RouteInterface
      */
     public function options(string $uri, $action): RouteInterface;
 
@@ -105,12 +104,11 @@ interface RouterInterface
      * Add group with params or subgroup
      *
      * @param array $attributes
-     * @param callable $routes
+     * @param \Closure $routes
      *
      * @return void
      */
-    public function group(array $attributes, callable $routes);
-
+    public function group(array $attributes, \Closure $routes);
 
 
     /**
@@ -118,14 +116,14 @@ interface RouterInterface
      *
      * @return RouteInterface|null
      */
-    public function getRoute(string $name): ? RouteInterface;
+    public function getRoute(string $name): ?RouteInterface;
 
     /**
      * @param string $settlement
      *
      * @return array|RouteInterface[]
      */
-    public function getBySettlement(string $settlement):array;
+    public function getBySettlement(string $settlement): array;
 
     /**
      * @param null|string $httpMethod
@@ -139,7 +137,7 @@ interface RouterInterface
      *
      * @return RouteInterface|null
      */
-    public function match(string $httpMethod, string $uri): ? RouteInterface;
+    public function match(string $httpMethod, string $uri): ?RouteInterface;
 
 
 }

@@ -4,7 +4,6 @@ namespace Symbiotic\Http\Middleware;
 
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
@@ -19,20 +18,21 @@ use Psr\Http\Server\RequestHandlerInterface;
 class MiddlewaresHandler implements RequestHandlerInterface
 {
     use MiddlewaresCollectionTrait;
+
     /**
      * @var MiddlewareInterface[]
      */
-    protected $middleware = [];
+    protected array $middleware = [];
 
     /**
      * @var RequestHandlerInterface
      */
-    protected $handler;
+    protected RequestHandlerInterface $handler;
 
     /**
      * @var int
      */
-    protected $index = 0;
+    protected int $index = 0;
 
     /**
      * @param MiddlewareInterface[] $middleware
@@ -40,8 +40,8 @@ class MiddlewaresHandler implements RequestHandlerInterface
      */
     public function __construct(RequestHandlerInterface $handler, array $middleware = [])
     {
-        $this->middleware = $middleware;
         $this->handler = $handler;
+        $this->middleware = $middleware;
     }
 
     public function getRealHandler()

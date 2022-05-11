@@ -4,6 +4,12 @@ namespace Symbiotic\Session;
 
 use Symbiotic\Container\ArrayContainerInterface;
 
+/**
+ * Interface SessionStorageInterface
+ * @package Symbiotic\Session
+ * @method mixed|null get(string $key) {@see SessionStorageNative::get()}
+ * @method bool has(string $key)
+ */
 interface SessionStorageInterface extends ArrayContainerInterface
 {
 

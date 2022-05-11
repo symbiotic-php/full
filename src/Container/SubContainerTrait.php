@@ -2,7 +2,7 @@
 
 namespace Symbiotic\Container;
 
-use \Closure;
+use Closure;
 
 
 trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBindingsInterface*/
@@ -15,24 +15,24 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
     /**
      * @var DIContainerInterface|null
      */
-    protected $app = null;
+    protected ?DIContainerInterface $app = null;
 
-    protected $aliases = [];
+    protected array $aliases = [];
 
-    protected $instances = [];
+    protected array $instances = [];
 
-    protected $abstractAliases = [];
+    protected array $abstractAliases = [];
 
-    protected $reboundCallbacks = [];
+    protected array $reboundCallbacks = [];
 
-    protected $bindings = [];
+    protected array $bindings = [];
 
-    protected $resolved = [];
+    protected array $resolved = [];
 
-    protected $extenders = [];
+    protected array $extenders = [];
 
 
-    public function call($callback, array $parameters = [], string $defaultMethod = null)
+    public function call(callable|string $callback, array $parameters = [], string $defaultMethod = null)
     {
         return BoundMethod::call($this, $callback, $this->bindParameters($parameters), $defaultMethod);
     }
@@ -40,16 +40,11 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
     public function bindParameters(&$parameters)
     {
         $di = DIContainerInterface::class;
-        if(!isset($parameters[$di])) {
+        if (!isset($parameters[$di])) {
             $parameters[$di] = $this;
         }
 
         return $parameters;
-    }
-
-    public function make(string $abstract, array $parameters = [])
-    {
-        return $this->resolve($abstract, $parameters);
     }
 
     /**
@@ -65,54 +60,21 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
             || $this->app->has($this->getAlias($key));
     }
 
+    public function getAlias(string $abstract): string
+    {
+        if (!isset($this->aliases[$abstract])) {
+            return $this->app->getAlias($abstract);
+        }
+
+        return $this->getAlias($this->aliases[$abstract]);
+    }
+
     public function set($key, $value): void
     {
         $this->bind($key, $value instanceof \Closure ? $value : function () use ($value) {
             return $value;
         });
     }
-
-    public function delete(string $key): bool
-    {
-        unset($this->bindings[$key], $this->instances[$key], $this->resolved[$key], $this->aliases[$key], $this->abstractAliases[$key]);
-        return true;
-    }
-
-    public function bound($abstract)
-    {
-        return isset($this->bindings[$abstract])
-            || isset($this->instances[$abstract])
-            || isset($this->aliases[$abstract])
-            || $this->app->bound($abstract);
-    }
-
-    public function alias(string $abstract, string $alias)
-    {
-        if ($alias === $abstract) {
-            throw new \LogicException("[{$abstract}] is aliased to itself.");
-        }
-
-        $this->aliases[$alias] = $abstract;
-
-        $this->abstractAliases[$abstract][] = $alias;
-    }
-
-
-    /**
-     * Fire the "rebound" callbacks for the given abstract type.
-     *
-     * @param string $abstract
-     * @return void
-     */
-    protected function rebound($abstract)
-    {
-        $instance = $this->make($abstract);
-
-        foreach ((isset($this->reboundCallbacks[$abstract]) ? $this->reboundCallbacks[$abstract] : []) as $callback) {
-            call_user_func($callback, $this, $instance);
-        }
-    }
-
 
     /**
      * Register a binding with the container.
@@ -122,7 +84,7 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
      * @param bool $shared
      * @return void
      */
-    public function bind(string $abstract, $concrete = null, bool $shared = false): void
+    public function bind(string $abstract, Closure|string $concrete = null, bool $shared = false): void
     {
         unset($this->instances[$abstract], $this->aliases[$abstract]);
         if (!$concrete) {
@@ -166,21 +128,35 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
     }
 
     /**
-     * Bind a new callback to an abstract's rebind event.
+     * Get the extender callbacks for a given type.
      *
      * @param string $abstract
-     * @param \Closure $callback
-     * @return mixed
+     * @return array
      */
-    public function rebinding(string $abstract, Closure $callback)
+    public function getExtenders(string $abstract)
     {
-        $this->reboundCallbacks[$abstract = $this->getAlias($abstract)][] = $callback;
+        return $this->extenders[$this->getAlias($abstract)] ?? [];
+    }
 
-        if ($this->bound($abstract)) {
-            return $this->make($abstract);
+    /**
+     * Fire the "rebound" callbacks for the given abstract type.
+     *
+     * @param string $abstract
+     * @return void
+     */
+    protected function rebound(string $abstract)
+    {
+        $instance = $this->make($abstract);
+
+        foreach ((isset($this->reboundCallbacks[$abstract]) ? $this->reboundCallbacks[$abstract] : []) as $callback) {
+            call_user_func($callback, $this, $instance);
         }
     }
 
+    public function make(string $abstract, array $parameters = [])
+    {
+        return $this->resolve($abstract, $parameters);
+    }
 
     public function resolve(string $abstract, array $parameters = [], bool $raiseEvents = true)
     {
@@ -205,19 +181,49 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
         return $this->app->resolve($alias, $this->bindParameters($parameters), $raiseEvents);
     }
 
-    public function build($concrete)
+    public function delete(string $key): bool
+    {
+        unset($this->bindings[$key], $this->instances[$key], $this->resolved[$key], $this->aliases[$key], $this->abstractAliases[$key]);
+        return true;
+    }
+
+    /**
+     * Bind a new callback to an abstract's rebind event.
+     *
+     * @param string $abstract
+     * @param \Closure $callback
+     * @return mixed|void
+     */
+    public function rebinding(string $abstract, Closure $callback)
+    {
+        $this->reboundCallbacks[$abstract = $this->getAlias($abstract)][] = $callback;
+
+        if ($this->bound($abstract)) {
+            return $this->make($abstract);
+        }
+    }
+
+    public function bound($abstract): bool
+    {
+        return isset($this->bindings[$abstract])
+            || isset($this->instances[$abstract])
+            || isset($this->aliases[$abstract])
+            || $this->app->bound($abstract);
+    }
+
+    public function build(string|Closure $concrete)
     {
         return $this->app->build($concrete);
     }
 
-    public function bindIf(string $abstract, $concrete = null, bool $shared = false)
+    public function bindIf(string $abstract, Closure|string $concrete = null, bool $shared = false)
     {
         if (!$this->bound($abstract)) {
             $this->bind($abstract, $concrete, $shared);
         }
     }
 
-    public function singleton(string $abstract, $concrete = null, string $alias = null)
+    public function singleton(string $abstract, Closure|string $concrete = null, string $alias = null)
     {
         $this->bind($abstract, $concrete, true);
         if (is_string($alias)) {
@@ -225,6 +231,17 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
         }
 
         return $this;
+    }
+
+    public function alias(string $abstract, string $alias)
+    {
+        if ($alias === $abstract) {
+            throw new \LogicException("[{$abstract}] is aliased to itself.");
+        }
+
+        $this->aliases[$alias] = $abstract;
+
+        $this->abstractAliases[$abstract][] = $alias;
     }
 
     /**
@@ -254,14 +271,30 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
     }
 
     /**
-     * Get the extender callbacks for a given type.
+     * Determine if the given abstract type has been resolved.
      *
      * @param string $abstract
-     * @return array
+     * @return bool
      */
-    public function getExtenders(string $abstract)
+    public function resolved(string $abstract): bool
     {
-        return $this->extenders[$this->getAlias($abstract)] ?? [];
+        if ($this->isAlias($abstract)) {
+            $abstract = $this->getAlias($abstract);
+        }
+
+        return isset($this->resolved[$abstract]) ||
+            isset($this->instances[$abstract]) || $this->app->resolved($abstract);
+    }
+
+    /**
+     * Determine if a given string is an alias.
+     *
+     * @param string $name
+     * @return bool
+     */
+    public function isAlias(string $name): bool
+    {
+        return isset($this->aliases[$name]) || $this->app->isAlias($name);
     }
 
     /**
@@ -275,23 +308,13 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
         unset($this->extenders[$this->getAlias($abstract)]);
     }
 
-
-    public function getAlias(string $abstract):string
-    {
-        if (!isset($this->aliases[$abstract])) {
-            return $this->app->getAlias($abstract);
-        }
-
-        return $this->getAlias($this->aliases[$abstract]);
-    }
-
     /**
-     * @todo: перенести в трейт {@see ContainerTrait::instance()} Дубликат!
-     *
      * @param string $abstract
      * @param $instance
      * @param string|null $alias
      * @return mixed
+     * @todo: перенести в трейт {@see ContainerTrait::instance()} Дубликат!
+     *
      */
     public function instance(string $abstract, $instance, string $alias = null)
     {
@@ -334,39 +357,22 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
         $this->app->addContextualBinding($concrete, $abstract, $implementation);
     }
 
-    public function when($concrete): ContextualBindingBuilder
+    public function when(string|array $concrete): ContextualBindingBuilder
     {
         return $this->app->when($concrete);
     }
 
-    public function factory(string $abstract):Closure
+    public function factory(string $abstract): Closure
     {
         return function () use ($abstract) {
             return $this->make($abstract);
         };
     }
 
-    public function clear():void
+    public function clear(): void
     {
         $this->aliases = [];
         $this->abstractAliases = [];
-    }
-
-
-    /**
-     * Determine if the given abstract type has been resolved.
-     *
-     * @param string $abstract
-     * @return bool
-     */
-    public function resolved(string $abstract)
-    {
-        if ($this->isAlias($abstract)) {
-            $abstract = $this->getAlias($abstract);
-        }
-
-        return isset($this->resolved[$abstract]) ||
-            isset($this->instances[$abstract]) || $this->app->resolved($abstract);
     }
 
     public function resolving($abstract, callable $callback = null)
@@ -383,7 +389,7 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
     /**
      * Register a new after resolving callback for all types.
      *
-     * @param \Closure|string $abstract
+     * @param \Closure|string $abstract ????
      * @param callable|null $callback
      * @return void
      */
@@ -398,19 +404,6 @@ trait SubContainerTrait /* implements DependencyInjectionInterface, ContextualBi
             return $callback($object, $this);
         });
     }
-
-
-    /**
-     * Determine if a given string is an alias.
-     *
-     * @param string $name
-     * @return bool
-     */
-    public function isAlias(string $name):bool
-    {
-        return isset($this->aliases[$name]) || $this->app->isAlias($name);
-    }
-
 
     /**
      * Get aliases for abstract binding

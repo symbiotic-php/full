@@ -12,8 +12,6 @@ class Reflection
      */
     public static function getParameterClassName(\ReflectionParameter $parameter): ?string
     {
-
-
         if (\PHP_VERSION_ID >= 70000) {
             $type = $parameter->getType();
             if (!$type instanceof \ReflectionNamedType || $type->isBuiltin()) {

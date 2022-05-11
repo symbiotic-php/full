@@ -3,17 +3,21 @@
 namespace Symbiotic\Routing;
 
 
-
+/**
+ * Class Settlement
+ * @package Symbiotic\Routing
+ * @todo Добавить интефейс
+ */
 class Settlement
 {
-    protected $config = [];
+    protected array $config = [];
 
-    protected $path = '/';
+    protected string $path = '/';
 
     /**
      * Settlement constructor.
      *
-     * @param array $config  = [
+     * @param array $config = [
      *      'prefix' => '/backend/', // Require parameter
      *      'router' => 'backend', // Require parameter
      *       // optional params
@@ -25,9 +29,14 @@ class Settlement
      */
     public function __construct(array $config)
     {
-       $this->config = $config;
-       $this->path = '/'.trim($config['prefix'], '\\/ ');
+        $this->config = $config;
+        $this->path = '/' . trim($config['prefix'], '\\/ ');
 
+    }
+
+    public function getUriWithoutSettlement(string $uri): string
+    {
+        return preg_replace('/^' . preg_quote($this->getPath(), '/') . '/uDs', '', $uri);
     }
 
     public function getPath(): string
@@ -35,14 +44,20 @@ class Settlement
         return $this->path;
     }
 
-    public function getUriWithoutSettlement(string $uri) : string
-    {
-        return preg_replace('/^'.preg_quote($this->getPath(),'/').'/uDs','/', $uri);
-    }
-
     public function getRouter(): string
     {
         return $this->get('router');
+    }
+
+    /**
+     * @param string|null $name
+     * @param null $default
+     *
+     * @return array|mixed
+     */
+    public function get(string $name = null, $default = null)
+    {
+        return !$name ? $this->config : (isset($this->config[$name]) ? $this->config[$name] : $default);
     }
 
     /**
@@ -60,18 +75,7 @@ class Settlement
      */
     public function validatePath(string $path)
     {
-        return (bool)preg_match('/^'.preg_quote($this->getPath(),'/').'.*/uDs', $path,$r);
-    }
-
-    /**
-     * @param string|null $name
-     * @param null $default
-     *
-     * @return array|mixed
-     */
-    public function get(string $name = null, $default = null)
-    {
-        return !$name ? $this->config : (isset($this->config[$name])? $this->config[$name]: $default);
+        return (bool)preg_match('/^' . preg_quote($this->getPath(), '/') . '.*/uDs', $path, $r);
     }
 
 

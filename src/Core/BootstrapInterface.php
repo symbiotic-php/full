@@ -10,7 +10,7 @@ namespace Symbiotic\Core;
 interface BootstrapInterface
 {
     /**
-     * @param CoreInterface|\Symbiotic\Core\Core | array $app = [
+     * @param CoreInterface|\Symbiotic\Core\Core | array $core = [
      *   // Сервисы доступные сразу
      *
      *       'config' => new \Symbiotic\Config(),
@@ -33,5 +33,5 @@ interface BootstrapInterface
      *       'route' => new \Symbiotic\Http\ServerRequest(),           //{@see \Symbiotic\Http\Bootstrap::bootstrap()}
      * ]
      */
-    public function bootstrap(CoreInterface $app) : void;
+    public function bootstrap(CoreInterface $core) : void;
 }

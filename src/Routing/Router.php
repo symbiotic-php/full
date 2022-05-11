@@ -12,14 +12,14 @@ class Router implements RouterInterface
 {
     use AddRouteTrait;
 
-    public static $verbs = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
+    public static array  $verbs = ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
 
     /**
      * @used-by group()
      *
      * @var array
      */
-    protected $groupStack = [];
+    protected array $groupStack = [];
 
     /**
      * @used-by addRoute()
@@ -34,7 +34,7 @@ class Router implements RouterInterface
      *       // ....
      * ]
      */
-    protected $routes = [];
+    protected array $routes = [];
 
     /**
      * @see addRoute()
@@ -42,9 +42,9 @@ class Router implements RouterInterface
      *
      * @var array
      */
-    protected $named_routes = [];
+    protected array $named_routes = [];
 
-    protected $domain = '';
+    protected string $domain = '';
 
 
     /**
@@ -79,7 +79,7 @@ class Router implements RouterInterface
      *
      * @return Route
      */
-    public function addRoute($httpMethods, string $uri, $action): RouteInterface
+    public function addRoute(string|array $httpMethods, string $uri, string|array|\Closure $action): RouteInterface
     {
         $httpMethods = array_map('strtoupper', (array)$httpMethods);
         $route = $this->createRoute($uri, $action, $httpMethods);
@@ -104,14 +104,14 @@ class Router implements RouterInterface
         return $route;
     }
 
-    public $count_routes = 0;
+    public int $count_routes = 0;
     /**
      * @param string $uri
      * @param array|string|\Closure $action
      * @param array $httpMethods
      * @return Route
      */
-    protected function createRoute(string $uri, $action, array $httpMethods)
+    protected function createRoute(string $uri, string|array|\Closure $action, array $httpMethods)
     {
         $this->count_routes++;
         if (is_string($action) || $action instanceof \Closure) {
@@ -152,11 +152,11 @@ class Router implements RouterInterface
      * Create a route group with shared attributes.
      *
      * @param array $attributes
-     * @param \Closure|callable| object $routes if object need __invoke method
+     * @param \Closure $routes if object need __invoke method
      *
      * @return void
      */
-    public function group(array $attributes, callable $routes)
+    public function group(array $attributes, \Closure $routes)
     {
         $attributes = static::mergeAttributes($attributes, !empty($this->groupStack) ? end($this->groupStack) : []);
 

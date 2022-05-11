@@ -2,11 +2,10 @@
 
 namespace Symbiotic\Packages;
 
-use Symbiotic\Mimetypes\MimeTypesMini;
-
 use Psr\Http\Message\{ResponseFactoryInterface, ResponseInterface, ServerRequestInterface};
 use Psr\Http\Server\{MiddlewareInterface, RequestHandlerInterface};
-use function _DS\app;
+use Symbiotic\Mimetypes\MimeTypesMini;
+use function _S\core;
 
 
 class AssetFileMiddleware implements MiddlewareInterface
@@ -15,15 +14,17 @@ class AssetFileMiddleware implements MiddlewareInterface
     /**
      * @var string
      */
-    protected $path;
+    protected string $path;
+
     /**
      * @var AssetsRepositoryInterface
      */
-    protected $resources;
+    protected AssetsRepositoryInterface $resources;
+
     /**
      * @var ResponseFactoryInterface
      */
-    protected $response_factory;
+    protected ResponseFactoryInterface $response_factory;
 
     /**
      * AssetFileRequestMiddleware constructor.
@@ -44,7 +45,7 @@ class AssetFileMiddleware implements MiddlewareInterface
         $pattern = '~^' . preg_quote(trim($this->path, '/'), '~') . '/(.[^/]+)(.+)~i';
 
         $assets_repository = $this->resources;
-        if (preg_match($pattern, ltrim($request->getRequestTarget(), '/'), $match)) {
+        if (preg_match($pattern, ltrim($request->getUri()->getPath(), '/'), $match)) {
 
             /**
              * @var  \Symbiotic\Http\PsrHttpFactory|ResponseFactoryInterface $response_factory
@@ -52,18 +53,20 @@ class AssetFileMiddleware implements MiddlewareInterface
             $response_factory = $this->response_factory;
             try {
                 $file = $assets_repository->getAssetFileStream($match[1], $match[2]);
-                /**
-                 * @var MimeTypesMini $mime_types
-                 */
-                $mime_types = new MimeTypesMini();
 
+                $mime_types = new MimeTypesMini();
+                $mime = $mime_types->getMimeType($match[2]);
+                if (!$mime) {
+                    $mime = 'text/plain';
+                }
                 return $response_factory->createResponse(200)
                     ->withBody($file)
-                    ->withHeader('content-type', $mime_types->getMimeType($match[2]))
+                    ->withHeader('content-type', $mime)
+                    ->withHeader('Cache-Control', 'max-age=86400')
                     ->withHeader('content-length', $file->getSize());
 
             } catch (\Throwable $e) {
-                app()->set('destroy_response', true);
+                core()->set('destroy_response', true);
                 return $response_factory->createResponse(404);
             }
         }

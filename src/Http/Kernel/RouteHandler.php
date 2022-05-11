@@ -2,13 +2,12 @@
 
 namespace Symbiotic\Http\Kernel;
 
-use Symbiotic\Apps\ {ApplicationInterface, AppsRepositoryInterface};
-use Symbiotic\Core\ {CoreInterface, Support\ArrayableInterface, Support\RenderableInterface};
-use Symbiotic\Routing\RouteInterface;
-use Symbiotic\Http\ResponseMutable;
-
-use Psr\Http\Message\ {ResponseFactoryInterface, ResponseInterface, ServerRequestInterface, StreamInterface};
+use Psr\Http\Message\{ResponseFactoryInterface, ResponseInterface, ServerRequestInterface, StreamInterface};
 use Psr\Http\Server\RequestHandlerInterface;
+use Symbiotic\Apps\{ApplicationInterface, AppsRepositoryInterface};
+use Symbiotic\Core\{CoreInterface, Support\ArrayableInterface, Support\RenderableInterface};
+use Symbiotic\Http\ResponseMutable;
+use Symbiotic\Routing\RouteInterface;
 
 
 class RouteHandler implements RequestHandlerInterface
@@ -16,16 +15,16 @@ class RouteHandler implements RequestHandlerInterface
     /**
      * @var CoreInterface
      */
-    protected $app;
+    protected CoreInterface $core;
 
     /**
      * @var RouteInterface
      */
-    protected $route;
+    protected RouteInterface $route;
 
     public function __construct(CoreInterface $app, RouteInterface $route)
     {
-        $this->app = $app;
+        $this->core = $app;
         $this->route = $route;
     }
 
@@ -37,7 +36,7 @@ class RouteHandler implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
 
-        $app = $this->app;
+        $app = $this->core;
 
 
         /**
@@ -51,7 +50,7 @@ class RouteHandler implements RequestHandlerInterface
         $apps = $app[AppsRepositoryInterface::class];
         $action = $route->getAction();
 
-        $container = (isset($action['app']) && ($apps instanceof AppsRepositoryInterface)) ? $apps->getBootedApp($action['app']) : $this->app;
+        $container = (isset($action['app']) && ($apps instanceof AppsRepositoryInterface)) ? $apps->getBootedApp($action['app']) : $this->core;
 
         $handler = $route->getHandler();
         if (!is_string($handler) && !is_callable($handler)) {
@@ -80,14 +79,14 @@ class RouteHandler implements RequestHandlerInterface
 
         if (is_array($data) || $data instanceof \Traversable || $data instanceof ArrayableInterface || $data instanceof \JsonSerializable) {
             $response->withHeader('content-type', 'application/json');
-            $data = \_DS\collect($data)->__toString();
-        } elseif ($data instanceof RenderableInterface || $data instanceof \Stringable) {
+            $data = \_S\collect($data)->__toString();
+        } elseif ($data instanceof RenderableInterface
+            || (is_object($data) && \method_exists($data, '__toString')) /*$data instanceof \Stringable*/) {
             $data = $data->__toString();
         }
+        // пишем строкой, если вам необходимо отдать большой объем контента, то сразу отдавайте Response из обработчика
         $response->getBody()->write((string)$data);
         return $response->getRealInstance();
-
-
     }
 
 }

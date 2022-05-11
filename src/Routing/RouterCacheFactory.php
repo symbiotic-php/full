@@ -2,7 +2,8 @@
 
 namespace Symbiotic\Routing;
 
-use Symbiotic\SimpleCacheFilesystem\SimpleCacheInterface;
+use Psr\SimpleCache\CacheInterface;
+
 
 
 class RouterCacheFactory implements RouterFactoryInterface
@@ -11,14 +12,14 @@ class RouterCacheFactory implements RouterFactoryInterface
     /**
      * @var RouterFactoryInterface
      */
-    protected $factory = null;
+    protected RouterFactoryInterface |null $factory = null;
 
     /**
-     * @var SimpleCacheInterface|null
+     * @var CacheInterface|null
      */
-    protected $cache = null;
+    protected CacheInterface|null $cache = null;
 
-    public function __construct(RouterFactoryInterface $factory, SimpleCacheInterface $cache = null)
+    public function __construct(RouterFactoryInterface $factory, CacheInterface $cache = null)
     {
         $this->factory = $factory;
         $this->cache = $cache;

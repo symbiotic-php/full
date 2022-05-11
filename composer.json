@@ -13,7 +13,7 @@
     "symbiotic web"
   ],
   "require": {
-    "php": ">=7.2",
+    "php": ">=8.0",
     "psr/http-server-handler": "1.0.*",
     "psr/http-server-middleware": "1.0.1",
     "psr/http-factory": "1.0.1",
@@ -30,11 +30,13 @@
     },
     "files": [
       "src/core_helpers.php",
+      "src/apps_helpers.php",
+      "src/settings_helper.php",
       "src/http_kernel_helpers.php"
     ]
   },
   "suggest": {
-    "symbiotic/full-single": "Full build in single file/",
+    "symbiotic/full-single": "Full build in single file",
     "symbiotic/develop": " Dev app"
   },
   "replace": {
@@ -67,6 +69,7 @@
     "symbiotic/simple-cache-filesystem": "1.*",
     "symbiotic/session-contracts": "1.*",
     "symbiotic/session-native": "1.*",
+    "symbiotic/setting": "1.*",
     "symbiotic/view-blade": "1.0.*"
   }
 }

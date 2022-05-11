@@ -8,17 +8,23 @@ class SessionStorageNative implements SessionStorageInterface
 {
     use ArrayAccessTrait;
 
-    protected $items = [];
+    protected array $items = [];
 
-    protected $started = false;
+    protected bool $started = false;
     /**
      * @var string|null
      */
-    protected $session_namespace;
+    protected ?string $session_namespace;
 
     public function __construct(string $session_namespace = null)
     {
         $this->session_namespace = $session_namespace;
+    }
+
+    public function set($key, $value): void
+    {
+        $this->start();
+        $this->items[$key] = $value;
     }
 
     /**
@@ -55,7 +61,6 @@ class SessionStorageNative implements SessionStorageInterface
     protected function loadSession()
     {
         $session_namespace = $this->session_namespace;
-        $session = &$_SESSION;
         if ($session_namespace) {
             if (!isset($_SESSION[$session_namespace])) {
                 $_SESSION[$session_namespace] = [];
@@ -66,26 +71,22 @@ class SessionStorageNative implements SessionStorageInterface
         }
     }
 
-
     public function has(string $key): bool
     {
         $this->start();
         return isset($this->items[$key]); // todo: may be array_key_exists???
     }
 
-    public function get(string $key)
+    /**
+     * Regenerate the CSRF token value.
+     *
+     * @return string
+     */
+    public function regenerateToken()
     {
-        $this->start();
-        return $this->items[$key] ?? null;
+        $this->set('_token', $token = \md5(\uniqid('', true)));
+        return $token;
     }
-
-
-    public function set($key, $value): void
-    {
-        $this->start();
-        $this->items[$key] = $value;
-    }
-
 
     public function delete(string $key): bool
     {
@@ -171,14 +172,13 @@ class SessionStorageNative implements SessionStorageInterface
     }
 
     /**
-     * Regenerate the CSRF token value.
-     *
-     * @return string
+     * @param string $key
+     * @return mixed|null
      */
-    public function regenerateToken()
+    public function get(string $key)
     {
-        $this->set('_token', $token = \md5(\uniqid('', true)));
-        return $token;
+        $this->start();
+        return $this->items[$key] ?? null;
     }
 
 }

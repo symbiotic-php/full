@@ -2,6 +2,7 @@
 
 namespace Symbiotic\Http\Cookie;
 
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class Cookies implements CookiesInterface
@@ -10,38 +11,38 @@ class Cookies implements CookiesInterface
     /**
      * @var array[]
      */
-    protected $items = [];
+    protected array $items = [];
 
     /**
      * @var string|null
      */
-    protected $domain;
+    protected ?string $domain;
 
     /**
      * @var string if empty path, browser set request request path
      */
-    protected $path = '';
+    protected string $path = '';
 
     /**
      * @var bool
      */
-    protected $secure = false;
+    protected bool $secure = false;
 
     /**
      * @var int
      */
-    protected $expires = 0;
+    protected int $expires = 0;
 
     /**
      * @var string|null
      * @uses \Symbiotic\Http\Cookie\CookiesInterface::SAMESITE_VALUES
      */
-    protected $same_site;
+    protected ?string $same_site;
 
     /**
      * @var array [ name => value...]
      */
-    protected $request_cookies = [];
+    protected array $request_cookies = [];
 
 
     /**
@@ -173,7 +174,7 @@ class Cookies implements CookiesInterface
      *
      * @param string[]|string $names
      */
-    public function remove($names): void
+    public function remove(array|string $names): void
     {
         foreach ((array)$names as $v) {
             $this->setCookie($v, '', time() - (3600 * 48), true, $this->path, $this->domain);
@@ -181,6 +182,10 @@ class Cookies implements CookiesInterface
     }
 
 
+    public function toRequest(RequestInterface $request): RequestInterface
+    {
+        return $request;
+    }
     /**
      * Send cookies to response
      *

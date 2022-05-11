@@ -22,7 +22,7 @@ class MiddlewareCallback implements MiddlewareInterface
     /**
      * @var \Closure function()
      */
-    protected $middleware;
+    protected \Closure $middleware;
 
 
     /**

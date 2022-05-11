@@ -3,18 +3,16 @@
 namespace Symbiotic\Filesystem\Adapter;
 
 
-
 use Symbiotic\Filesystem\FilesystemInterface;
+use Symbiotic\Filesystem\NotExistsException;
 
-class Local extends AbstractAdapter implements FilesystemInterface {
-
-    protected $writeFlags = LOCK_EX;
-
+class Local extends AbstractAdapter implements FilesystemInterface
+{
 
     /**
      * @var array
      */
-    protected static $permissions = [
+    CONST permissions = [
         'file' => [
             'public' => 0644,
             'private' => 0600,
@@ -24,29 +22,29 @@ class Local extends AbstractAdapter implements FilesystemInterface {
             'private' => 0700,
         ],
     ];
-
+    protected bool $writeFlags = LOCK_EX;
     /**
      * @var array
      */
-    protected $permissionMap;
+    protected array $permissionMap;
 
     /**
      * Constructor.
      *
      * @param string $root
-     * @param int    $writeFlags
-     * @param int    $linkHandling
-     * @param array  $permissions
+     * @param int $writeFlags
+     * @param int $linkHandling
+     * @param array $permissions
      *
      * @throws \LogicException
      */
     public function __construct($root = '/', $writeFlags = LOCK_EX, array $permissions = [])
     {
         $root = is_link($root) ? realpath($root) : $root;
-        $this->permissionMap = array_replace_recursive(static::$permissions, $permissions);
-        $this->ensureDirectory($root);
+        $this->permissionMap = array_replace_recursive(static::permissions, $permissions);
+        //  $this->ensureDirectory($root);
 
-        if ( ! is_dir($root) || ! is_readable($root)) {
+        if (!empty($root) && (!is_dir($root) || !is_readable($root))) {
             throw new \LogicException('The root path ' . $root . ' is not readable.');
         }
 
@@ -64,19 +62,22 @@ class Local extends AbstractAdapter implements FilesystemInterface {
      *    ....
      * ] : false
      *
-     * @param string $dir_path - Полный путь к директории от корня сервера
+     * @param string $path - Полный путь к директории от корня сервера
      *
      * @return array|false
      */
-    public function listDir ($dir_path = '') {
+    public function listDir(string $path)
+    {
+
+        $path = $this->applyPathPrefix($this->normalizePath($path));
         $files = [];
-        if( !funex("scandir")) {
-            $h = @opendir($dir_path);
-            while(false !== ($filename = @readdir($h))) {
+        if (!\function_exists("scandir")) {
+            $h = \opendir($path);
+            while (false !== ($filename = \readdir($h))) {
                 $files [] = $filename;
             }
         } else {
-            $files = @scandir($dir_path);
+            $files = \scandir($path);
         }
         return $files;
     }
@@ -87,7 +88,8 @@ class Local extends AbstractAdapter implements FilesystemInterface {
      * @param array $options
      * @return bool
      */
-    public function createDir($dirname, array $options = []) {
+    public function createDir($dirname, array $options = [])
+    {
 
         $return = $dirname = $this->applyPathPrefix($dirname);
 
@@ -100,9 +102,66 @@ class Local extends AbstractAdapter implements FilesystemInterface {
         return $return;
     }
 
-    protected function clearstatcache($path, $flag = false)
+    /**
+     * @param string $path
+     * @param string $time
+     *
+     * @return bool
+     */
+    public function touch($path, $time)
     {
-        clearstatcache($flag, $path);
+        return \touch($path, $time, $time);
+    }
+
+    /**
+     * @param $from
+     * @param $to
+     * @param bool $delete_from
+     * @return bool
+     * @throws \Exception
+     */
+    public function copy($from, $to, $delete_from = false)
+    {
+        if (!$this->has($from)) {
+            throw new \Exception($from . ' File not Found');
+        }
+        $from = $this->applyPathPrefix($from);
+        $to = $this->applyPathPrefix($to);
+
+        if (!is_dir($from)) {
+            $this->ensureDirectory(dirname($to));
+            $this->copyThrow($from, $to);
+        } else {
+            $from = rtrim($from, '\\/') . '/';
+            $to = rtrim($to, '\\/') . '/';
+            /** @var \SplFileInfo $file */
+            foreach ($this->getRecursiveDirectoryIterator($from, \RecursiveIteratorIterator::CHILD_FIRST) as $file) {
+                $old_path = ($file->getType() == 'link') ? $file->getPathname() : $file->getRealPath();
+                $new_path = str_replace($from, $to, $old_path);
+
+                if (!$file->isDir()) {
+                    $this->ensureDirectory(dirname($new_path));
+                    $this->copyThrow($old_path, $new_path);
+                } else {
+                    $this->ensureDirectory($new_path);
+                }
+            }
+        }
+
+        if ($delete_from) {
+            return $this->delete($from);
+        }
+        return true;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function has($path)
+    {
+        $location = $this->applyPathPrefix($path);
+
+        return file_exists($location);
     }
 
     /**
@@ -118,7 +177,7 @@ class Local extends AbstractAdapter implements FilesystemInterface {
     {
         if (!is_dir($dirname)) {
             $error = !@mkdir($dirname, $this->permissionMap['dir']['public'], true) ? error_get_last() : [];
-            if (!@mkdir($dirname, $this->permissionMap['dir']['public'], true)) {
+            if (!@mkdir($dirname, $this->permissionMap['dir']['public'], true)) {//?????????????? todo
                 $error = error_get_last();
             }
             $this->clearstatcache($dirname);
@@ -129,138 +188,24 @@ class Local extends AbstractAdapter implements FilesystemInterface {
         }
     }
 
-
-    /**
-     * @param string $path
-     * @param string $time
-     *
-     * @return bool
-     */
-    public function touch($path, $time) {
-        return @touch($path, $time, $time);
-    }
-
-    /**
-     * @param $from
-     * @param $to
-     * @param bool $delete_from
-     * @return bool
-     * @throws \Exception
-     */
-    public function copy($from, $to, $delete_from = false) {
-        if(!$this->has($from)) {
-            throw new \Exception($from.' File not Found');
-        }
-        $from = $this->applyPathPrefix($from);
-        $to = $this->applyPathPrefix($to);
-
-        if(!is_dir($from)) {
-            $this->ensureDirectory(dirname($to));
-            $this->copyThrow($from, $to);
-        } else {
-            $from = rtrim($from,'\\/').'/';
-            $to = rtrim($to,'\\/').'/';
-            /** @var \SplFileInfo $file */
-            foreach ($this->getRecursiveDirectoryIterator($from,\RecursiveIteratorIterator::CHILD_FIRST) as $file)
-            {
-                $old_path = ($file->getType() == 'link') ? $file->getPathname() : $file->getRealPath();
-                $new_path = str_replace($from, $to, $old_path);
-
-                if(!$file->isDir()) {
-                    $this->ensureDirectory(dirname($new_path));
-                    $this->copyThrow($old_path, $new_path);
-                } else {
-                    $this->ensureDirectory($new_path);
-                }
-            }
-        }
-
-        if($delete_from) {
-           return $this->delete($from);
-        }
-        return true;
+    protected function clearstatcache($path, $flag = false)
+    {
+        clearstatcache($flag, $path);
     }
 
     protected function copyThrow($path, $newpath)
     {
-        if($result = copy($path, $newpath)) {
+        if ($result = copy($path, $newpath)) {
             return $result;
         }
-        throw new \Exception('File not copied : '.$path);
-    }
-
-    /**
-     * @param $dir_from
-     * @param $dir_to
-     * @param $filename
-     *
-     * @return bool
-     */
-    public function move ($dir_from, $dir_to, $filename) {
-        return $this->copy($dir_from, $dir_to, $filename, true);
+        throw new \Exception('File not copied : ' . $path);
     }
 
     /**
      * @param string $path
-     * @return bool
-     */
-    public function delete($path)
-    {
-        $path = $this->applyPathPrefix($path);
-        if(is_dir($path)) {
-            return $this->deleteDir($this->removePathPrefix($path));
-        }
-
-        return @unlink($path);
-    }
-
-    public function deleteDir($path)
-    {
-        $path = $this->applyPathPrefix($path);
-        if(!is_dir($path)) {
-            return false;
-        }
-        /** @var \SplFileInfo $file */
-        foreach ($this->getRecursiveDirectoryIterator($path, \RecursiveIteratorIterator::CHILD_FIRST) as $file) {
-            $this->deleteFileInfoObject($file);
-        }
-
-        return rmdir($path);
-    }
-
-
-    /**
-     * @param \SplFileInfo $file
-     */
-    protected function deleteFileInfoObject(\SplFileInfo $file)
-    {
-        switch ($file->getType()) {
-            case 'dir':
-               return rmdir($file->getRealPath());
-                break;
-            case 'link':
-                return unlink($file->getPathname());
-                break;
-            default:
-                unlink($file->getRealPath());
-        }
-    }
-
-
-    /**
-     * @param string $path
-     *
-     * @return \DirectoryIterator
-     */
-    protected function getDirectoryIterator($path)
-    {
-        return new \DirectoryIterator($path);
-    }
-    /**
-     * @param string $path
-     * @param int    $mode
-     * @todo : убрать SPL !!!!! это говно плохо работает!!!!
+     * @param int $mode
      * @return \RecursiveIteratorIterator
+     * @todo : убрать SPL !!!!! это говно плохо работает!!!!
      */
     public function getRecursiveDirectoryIterator($path, $mode = \RecursiveIteratorIterator::SELF_FIRST)
     {
@@ -271,11 +216,57 @@ class Local extends AbstractAdapter implements FilesystemInterface {
     }
 
     /**
+     * @param string $path
+     * @return bool
+     */
+    public function delete(string $path)
+    {
+        $path = $this->applyPathPrefix($path);
+        if (is_dir($path)) {
+            return $this->deleteDir($this->removePathPrefix($path));
+        }
+
+        return \unlink($path);
+    }
+
+    public function deleteDir(string $path)
+    {
+        $path = $this->applyPathPrefix($path);
+        if (!is_dir($path)) {
+            return false;
+        }
+        /** @var \SplFileInfo $file */
+        foreach ($this->getRecursiveDirectoryIterator($path, \RecursiveIteratorIterator::CHILD_FIRST) as $file) {
+            $this->deleteFileInfoObject($file);
+        }
+
+        return rmdir($path);
+    }
+
+    /**
+     * @param \SplFileInfo $file
+     */
+    protected function deleteFileInfoObject(\SplFileInfo $file)
+    {
+        switch ($file->getType()) {
+            case 'dir':
+                return rmdir($file->getRealPath());
+                break;
+            case 'link':
+                return unlink($file->getPathname());
+                break;
+            default:
+              return  unlink($file->getRealPath());
+        }
+    }
+
+    /**
      * @param $path
      *
      * @return bool|string
      */
-    public function read($path) {
+    public function read($path)
+    {
         return @file_get_contents($this->applyPathPrefix($path));
     }
 
@@ -286,70 +277,40 @@ class Local extends AbstractAdapter implements FilesystemInterface {
      *
      * @return bool|int
      */
-    public function write(string $path, $contents, array $options = []) {
+    public function write(string $path, $contents, array $options = [])
+    {
 
         $path = $this->applyPathPrefix($path);
         $time = $this->has($path) ? filemtime($path) : time();
 
         $result = @file_put_contents($path, $contents, isset($options['flags']) ? $options['flags'] : $this->writeFlags);
-        if($result && !empty($options['no_touch'])) {
+        if ($result && !empty($options['no_touch'])) {
             @touch($path, $time, $time);
         }
 
         return $result;
     }
 
-    public function rename($path, $newpath) {
-        $path = $this->applyPathPrefix($path);
-        $newpath = $this->applyPathPrefix($newpath);
-
-        $this->ensureDirectory(dirname($newpath));
-
-        return rename($path, $newpath);
-
-    }
-
     /**
-     * @inheritdoc
-     */
-    public function has($path)
-    {
-        $location = $this->applyPathPrefix($path);
-
-        return file_exists($location);
-    }
-    /**
-     * @param $file_data
-     * @param string $format
-     *
-     * @return bool|float|int|string
-     */
-    public function getPerms ($file_data, $format = 'oct') {
-        if(arkex($format . '_perms', $file_data)) {
-            return $file_data[ $format . '_perms' ];
-        }
-        if( !isar($file_data)) {
-            $file_data = $this->fileinfo($file_data);
-        }
-        return $this->permsFormat(ifset($file_data, 'perms', 0), 'base', $format);
-    }
-
-    /**
-     * @param $filepath
-     * @param string $oct_perms
-     *
+     * @param string $path
+     * @param string $newPath
      * @return bool
+     *
+     * @throws \Exception
      */
-    public function setPerms ($filepath, $oct_perms = '') {
-        if( !empty($oct_perms)) {
-            $pm = 0;
-            for($i = strlen($oct_perms)-1; $i >= 0; --$i) {
-                $pm += (int) $oct_perms[ $i ]*pow(8, (strlen($oct_perms)-$i-1));
-            }
-            return chmod($filepath, $pm);
+    public function rename(string $path, string $newPath)
+    {
+        $path = $this->applyPathPrefix($path);
+        $newPath = $this->applyPathPrefix($newPath);
+        if (!\file_exists($path)) {
+            throw new NotExistsException($path);
         }
-        return false;
+        $this->ensureDirectory(dirname($newPath));
+
+        return rename($path, $newPath);
+
     }
+
 
     public function listContents($directory = '', $recursive = false)
     {
@@ -384,6 +345,16 @@ class Local extends AbstractAdapter implements FilesystemInterface {
     public function getVisibility($path)
     {
         // TODO: Implement getVisibility() method.
+    }
+
+    /**
+     * @param string $path
+     *
+     * @return \DirectoryIterator
+     */
+    protected function getDirectoryIterator($path)
+    {
+        return new \DirectoryIterator($path);
     }
 
 

@@ -7,21 +7,21 @@ use Symbiotic\Packages\PackagesRepositoryInterface;
 
 class ProvidersRepository
 {
-    const EXCLUDE = 1;
-    const ACTIVE = 3;
-    const DEFER = 5;
+    const EXCLUDE = 32;
+    const ACTIVE = 1;
+    const DEFER = 64;
     /**
      * @var array
      * [class => bool (active flag),... ]
      */
-    protected $providers = [];
+    protected array $providers = [];
 
     /**
      * @var array [serviceClassName => ProviderClassName]
      */
-    protected $defer_services = [];
+    protected array $defer_services = [];
 
-    protected $loaded = false;
+    protected bool $loaded = false;
 
     /**
      * @param string|string[] $items
@@ -81,7 +81,7 @@ class ProvidersRepository
     public function load(ServiceContainerInterface $app, array $force_providers = [], array $force_exclude = [])
     {
         if (!$this->loaded) {
-            foreach ($app[PackagesRepositoryInterface::class]->getPackages() as $config) {
+            foreach ($app[PackagesRepositoryInterface::class]->all() as $config) {
                 $this->add(isset($config['providers']) ? (array)$config['providers'] : []);
                 $this->defer(isset($config['defer']) ? (array)$config['defer'] : []);
                 $this->exclude(isset($config['providers_exclude']) ? (array)$config['providers_exclude'] : []);
@@ -95,7 +95,7 @@ class ProvidersRepository
          * @var ServiceProviderInterface $provider
          */
         foreach ($this->providers as $provider => $mask) {
-            if (!($mask & (self::DEFER | self::EXCLUDE))) {
+            if (!($mask & self::DEFER || $mask & self::EXCLUDE)) {
                 $app->register($provider);
             }
         }

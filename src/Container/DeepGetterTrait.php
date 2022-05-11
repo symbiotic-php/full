@@ -2,8 +2,6 @@
 
 namespace Symbiotic\Container;
 
-use Symbiotic\Container\BaseContainerInterface;
-use Symbiotic\Core\Support\Str;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 
@@ -14,7 +12,20 @@ use Psr\Container\NotFoundExceptionInterface;
 trait DeepGetterTrait /* implements ContainerInterface*/
 {
 
-    private $deep_delimiter = '::';
+    private string $deep_delimiter = '::';
+
+    /**
+     * Менее строгий метод получения данных из контейнера, если ключ не существует вернет NULL по умолчанию
+     *
+     * @param $key
+     * @param null $default
+     * @return mixed
+     *
+     */
+    public function __invoke($key, $default = null)
+    {
+        return $this->get($key, $default);
+    }
 
     /**
      * @param string $key - Возможно использование доступа внутри объекта через точку ,
@@ -31,7 +42,7 @@ trait DeepGetterTrait /* implements ContainerInterface*/
         /**
          * @var DIContainerInterface|DeepGetterTrait $this
          */
-        $key = (false === \strpos($key, $this->deep_delimiter)) ? $key: \explode($this->deep_delimiter, $key);
+        $key = (false === \strpos($key, $this->deep_delimiter)) ? $key : \explode($this->deep_delimiter, $key);
         try {
             if (\is_array($key)) {
                 $c = $key[0];
@@ -42,7 +53,7 @@ trait DeepGetterTrait /* implements ContainerInterface*/
                         return $service[$k];
                     }
                 } elseif ($service instanceof ContainerInterface || $service instanceof BaseContainerInterface) {
-                    if($service->has($k)) {
+                    if ($service->has($k)) {
                         return $service->get($k);
                     }
                 } elseif ($service instanceof \ArrayAccess && $service->offsetExists($k)) {
@@ -53,8 +64,8 @@ trait DeepGetterTrait /* implements ContainerInterface*/
             try {
                 return $this->make($key);
             } catch (\Exception $e) {
-                if (!$this->has($key)) {
-                    throw new NotFoundException($key, $this);
+                if (!$this->has($key) || ($this->has($key) && get_class($e) === '\Exception')) {
+                    throw new NotFoundException($key, $this, 4004, $e);
                 }
             }
 
@@ -64,18 +75,5 @@ trait DeepGetterTrait /* implements ContainerInterface*/
             }
             throw $e;
         }
-    }
-
-    /**
-     * Менее строгий метод получения данных из контейнера, если ключ не существует вернет NULL по умолчанию
-     *
-     * @param $key
-     * @param null $default
-     * @return mixed
-     *
-     */
-    public function __invoke($key, $default = null)
-    {
-        return $this->get($key, $default);
     }
 }

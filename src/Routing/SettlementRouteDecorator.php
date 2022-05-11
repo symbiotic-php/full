@@ -6,48 +6,50 @@ namespace Symbiotic\Routing;
 class SettlementRouteDecorator implements RouteInterface
 {
     /**
-     * @var RouteInterface
+     * @var RouteInterface|null
      */
-    protected $route = null;
+    protected RouteInterface|null $route = null;
 
     /**
      * @var Settlement|null
      */
-    protected $settlement = null;
+    protected Settlement|null $settlement = null;
 
     /**
      * @var string
      */
-    protected $path;
+    protected string $path;
 
     public function __construct(RouteInterface $route, Settlement $settlement)
     {
         $this->route = $route;
         $this->settlement = $settlement;
-        $this->path =  $this->settlement->getPath().'/'.ltrim($this->route->getPath(),'\\/');
+        $this->path = $this->settlement->getPath() . '/' . ltrim($this->route->getPath(), '\\/');
     }
-    public function getName() : string
+
+    public function getName(): string
     {
         return $this->route->getName();
     }
 
-    public function isStatic():bool
+    public function isStatic(): bool
     {
         return $this->route->isStatic();
     }
 
-    public function getAction() : array
+    public function getAction(): array
     {
         return $this->route->getAction();
     }
-    public function getMiddlewares() : array
+
+    public function getMiddlewares(): array
     {
         return $this->route->getMiddlewares();
     }
 
     public function getPath(): string
     {
-        return  $this->path;
+        return $this->path;
     }
 
     public function getHandler()
@@ -64,6 +66,7 @@ class SettlementRouteDecorator implements RouteInterface
     {
         return $this->route->getParam($key);
     }
+
     public function getParams(): array
     {
         return $this->route->getParams();
@@ -73,7 +76,8 @@ class SettlementRouteDecorator implements RouteInterface
     {
         return $this->route->getSecure();
     }
-    public function getDomain(): ? string
+
+    public function getDomain(): ?string
     {
         return $this->route->getDomain();
     }

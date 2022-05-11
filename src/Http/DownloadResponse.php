@@ -2,8 +2,6 @@
 
 namespace Symbiotic\Http;
 
-
-
 use Psr\Http\Message\StreamInterface;
 
 /**

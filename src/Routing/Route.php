@@ -7,11 +7,11 @@ class Route implements RouteInterface
 {
 
 
-    protected $action = [];
+    protected array $action = [];
 
-    protected $pattern = '';
+    protected string $pattern = '';
 
-    protected $request_params = [];
+    protected array $request_params = [];
 
     /**
      * Route constructor.
@@ -29,18 +29,24 @@ class Route implements RouteInterface
         return $this->action['as'] ?? $this->pattern;
     }
 
-    public function isStatic():bool
+    public function isStatic(): bool
     {
-        return strpos($this->getPath(),'{')===false;
+        return strpos($this->getPath(), '{') === false;
+    }
+
+    public function getPath(): string
+    {
+        return $this->pattern;
     }
 
     public function getAction(): array
     {
         return $this->action;
     }
+
     public function getMiddlewares(): array
     {
-        return isset($this->action['middleware'])?$this->action['middleware']:[];
+        return isset($this->action['middleware']) ? $this->action['middleware'] : [];
     }
 
     public function setDomain(string $domain)
@@ -60,15 +66,9 @@ class Route implements RouteInterface
         return $this->action['domain'] ?? null;
     }
 
-
     public function getApp(): ?string
     {
         return $this->action['app'] ?? null;
-    }
-
-    public function getPath(): string
-    {
-        return $this->pattern;
     }
 
     public function getHandler()

@@ -8,9 +8,9 @@ use Symbiotic\Core\{CoreInterface, BootstrapInterface, HttpKernelInterface};
 
 class Bootstrap implements BootstrapInterface
 {
-    public function bootstrap(CoreInterface $app): void
+    public function bootstrap(CoreInterface $core): void
     {
-        $app->singleton(HttpKernelInterface::class, HttpKernel::class);
-        $app->addRunner(new HttpRunner($app));
+        $core->singleton(HttpKernelInterface::class, HttpKernel::class);
+        $core->addRunner(new HttpRunner($core));
     }
 }

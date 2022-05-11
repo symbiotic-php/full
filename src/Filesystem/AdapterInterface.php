@@ -12,18 +12,18 @@ interface AdapterInterface
      *
      * @return bool
      */
-    public function has($path);
+    public function has(string $path);
 
     /**
      * Read a file.
      *
      * @param string $path The path to the file.
      *
-     * @throws Exception
+     * @throws \Exception
      *
      * @return string|false The file contents or false on failure.
      */
-    public function read($path);
+    public function read(string $path);
 
     /**
      * List contents of a directory.
@@ -33,7 +33,7 @@ interface AdapterInterface
      *
      * @return array A list of file metadata.
      */
-    public function listContents($directory = '', $recursive = false);
+    public function listContents(string $directory = '', $recursive = false);
 
     /**
      * Get a file's metadata.
@@ -44,7 +44,7 @@ interface AdapterInterface
      *
      * @return array|false The file metadata or false on failure.
      */
-    public function getMetadata($path);
+    public function getMetadata(string $path);
 
     /**
      * Get a file's size.
@@ -99,14 +99,14 @@ interface AdapterInterface
      * Rename a file.
      *
      * @param string $path    Path to the existing file.
-     * @param string $newpath The new path of the file.
-     *
-     * @throws FileExistsException   Thrown if $newpath exists.
-     * @throws FileNotFoundException Thrown if $path does not exist.
+     * @param string $newPath The new path of the file.
      *
      * @return bool True on success, false on failure.
+     * @throws FileNotFoundException Thrown if $path does not exist.
+     *
+     * @throws FileExistsException   Thrown if $newpath exists.
      */
-    public function rename($path, $newpath);
+    public function rename(string $path, string $newPath);
 
     /**
      * Copy a file.
@@ -130,7 +130,7 @@ interface AdapterInterface
      *
      * @return bool True on success, false on failure.
      */
-    public function delete($path);
+    public function delete(string $path);
 
 
     /**
@@ -142,7 +142,7 @@ interface AdapterInterface
      *
      * @return bool True on success, false on failure.
      */
-    public function deleteDir($path);
+    public function deleteDir(string $path);
 
     /**
      * Create a directory.
@@ -152,7 +152,7 @@ interface AdapterInterface
      *
      * @return bool True on success, false on failure.
      */
-    public function createDir($dirname, array $options = []);
+    public function createDir(string $dirname, array $options = []);
 
     /**
      * Set the visibility for a file.
@@ -164,7 +164,7 @@ interface AdapterInterface
      *
      * @return bool True on success, false on failure.
      */
-    public function setVisibility($path, $visibility);
+    public function setVisibility(string $path, $visibility);
 
     /**
      * Get a file's visibility.
@@ -175,7 +175,7 @@ interface AdapterInterface
      *
      * @return string|false The visibility (public|private) or false on failure.
      */
-    public function getVisibility($path);
+    public function getVisibility(string $path);
 
     /**
      * Create a file or update if exists.
@@ -184,7 +184,7 @@ interface AdapterInterface
      * @param resource $resource The file handle.
      * @param array    $options   An optional configuration array.
      *
-     * @throws InvalidArgumentException Thrown if $resource is not a resource.
+     * @throws \InvalidArgumentException Thrown if $resource is not a resource.
      *
      * @return bool True on success, false on failure.
      */

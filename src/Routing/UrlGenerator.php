@@ -2,7 +2,7 @@
 
 namespace Symbiotic\Routing;
 
-use Symbiotic\Core\Support\{Str,Arr};
+use Symbiotic\Core\Support\{Arr, Str};
 
 
 class UrlGenerator implements UrlGeneratorInterface
@@ -13,14 +13,14 @@ class UrlGenerator implements UrlGeneratorInterface
      *
      * @var array
      */
-    public $defaultParameters = [];
+    public array $defaultParameters = [];
 
     /**
      * Characters that should not be URL encoded.
      *
      * @var array
      */
-    public $dontEncode = [
+    public array $dontEncode = [
         '%2F' => '/',
         '%40' => '@',
         '%3A' => ':',
@@ -38,15 +38,21 @@ class UrlGenerator implements UrlGeneratorInterface
     ];
 
 
-    protected $base_uri;
+    protected string $base_uri;
 
-    protected $assets_path;
+    protected string $assets_path;
 
     /**
-     * @var Router
+     * @var RouterInterface
      */
-    protected $router;
+    protected RouterInterface $router;
 
+    /**
+     * UrlGenerator constructor.
+     * @param RouterInterface $router
+     * @param string $base_uri {@see Provider::registerUriGenerator()}
+     * @param string $assets_path {@see Provider::registerUriGenerator()}
+     */
     public function __construct(RouterInterface $router, string $base_uri = '', string $assets_path = 'assets')
     {
         $this->router = $router;
@@ -55,18 +61,24 @@ class UrlGenerator implements UrlGeneratorInterface
 
     }
 
+    public function asset(string $path = '')
+    {
+        return $this->to($this->assets_path . '/' . $this->preparePath($path));
+    }
 
     public function to(string $path = '')
     {
         return $this->base_uri . '/' . $this->preparePath($path);
     }
 
-    public function asset($path = '')
-    {
-        return $this->to($this->assets_path . '/' . $this->preparePath($path));
-    }
-
-    public function route($name, $parameters = [], $absolute = true)
+    /**
+     * @param $name
+     * @param array $parameters
+     * @param bool $absolute
+     * @return string
+     * @throws \Exception
+     */
+    public function route(string $name, array $parameters = [], bool $absolute = true)
     {
 
         $route = $this->router->getRoute($name);
@@ -85,21 +97,46 @@ class UrlGenerator implements UrlGeneratorInterface
         }
 
         $uri = strtr(rawurlencode($uri), $this->dontEncode);
-        $uri = $this->base_uri .'/'. ltrim($uri, '/');
+        $uri = $this->base_uri . '/' . ltrim($uri, '/');
         if ($absolute) {
-           $uri =  'http'.($route->getSecure()?'s':'').'://'.$route->getDomain().$uri;
+            $uri = 'http' . ($route->getSecure() ? 's' : '') . '://' . $route->getDomain() . $uri;
         }
 
         return $uri;
     }
 
 
-    protected function preparePath($path)
+    /**
+     * @param string $path
+     * @return string
+     */
+    protected function preparePath(string $path)
     {
         if (is_array(($sc = Str::sc($path)))) {
-            $path = $sc[0].'/'.$sc[1];
+            $path = $sc[0] . '/' . $sc[1];
         }
         return ltrim($path, '/');
+    }
+
+    /**
+     * Add a query string to the URI.
+     *
+     * @param string $uri
+     * @param array $parameters
+     * @return mixed|string
+     */
+    protected function addQueryString(string $uri, array $parameters)
+    {
+        // If the URI has a fragment we will move it to the end of this URI since it will
+        // need to come after any query string that may be added to the URL else it is
+        // not going to be available. We will remove it then append it back on here.
+        if (!is_null($fragment = parse_url($uri, PHP_URL_FRAGMENT))) {
+            $uri = preg_replace('/#.*/', '', $uri);
+        }
+
+        $uri .= $this->getRouteQueryString($parameters);
+
+        return is_null($fragment) ? $uri : $uri . "#{$fragment}";
     }
 
     /**
@@ -153,7 +190,6 @@ class UrlGenerator implements UrlGeneratorInterface
         return array_filter($parameters, 'is_numeric', ARRAY_FILTER_USE_KEY);
     }
 
-
     /**
      * Replace all of the wildcard parameters for a route path.
      *
@@ -192,27 +228,6 @@ class UrlGenerator implements UrlGeneratorInterface
 
             return $m[0];
         }, $path);
-    }
-
-    /**
-     * Add a query string to the URI.
-     *
-     * @param string $uri
-     * @param array $parameters
-     * @return mixed|string
-     */
-    protected function addQueryString($uri, array $parameters)
-    {
-        // If the URI has a fragment we will move it to the end of this URI since it will
-        // need to come after any query string that may be added to the URL else it is
-        // not going to be available. We will remove it then append it back on here.
-        if (!is_null($fragment = parse_url($uri, PHP_URL_FRAGMENT))) {
-            $uri = preg_replace('/#.*/', '', $uri);
-        }
-
-        $uri .= $this->getRouteQueryString($parameters);
-
-        return is_null($fragment) ? $uri : $uri . "#{$fragment}";
     }
 
 

@@ -1,8 +1,8 @@
 {
-  "name": "symbiotic/full",
+  "name": "symbiotic/full-dev",
   "description": "Полная сборка пакетов фреймворка Symbiotic.",
   "license": "BSD-3-Clause",
-  "version": "1.2.12",
+  "version": "1.3.0",
   "authors": [{
     "name": "Surkov Sergey",
     "role": "creator"
@@ -22,6 +22,7 @@
     "psr/simple-cache": "1.*",
     "nyholm/psr7": ">=1.3.2",
     "symbiotic/ui_http_kernel": "1.*",
+    "symbiotic/ui_form": "1.*",
     "ext-json": "*"
   },
   "autoload": {
@@ -29,10 +30,10 @@
       "Symbiotic\\": "src/"
     },
     "files": [
-      "src/core_helpers.php",
       "src/apps_helpers.php",
-      "src/settings_helper.php",
-      "src/http_kernel_helpers.php"
+      "src/core_helpers.php",
+      "src/http_kernel_helpers.php",
+      "src/settings_helper.php"
     ]
   },
   "suggest": {
@@ -52,6 +53,8 @@
     "symbiotic/event": "1.*",
     "symbiotic/event-contracts": "1.*",
     "symbiotic/filesystem": "1.*",
+    "symbiotic/form-contracts": "1.*",
+    "symbiotic/form": "1.*",
     "symbiotic/http": "1.*",
     "symbiotic/http-cookie": "1.*",
     "symbiotic/http-kernel": "1.*",

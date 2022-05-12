@@ -219,7 +219,7 @@ class Core extends Container implements CoreInterface
      *
      * @todo: Метод используется один раз, нужен ли он?
      */
-    public function getBasePath($path = '')
+    public function getBasePath($path = ''):string
     {
         return $this->base_path . ($path ? \_S\DS . $path : $path);
     }

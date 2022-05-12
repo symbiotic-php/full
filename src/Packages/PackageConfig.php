@@ -24,7 +24,7 @@ class PackageConfig implements ArrayContainerInterface
      *     'settings_controller' => '\PAck\MySettingsController',
      *     // or
      *    'settings' => [
-     *         ['field_name' => 'name', 'type' => 1 ], // {@see \Symbiotic\Settings\SettingsFormInterface}
+     *         ['field_name' => 'name', 'type' => 1 ], // {@see \Symbiotic\Form\FormInterface}
      *     ]
      *     ....
      * ]

@@ -43,6 +43,10 @@ class RoutingHandler implements RequestHandlerInterface
             $route = $app['router']->match($request->getMethod(), $path);
         }
         if ($route) {
+            foreach ($route->getParams() as $k => $v) {
+                $request = $request->withAttribute($k, $v);
+            }
+
             /**
              * @todo наверно надо перенести отработку в {@see RouteHandler::handle()} после загрузки самого приложения
              */

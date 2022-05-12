@@ -129,8 +129,7 @@ function render($template, array $vars = null)
  */
 function lang(string $message, array $vars = null, $lang = null): string
 {
-    return $message;
-    // todo return \_S\lang(appendApp($message),$vars,$lang);
+    return \_S\lang(appendApp($message), $vars, $lang);
 }
 
 

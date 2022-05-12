@@ -80,7 +80,7 @@ class ResourcesRepository implements ResourcesRepositoryInterface, AssetsReposit
             if (isset($assets[$path_type])) {
                 $full_path = $assets[$path_type] . '/' . ltrim($path, '/\\');
                 if (!\is_readable($full_path) || !($res = \fopen($full_path, 'r'))) {
-                    throw new ResourceException('File is not exists or not readable!', $full_path);
+                    throw new ResourceException('File is not exists or not readable!'.$full_path, $full_path);
                 }
                 return $this->factory->createStreamFromResource($res);
             }

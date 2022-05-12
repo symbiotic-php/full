@@ -148,7 +148,7 @@ class AuthService implements AuthServiceInterface
     /**
      * Returns the identity from storage or null if no identity is available
      *
-     * @return mixed|null
+     * @return mixed|UserInterface|null
      * @throws \Exception
      */
     public function getIdentity()
@@ -163,5 +163,19 @@ class AuthService implements AuthServiceInterface
             return $data;
         }
         throw new \Exception('Некорректные данные сессии!');
+    }
+
+    /**
+     * @param null $fullName
+     * @param null $id
+     * @return User
+     * @todo Надо перенести
+     */
+    public function getGuestUser($fullName = null, $id = null)
+    {
+        if(!$fullName) {
+            $fullName = 'Guest';
+        }
+        return new User(UserInterface::GROUP_GUEST, $fullName, $id);
     }
 }

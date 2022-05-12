@@ -14,7 +14,7 @@ const DS = DIRECTORY_SEPARATOR;
 
 function core($abstract = null, array $parameters = null)
 {
-    $core = Core::getInstance();
+     $core = Core::getInstance();
     if (is_null($abstract)) {
         return $core;
     }
@@ -98,7 +98,17 @@ if (!function_exists('_S\\route')) {
  */
 function lang(string $message, array $vars = null, $lang = null): string
 {
+    //todo: translate
+    if(is_array($vars)) {
+        $replaces = [];
+        foreach ($vars as $k => $v) {
+            $replaces[':'.(string)$k] = $v;
+        }
+        return str_replace(array_keys($replaces), $replaces, $message);
+    }
+
     return $message;
+
 }
 
 if (!function_exists('_S\\view')) {

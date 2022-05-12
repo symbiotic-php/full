@@ -31,7 +31,7 @@ interface AuthServiceInterface
     /**
      * Returns the authenticated identity or null if no identity is available
      *
-     * @return mixed|null
+     * @return mixed|null|UserInterface
      * @throws
      */
     public function getIdentity();

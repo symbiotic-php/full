@@ -6,6 +6,7 @@ use Symbiotic\Apps\ApplicationInterface;
 use Symbiotic\Core\BootstrapInterface;
 use Symbiotic\Core\Config;
 use Symbiotic\Core\CoreInterface;
+use Symbiotic\Filesystem\FilesystemManagerInterface;
 use function _S\collect;
 use function _S\settings;
 
@@ -68,9 +69,29 @@ class SettingsBootstrap implements BootstrapInterface
                 }
             }
 
-
-
             $core->instance(SettingsInterface::class, $core[SettingsRepositoryInterface::class]->get('core'));
+        }
+
+        // append filesystems
+        if ($core[SettingsRepositoryInterface::class]->has('filesystems')) {
+            /**
+             * @var SettingsInterface $core_settings
+             * @var Config $config
+             */
+            $filesystems_settings = $core[SettingsRepositoryInterface::class]->get('filesystems');
+            if(!empty($filesystems_settings) && is_array($filesystems_settings)) {
+                $core->afterResolving(FilesystemManagerInterface::class, function (FilesystemManagerInterface $manager) use ($filesystems_settings, $config) {
+
+                    $filesystems = $config->get('filesystems', []);
+                    if(!isset($filesystems['disks'])) {
+                        $filesystems['disks'] = [];
+                    }
+                    $filesystems['disks'] = array_merge($filesystems['disks'], $filesystems_settings);
+                    $config->set('filesystems', $filesystems);
+
+                });
+            }
+
         }
     }
 }

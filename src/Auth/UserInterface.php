@@ -9,7 +9,7 @@ interface UserInterface
 
     const GROUP_MANAGER = 1;
     //
-    const GROUP_ADMIN = 69;
+    const GROUP_ADMIN = 365;
 
     /**
      * @return int

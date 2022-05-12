@@ -27,6 +27,7 @@ interface BaseContainerInterface
      * Get item by key
      *
      * @param string $key
+     * @return mixed|null
      */
     public function get(string $key);
 

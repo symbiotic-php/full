@@ -82,4 +82,14 @@ interface CoreInterface extends DIContainerInterface, ServiceContainerInterface
      * @used-by Core::run()
      */
     public function runNext():void;
+
+    /**
+     * Get the base path of the Laravel installation.
+     *
+     * @param string $path Optionally, a path to append to the base path
+     * @return string
+     *
+     * @todo: Метод используется один раз, нужен ли он?
+     */
+    public function getBasePath($path = ''):string;
 }

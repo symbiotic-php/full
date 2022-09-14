@@ -1,287 +1,311 @@
-# Symbiotic Web (MVP, BETA-PRE-ZERO EDITION)
-### Описание
-**Фреймфорк создан с целью упростить интеграцию независимых небольших приложений в другие CMS и фреймворки, а также для расширения функциональности пакетов для композера.** 
-
-
-Идеология - отдельная экосистема небольших приложений для совместной работы вместе с другими фреймворками и удобной интеграции дополнительного функционала.
-
-Есть много пакетов и отдельно написанных приложений,
- которые поставляют полезный функционал, имеют свою бизнес логику и иногда даже имеют свой отдельный веб интерфейс.
-  
-  В ларавель пакеты, в симфони бандлы, в различных CMS в виде плагинов и дополнений, и у всех своя реализация роутинга, событий, кеширования и т.д. Взять пакет, написанный для ларавель, и интегрировать его в другой фреймворк или CMS, в большинсте случаев будет проблематично, а в некоторых нереально из-за определенных зависимостей от фреймворка.
-  
-
-Самим разработчикам приложений приходится писать адаптацию под каждый фреймворк и CMS, что создает много проблем и не покрывает все известные экосистемы.
- 
-Также такие приложения приходится интегрировать в систему:
-1. Настраивать ACL
-2. Интегрировать неоходимые скрипты админку и на фронт
-3. Создавать обработчики запросов и структуру в бд
-4. Делать связку с файловой системой
-5. Делать сохранение настроек и конфигурации
-
-Примеров таких приложений много:
-- одностраничные приложения
-- текстовые редакторы и их плагины с несколькими уровнями зависимости (плагин для плагина)
-- обработчики картинок
-- различные оптимизаторы и компрессоры 
-- приложения для работы с файлами и базами данных
-- чат боты
-- административные, аналитические интрументы
-- лендинги и другие микро приложения
-- .....
-
-
-Фреймворк оптимизирован для работы с большим количеством приложений, а также для работы в качетсве подсистемы для основного фреймворка. 
-
-Каждое приложение является композер пакетом, 
-с дополнительным описанием прямо в файле composer.json.
-
-## Характеристики
-- PSR дружественный
-- Мало зависимостей (только PSR интерфейсы и PSR-7 имплементация)
-- Небольшой вес (370 кб дев версия и формтированием и коментариями, продакт 170 кб)
-- Оптимизирован для работы в симбиозе с другими фреймворками
-- Многоуровневая система контейнеров (Ядро<-Приложение<-Плагин), с доступом к контейнеру родителю.
-- Виртуальная файловая система (прокидывание статики прямо из папки пакета)
-- Всем знакомое апи контейнера
-- Шаблонизатор Blade(урезанный и кривой пока), + возможность прокинуть свой шаблонизатор.
-- Никаких сборщиков статики (Каждый пакет должен иметь уже скомпилировынные файлы).
-- Отложенный роутинг (грузятся только роуты запрошенного приложения, определяется по префиксу-поселению).
-- Возможность расширять конревые сервисы (Бутстраперы и сервисы).
-- У каждого приложения свой сервис контейнер и сервисы.
-- Поддержка кеша (PSR-16 Simple Cache) + Кешируемый cервис контейнер.
-- Для тех, кто будет тестировать: отличное приключение (почти реверс), абсолютно без документации и все одном файле!!!)))
-
-## Установка
+# Symbiotic Full (BETA EDITION)
+README.RU.md  [РУССКОЕ ОПИСАНИЕ](https://github.com/symbiotic-php/full/blob/master/README.RU.md)
+## Installation
 ```
 composer require symbiotic/full
 ```
-Сразу ставьте и пакет для разработки
-```
-composer require symbiotic/develop
-```
 
-## Запуск
+## Features
 
-Фреймворк подключается из композера прямо в ваш index.php.
- 
- Если вы используете уже фреймворк, то необходимо включить режим симбиоза в конфиге
+- PSR friendly
+- Only a few dependencies (only PSR interfaces and PSR-7 implementation).
+- Light weight (440 kb with formatting and comments, [assembly in one 200 kb file](https://github.com/symbiotic-php/full-single/)).
+- Optimized to work in symbiosis with other frameworks.
+- Multilevel DI container system **(Core <- Application <- Plugin)**, with access to the parent container.
+- Virtual file system (proxying static from the package folder to the web).
+- The familiar api of the container (laravel/container).
+- Blade template engine (stripped down), + the ability to add your own template engine.
+- No static collectors (Each package must have already compiled files).
+- Deferred routing (only the routes of the requested application are loaded, determined by the prefix-settlement).
+- The ability to extend the kernel via Bootstrap and Service Provider.
+- Each application has its own container service and services.
+- Cache support (PSR-16 Simple Cache) + Cached DI Container.
+- Middleware support for intercepting a request before loading the core of the framework (response in 1 ms).
+
+For faster work on hosting without PHP optimization, build in one file [symbiotic/full-single](https://github.com/symbiotic-php/full-single/)
+
+
+## Description
+
+**The framework was created to simplify the integration of independent small applications into other CMS and frameworks,
+as well as to expand the functionality of the composer packages.**
+
+Ideology is a separate ecosystem of small applications for collaboration with other frameworks and convenient
+integration of additional functionality.
+
+There are many packages and separately written applications
+that deliver useful functionality, have their own business logic and sometimes even have their own separate web interface.
+
+In Laravel packages, in Symfony Bundles, in various CMS in the form of plugins and add-ons, all have their own implementation of routing,
+events, caching, etc.
+A package written for Laravel to integrate another framework or CMS will be problematic in most cases,
+and in some cases impossible due to certain dependencies on the framework.
+
+Application developers themselves have to write adaptations for each framework and CMS,
+which creates a lot of problems and does not cover all ecosystems.
+
+**Also, such applications have to do various integrations into the system:**
+
+1. Configure ACL
+2. Integrate the necessary scripts to the admin panel and to the site
+3. Create query handlers and a structure in the database
+4. Configure a bundle with the file system
+5. To save settings and configuration
+
+**Such applications include:**
+
+- Single Page Applications
+- Text editors and their plugins with multiple levels of dependency (plugin for plugin)
+- Media Handlers
+- Various optimizers and compressors
+- Applications for administrative work with files and databases
+- Chat bots, messengers, widgets
+- Integration API components, OAuth authorization providers
+- Hosting administration and monitoring tools, analytical tools
+- Landing pages and other micro applications ....
+
+**The framework is optimized to work with a large amount of applications, as well as to work as a subsystem for
+the main framework.**
+
+Each application is a composer package,
+with an additional description directly in the composer.json file.
+
+## Run
+
+
 ```php
+// If you are already using the framework, then you need to enable the symbiosis mode in the config
+// In this mode of operation, the framework will respond only to requests related to it and will not block work for "other" requests.
 $config['symbiosis'] = true;
 ```
-##### Инициализация
+
+#### Initialization
+The framework is attached from the composer directly to your index.php.
 ```php
-$basePath = dirname(__DIR__);// корневая папка проекта
+$basePath = dirname(__DIR__);// root folder of the project
+
 include_once $basePath . '/vendor/autoload.php';
 
 include $basePath.'/vendor/symbiotic/full/src/symbiotic.php';
 
-// Дальше может идти код инициализации и отработки другого фреймворка...
-//....
+// Then the initialization code and the work of another framework can go on when the symbiosis mode is enabled...
+//.... $laravel->handle();
+
 
 ```
-## Расширенный способ
+
+### Advanced method with its own configuration
+
 ```php
 
+$basePath = dirname(__DIR__);// root folder of the project
 
-
-$basePath = dirname(__DIR__);// корневая папка проекта
 include_once $basePath. '/vendor/autoload.php';
 
-$config  = [
-    'debug' => true,
-    'symbiosis' => true, // Режим симбиоза, если включен и фреймворк не найдет обработчик,
-    // то он ничего не вернет и основной фреймворк смодет сам обработать запрос
-    'default_host' => 'localhost',// для консоли , но ее пока нет
-    'uri_prefix' => 'symbiotic', // Префикс в котором работет фреймворк, если пустой то работае от корня
-    'base_path' => $basePath, // базовая папка проекта
-    'assets_prefix' => '/assets',
-    'storage_path' =>  $basePath . '/storage', // Если убрать то кеш отключится
-    'packages_paths' => [
-        $basePath . '/vendor', // Папка для приложений
-    ],
-    'bootstrappers' => [
-        //\Symbiotic\Develop\Bootstrap\DebugBootstrap::class,/// debug with develop app only
-        \Symbiotic\Core\Bootstrap\EventBootstrap::class,
-        \Symbiotic\SimpleCacheFilesystem\Bootstrap::class,
-        \Symbiotic\Packages\PackagesLoaderFilesystemBootstrap::class,
-        \Symbiotic\Packages\PackagesBootstrap::class,
-        \Symbiotic\Packages\ResourcesBootstrap::class,
-        \Symbiotic\Apps\Bootstrap::class,
-        \Symbiotic\Http\Bootstrap::class,
-        \Symbiotic\Http\Kernel\Bootstrap::class,
-        \Symbiotic\Routing\CacheRoutingProvider::class,
-        \Symbiotic\View\Blade\Bootstrap::class,
-    ],
-    'providers' => [
-        \Symbiotic\Http\Cookie\CookiesProvider::class,
-        \Symbiotic\Routing\SettlementsRoutingProvider::class,
-        \Symbiotic\Session\NativeProvider::class,
-    ],
-    'providers_exclude' => [
-        \Symbiotic\Routing\Provider::class,
-    ]
-];
+$config = include $basePath.'/vendor/symbiotic/full/src/config.sample.php';
 
-// Базовая постройка контейнера
+//.. Redefining the configuration array
+
+// Basic construction of the Core container
 $core = new \Symbiotic\Core\Core($config);
-// Или через билдер с кешем
-$cache = new Symbiotic\SimpleCacheFilesystem\SimpleCache($basePath . '/storage/cache/core');
+
+/**
+ * When installing the symbiotic/full package, a cached container is available
+ * Initialization in this case occurs through the Builder:
+ */
+$cache = new Symbiotic\Cache\FilesystemCache($config['storage_path'] . '/cache/core');
 $core = (new \Symbiotic\Core\ContainerBuilder($cache))
     ->buildCore($config);
-
-// Запуск 
-$core->run();
-// Дальше может идти код инициализации и отработки другого фреймворка...
-
-```
-##### Схема описания расширения и приложения для фреймворка
-Берем стандартный пакет композера и добавляем:
-```json
-{
-  "name": "vendor/package",
-  "require": {
-   // ...
-  },
-  "autoload": {
-   ///
-  
-  },
-// Добавляем описание пакета для фреймворка
-  "extra": {
-    "symbiotic": {
-          "id": "wso.my_package_id", // ID пакета формируется на сайте фреймворка, но можно локально любой ставить
-           // Описание приложения, пакет может и не иметь секцию приложения, а быть лишь расширением
-          "app": { 
-                "id": "my_package_id", // Id приложения, указывается без префикса родительского приложения
-                "parent_app": "wso", // ID родительсского приложения, если приложение плагин 
-                "name": "WSO Users exporter", // Имя приложения, используется в списке приложений и меню
-                "routing": "\\\\MyVendor\\\\MySuperPackage\\\\Routing", // Класс роутинга, не обязательно
-                "controllers_namespace": "\\\\Symbiotic\\\\Develop\\\\Controllers", // Базовый неймспейс для контроллеров, не обязательно
-                "version": "1.0.0", // Версия, не обязательно, плагины могут проверять и подстаиваться под изменения
-                "providers": [ // Провайдеры приложения, не обязательно
-                  "MyVendor\\\\MySuperPackage\\\\Providers\\\\AppProvider"
-                ],
-                // Не обязательно! Наследник от \\Symbiotic\\App\\Application
-                "app_class": "MyVendor\\\\MySuperPackage\\\\MyAppContainer" 
-          },
     
-          // Расширения ядра фреймворка, не обязательно
-          "bootstrappers":[
-             "MyVendor\\\\MySuperPackage\\\\CoreBootstrap" // Загрузчики
-          ],
-          "providers" : [
-             "MyVendor\\\\MySuperPackage\\\\MyDbProvider" // Провайдеры
-          ],
-          "providers_exclude" : [
-              // Исключение провайдеров из загрузки
-              // Например при двух пакетах одной библиотеки позволяет исключить не нужную
-          ]     
-    }
-  }
-}
+// Starting request processing
+$core->run();
+
+// Then the initialization code and the work of another framework can go on when the symbiosis mode is enabled...
+// $laravel->handle();
 
 ```
 
-#### Пример пакета только со статикой
-Всего пару строк:
+## Package scheme for the framework
+
+**The minimum scheme of the application description in the composer.json file:**
+
 ```json
 {
   "name": "vendor/package",
   "require": {
-   // ...
+    // ...
   },
   "autoload": {
-   // ...
+    // ...
   },
   "extra": {
     "symbiotic": {
-          "id": "my_super_theme_2",
-          // Можно указать что то одно или все вместе
-          "public_path": "assets", // Папка со статикой, относительно корня пакета 
-          "resources_path": "my_resources", // Папка c шаблонами и другими файлами, не доступны через http
-          // можно прокинуть в веб при необходимости через специальный объект доступа к ресурсам
+      "app": {
+        // Application ID
+        "id": "my_package_id",
+        // Routing provider
+        "routing": "\\MyVendor\\MySuperPackage\\Routing",
+        // Basic namespace for application controllers
+        "controllers_namespace": "\\MyVendor\\MySuperPackage\\Http\\Controllers"
+      }
     }
   }
 }
 
 ```
 
+### Full scheme of package for the framework
 
-#### Пример пакета приложения
-При конфигурации приложения можно не указывать пути для статики и ресурсов, тогда будут определены пути по умолчанию:
+```json
+{
+  "name": "vendor/package",
+  "require": {
+    // ...
+  },
+  "autoload": {
+    // ...
+  },
+  // Adding a description of the package for the symbiotic
+  "extra": {
+    "symbiotic": {
+      // Package ID  
+      "id": "my_super_package",
+      
+      // Application description, the package may not have an application section
+      "app": {
+        // Application ID, specified without the prefix of the parent application
+        "id": "image_optimizer",
+        // ID of the parent application (optional)
+        "parent_app": "media",
+        // Application name, used in the application list and menu
+        "name": "Media images optimizer",
+        // Routing class (optional)
+        "routing": "\\MyVendor\\MySuperPackage\\Routing",
+        // Basic namespace for controllers (optional)
+        "controllers_namespace": "\\Symbiotic\\Develop\\Controllers",
+        // Application providers (optional)
+        "providers": [
+          "MyVendor\\MySuperPackage\\Providers\\AppProvider"
+        ],
+        // Application container class (optional)
+        // Heir from \\Symbiotic\\App\\Application
+        "app_class": "MyVendor\\MySuperPackage\\MyAppContainer"
+      },
+      // Folder with static relative to the package root (will be accessible via the web) (optional)
+      "public_path": "assets",
+      // Folder with templates and other resources (not accessible via the Web) (optional)
+      "resources_path": "my_resources",
+      
+      // Framework Core Extensions
 
+      // Bootstrappers (optional)
+      "bootstrappers": [
+        "MyVendor\\MySuperPackage\\CoreBootstrap"
+      ],
+      // Providers (optional)
+      "providers": [
+        "MyVendor\\MySuperPackage\\MyDbProvider"
+      ],
+      // Exclusion of kernel providers (optional)
+      "providers_exclude": [
+        // Exclusion of providers from downloading
+        // For example, with two packages of the same library, it allows you to exclude unnecessary
+      ],
+      // Event subscribers (optional)
+      "events": {
+        "handlers": {
+          "Symbiotic\\Form\\FormBuilder": "MyVendor\\MyApp\\Events\\FilesystemFieldHandler",
+          "Symbiotic\\Settings\\FieldTypesRepository": "MyVendor\\MyApp\\Events\\FieldsHandler",
+          "Symbiotic\\UIBackend\\Events\\MainSidebar": "MyVendor\\MyApp\\Events\\Menu"
+        }
+      },
+      //Package settings fields (optional)
+      "settings_fields": [
+        {
+          "title": "Fields group 1",
+          "name": "group_1",
+          "collapsed": 0,
+          "type": "group",
+          "fields": [
+            {
+              "label": "Field 1",
+              "name": "filed_name_1",
+              "type": "text"
+            },
+            {
+              "label": "Select 1",
+              "name": "select_1",
+              "type": "select",
+              "variants": {
+                "value1" :"title1",
+                "value12" :"title2"
+              }
+            },
+            {
+              "label": "Boolean checkbox",
+              "name": "debug",
+              "description": "Debug mode",
+              "type": "boolean"
+            }
+          ]
+        }
+      ],
+      // Default settings (optional)
+      "settings": {
+        "filed_name_1": "demo_value",
+        "select_1": "value12",
+        "debug": "0"
+      },
+      // Console commands (optional)
+      "commands": {
+        "worker": "MyVendor\\MyApp\\Commands\\Worker",
+        "stop": "MyVendor\\MyApp\\Commands\\Stop"
+      }
+    }
+  }
+}
+
+```
+
+When configuring the application, you can not specify paths for statics and resources, then default paths will be defined.:
 - public_path = assets
 - resources_path = resources
 
-Шаблоны всегда дожны лежать в директории /view/ в папке ресурсов!
-```json
-{
-  "name": "vendor/package",
-  "require": {
-   // ...
-  },
-  "autoload": {
-   // ...
-  },
-  "extra": {
-    "symbiotic": {
-           "app": { 
-                "id": "my_package_id", // Id приложения
-                "routing": "\\\\MyVendor\\\\MySuperPackage\\\\Routing",
-                "controllers_namespace": "\\\\Symbiotic\\\\Develop\\\\Controllers"
-          },
-    }
-  }
-}
+Templates should always be in the `/view/` directory in the resources folder!
 
-```
+## Types of packages
 
-## Примерная структура пакета
-Четкой обязательной структуры нет, можно использовать любую. 
+All packages for the framework can be divided into several logical categories:
+
+- Application or plugin
+- Component (any composer package that needs settings or working with resources)
+- Core extension (replaces or adds key core components of the framework)
+- Static package (design theme, package with public files for the web)
+
+**Any package can combine all of the above.**
+
+## Sample file structure of the package
+There is no clear mandatory structure, you can use any one.
+If you are making an application based on the composer package (library), to avoid confusion,
+it is recommended to put all the code for the application in the `src/Symbiotic` folder.
+
 ```text
 vendor/
    -/my_vendor
       -/my_package_name
-           -/assets          - Статика
+           -/assets          - Public files
                 -/js
                 -/css
                 -/...
-           -/resources       - Ресурсы
-                -/views
+           -/resources       - Resources
+                -/views      - View templates
                 -/...
-           -/src             - Ваш пакет
+           -/src             - php code
                -/Http
                    -/Cоntrollers
                    -/...
-               -/ ...
+               -/Services
+                ...
                -/Routing.php
           -/composer.json
 ```
-
-При необходимости можно поселить все классы для приложения фреймворка в подпапку src/Symbiotic. Так не будет путаницы с функционалом вашего пакета.
-
-```text
-vendor/
-   -/my_vendor
-      -/my_package_name
-           -/symbiotic
-                   -/assets          - Статика
-                        -/js
-                        -/css
-                        -/...
-                   -/resources       - Ресурсы
-                        -/views
-                        -/...
-           -/src                     - Ваш пакет
-               -/Symbiotic
-                       -/Http
-                           -/Cоntrollers
-                           -/...
-                       -/Routing.php
-              -/Ваши папки и файлы ...
-              
-          -/composer.json
-```
-

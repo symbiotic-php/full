@@ -1,60 +1,61 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbiotic\Routing;
 
-use Symbiotic\Core\Support\Collection;
-use Symbiotic\Laravel\SettlementsRouter\Contracts\SettlementInterface;
-use Symbiotic\Packages\PackagesRepositoryInterface;
 
-/**
- * Class Settlements
- * @package Symbiotic\Services
- *
-
- */
 class PackagesSettlements implements SettlementsInterface
 {
-
     /**
-     * @var SettlementsInterface
+     * @var string
      */
-    protected SettlementsInterface $settlements;
-
-    /**
-     * @var SettlementFactory
-     */
-    protected SettlementFactory $factory;
-
-    protected PackagesRepositoryInterface $packages;
-
     protected string $backend_prefix;
 
-
-    public function __construct(SettlementsInterface $settlements, PackagesRepositoryInterface $packages, SettlementFactory $factory, string $backend_prefix)
-    {
-        $this->settlements = $settlements;
-        $this->factory = $factory;
-        $this->packages = $packages;
-        $this->backend_prefix = trim($backend_prefix,"\\/");
+    /**
+     * @param SettlementsInterface $settlements
+     * @param AppsRoutesRepository $apps_routing
+     * @param SettlementFactory    $factory
+     * @param string               $backend_prefix
+     */
+    public function __construct(
+        protected SettlementsInterface $settlements,
+        protected AppsRoutesRepository $apps_routing,
+        protected SettlementFactory $factory,
+        string $backend_prefix
+    ) {
+        $this->backend_prefix = trim($backend_prefix, "\\/");
     }
 
 
-    public function getByRouter(string $router)
+    /**
+     * @param string $router
+     *
+     * @return SettlementInterface|null
+     */
+    public function getByRouter(string $router): ?SettlementInterface
     {
         return $this->getSettlementByString($router);
     }
 
-    public function getByUrl(string $url): ?Settlement
+    /**
+     * @param string $url
+     *
+     * @return SettlementInterface|null
+     */
+    public function getByUrl(string $url): ?SettlementInterface
     {
         $path = $this->getPathByUrl($url);
         return $this->getSettlementByString($path);
     }
 
-    protected function getSettlementByString(string $string): ?Settlement
+    protected function getSettlementByString(string $string): ?SettlementInterface
     {
-
-        //$backend_prefix = \trim($app('config::backend_prefix', 'backend'), '/');
-        if (preg_match('~^(backend|api|default):([0-9a-z_\-\.]+)|/('.preg_quote($this->backend_prefix,'~').'|api)/(.[^/]+)~', $string, $m)) {
+        if (preg_match(
+            '~^(backend|api|default):([\da-z_\-\.]+)|/(' . preg_quote($this->backend_prefix, '~') . '|api)/(.[^/]+)~',
+            $string,
+            $m
+        )) {
             if (!empty($m[1]) && !empty($m[2])) {
                 $router = $m[1];
                 $app_id = $m[2];
@@ -62,20 +63,24 @@ class PackagesSettlements implements SettlementsInterface
                 $router = $m[3];
                 $app_id = $m[4];
             }
-            if ($this->packages->has($app_id)) {
-                return $this->factory->make([
-                    'prefix' => '/' .  ($router === 'backend'?$this->backend_prefix:$router) . '/' . $app_id . '/',
-                    'router' => ($router === $this->backend_prefix?'backend':$router). ':' . $app_id
-                ]);
+            if ($this->apps_routing->has($app_id)) {
+                return $this->factory->make(
+                    [
+                        'prefix' => '/' . ($router === 'backend' ? $this->backend_prefix : $router) . '/' . $app_id . '/',
+                        'router' => ($router === $this->backend_prefix ? 'backend' : $router) . ':' . $app_id
+                    ]
+                );
             }
         }
 
-        $app_id = explode('/', ltrim($string,'\\/'))[0];
-        if(!empty($app_id) && $this->packages->has($app_id)) {
-            return $this->factory->make([
-                'prefix' => $app_id,
-                'router' => $app_id
-            ]);
+        $app_id = explode('/', ltrim($string, '\\/'))[0];
+        if (!empty($app_id) && $this->apps_routing->has($app_id)) {
+            return $this->factory->make(
+                [
+                    'prefix' => $app_id,
+                    'router' => $app_id
+                ]
+            );
         }
 
         return null;
@@ -83,44 +88,32 @@ class PackagesSettlements implements SettlementsInterface
 
     /**
      * @param string $key
-     * @param $value
-     * @param bool $all
-     * @return Collection|Settlement[]|Settlement|null
+     * @param mixed  $value
+     * @param bool   $all
+     *
+     * @return SettlementInterface|array|SettlementInterface[]|null
      */
-    public function getByKey(string $key, $value, $all = false)
+    public function getByKey(string $key, mixed $value, bool $all = false): SettlementInterface|array|null
     {
-        /**
-         * @param $settlement
-         * @return bool
-         * @todo ДОПИСАТЬ
-         */
-        $callback = function ($settlement) use ($key, $value) {
-            /**
-             * @var Settlement $settlement
-             */
-            return $settlement->get($key) === $value;
-        };
-        $result = [];
-        foreach ($this->items as $v) {
-            if ($v->get($key) === $value) {
-                if ($all) {
-                    $result[] = $v;
-                } else {
-                    return $v;
-                }
-
+        if ($key === 'router') {
+            if ($this->apps_routing->has($value)) {
+                return $this->factory->make(
+                    [
+                        'prefix' => $value,
+                        'router' => $value
+                    ]
+                );
             }
         }
-        return $result;
+
+        return $this->settlements->getByKey($key, $value, $all);
     }
 
-    public static function normalizePrefix(string $prefix): string
-    {
-        $prefix = trim($prefix, ' \\/');
-
-        return $prefix == '' ? '/' : '/' . $prefix . '/';
-    }
-
+    /**
+     * @param string $url
+     *
+     * @return string
+     */
     public function getPathByUrl(string $url): string
     {
         return preg_replace('~(^((.+?\..+?)[/])|(^(https?://)?localhost(:\d+)?[/]))(.*)~i', '/', $url);

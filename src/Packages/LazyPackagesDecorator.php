@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbiotic\Packages;
 
 use Symbiotic\Filesystem\ArrayStorageTrait;
-use Symbiotic\Storage\RememberingInterface;
+use Symbiotic\Cache\RememberingInterface;
+
 
 class LazyPackagesDecorator implements PackagesRepositoryInterface, RememberingInterface
 {
@@ -14,10 +17,24 @@ class LazyPackagesDecorator implements PackagesRepositoryInterface, RememberingI
      */
     protected PackagesRepositoryInterface $repository;
 
+    /**
+     * @var array|null
+     */
     protected ?array $meta = null;
 
+    /**
+     * @var array|null
+     */
     protected ?array $packages = null;
 
+    /**
+     * @param PackagesRepositoryInterface $repository
+     * @param string|null                 $storage_path
+     *
+     * @throws \Symbiotic\Filesystem\NotExistsException
+     * @todo: Can transmit CacheInterface?
+     *
+     */
     public function __construct(PackagesRepositoryInterface $repository, string $storage_path = null)
     {
         $this->repository = $repository;
@@ -26,6 +43,12 @@ class LazyPackagesDecorator implements PackagesRepositoryInterface, RememberingI
         }
     }
 
+    /**
+     * @param string $id
+     *
+     * @return PackageConfig|null
+     * @throws
+     */
     public function getPackageConfig(string $id): ?PackageConfig
     {
         if ($this->has($id)) {
@@ -34,7 +57,12 @@ class LazyPackagesDecorator implements PackagesRepositoryInterface, RememberingI
         return null;
     }
 
-    public function has($id): bool
+    /**
+     * @param string $id
+     *
+     * @return bool
+     */
+    public function has(string $id): bool
     {
         return isset($this->getIds()[$id]);
     }
@@ -46,6 +74,7 @@ class LazyPackagesDecorator implements PackagesRepositoryInterface, RememberingI
 
     /**
      * @return array = ['ids'=>[],'bootstraps' =>[]];
+     *
      */
     protected function getMeta(): array
     {
@@ -66,14 +95,15 @@ class LazyPackagesDecorator implements PackagesRepositoryInterface, RememberingI
 
     /**
      * @param string $id
+     *
      * @return array
-     * @throws \Exception
+     * @throws PackagesException
      */
     public function get(string $id): array
     {
         $packages = $this->all();
         if (!isset($this->getIds()[$id])) {
-            throw new \Exception("Package [$id] not found!");
+            throw new PackagesException("Package [$id] not found!");
         }
         return $packages[$id];
     }
@@ -90,26 +120,45 @@ class LazyPackagesDecorator implements PackagesRepositoryInterface, RememberingI
         return $this->packages;
     }
 
+    /**
+     * @param PackagesLoaderInterface $loader
+     *
+     * @return void
+     */
     public function addPackagesLoader(PackagesLoaderInterface $loader): void
     {
         $this->repository->addPackagesLoader($loader);
     }
 
+    /**
+     * @param array $config
+     *
+     * @return void
+     */
     public function addPackage(array $config): void
     {
         $this->repository->addPackage($config);
     }
 
+    /**
+     * @return array
+     */
     public function getBootstraps(): array
     {
         return $this->getMeta()['bootstraps'];
     }
 
+    /**
+     * @return array|array[]
+     */
     public function getEventsHandlers(): array
     {
         return $this->getMeta()['handlers'];
     }
 
+    /**
+     * @return void
+     */
     public function load(): void
     {
         /**
@@ -117,5 +166,4 @@ class LazyPackagesDecorator implements PackagesRepositoryInterface, RememberingI
          * @see LazyPackagesDecorator::all()
          */
     }
-
 }

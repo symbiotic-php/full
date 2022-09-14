@@ -1,30 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbiotic\Routing;
 
 use Psr\SimpleCache\CacheInterface;
-
 
 
 class RouterCacheFactory implements RouterFactoryInterface
 {
 
     /**
-     * @var RouterFactoryInterface
+     * @param RouterFactoryInterface $factory
+     * @param CacheInterface|null    $cache
      */
-    protected RouterFactoryInterface |null $factory = null;
-
-    /**
-     * @var CacheInterface|null
-     */
-    protected CacheInterface|null $cache = null;
-
-    public function __construct(RouterFactoryInterface $factory, CacheInterface $cache = null)
-    {
-        $this->factory = $factory;
-        $this->cache = $cache;
+    public function __construct(
+        protected RouterFactoryInterface $factory,
+        protected ?CacheInterface $cache = null
+    ) {
     }
 
+    /**
+     * @param array $params
+     *
+     * @return RouterInterface
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
     public function factoryRouter(array $params = []): RouterInterface
     {
         if ($this->cache) {
@@ -33,7 +34,7 @@ class RouterCacheFactory implements RouterFactoryInterface
             $data = $this->cache->get($cache_key, $t = \uniqid());
             if ($data === $t) {
                 $router = $this->factory->factoryRouter($params);
-                $class = $router instanceof LazyRouterInterface?CacheLazyRouterDecorator::class :CacheRouterDecorator::class;
+                $class = $router instanceof LazyRouterInterface ? CacheLazyRouterDecorator::class : CacheRouterDecorator::class;
                 $data = new $class($this, $this->factory->factoryRouter($params), $cache_key);
             }
 
@@ -43,7 +44,13 @@ class RouterCacheFactory implements RouterFactoryInterface
         return $this->factory->factoryRouter($params);
     }
 
-    public function loadRoutes(RouterInterface $router)
+    /**
+     * @param RouterInterface $router
+     *
+     * @return void
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     */
+    public function loadRoutes(RouterInterface $router): void
     {
         $this->factory->loadRoutes($router);
         if ($this->cache && $router instanceof CacheRouterDecorator && $router->isAllowedCache()) {

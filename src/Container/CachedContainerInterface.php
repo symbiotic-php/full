@@ -1,25 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbiotic\Container;
 
 use Closure;
 
 interface CachedContainerInterface extends DIContainerInterface, \Serializable
 {
-
+    /**
+     * Allows caching of the service in the container
+     *
+     * The method works like a singleton, but with caching of the service
+     * Only services added via the method {@see DIContainerInterface::singleton()}
+     * If there is a cache in the container {@see \Psr\SimpleCache\CacheInterface},
+     * then the specified service will be cached
+     *
+     * @param string              $abstract
+     * @param Closure|string|null $concrete
+     * @param string|null         $alias
+     */
+    public function cached(string $abstract, Closure|string $concrete = null, string $alias = null): static;
 
     /**
-     * Разрешает кеширование сервиса в контейнере
+     * Marks the service as available for caching
      *
+     * @param string $abstract The service key for caching
+     *                         (use the interface with which the service was added)
      *
-     * !! Только сервисы добавленные через метод {@see DIContainerInterface::singleton()}
-     * Если есть сервис кеша в контейнере {@see \Psr\SimpleCache\CacheInterface} , то указанный сервис будет добавлен для кешироваиня
-     *
-     * @param string $abstract - ключ сервиса для кеширования, использовать интерфейс с которым был добавлен сервис
-     * @param Closure|string|null $concrete
-     * @param string|null $alias
+     * @return void
      */
-    public function cached(string $abstract, Closure|string $concrete = null, string $alias = null);
-
-    public function addToCache(string $abstract);
+    public function markAsCached(string $abstract): void;
 }

@@ -1,93 +1,97 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbiotic\Container;
 
 use \Closure;
 use Psr\SimpleCache\CacheInterface;
 
-/**
- * Trait CacheContainerTrait
- * @package Symbiotic\Container
- */
-trait CachedContainerTrait /*implements CachedContainerInterface*/
+
+trait CachedContainerTrait /* implements CachedContainerInterface */
 {
     /**
      * @var null|CacheInterface
      */
-    protected ?CacheInterface $container_cache = null;
+    protected ?CacheInterface $cache = null;
 
-    protected string $container_key = '';
     /**
-     * Массив ключей разрешенных сервисов для кеширования
-     * @var array|string[]
+     * Cache key
+     * @var string
+     */
+    protected string $key = '';
+    /**
+     * Array of keys of allowed caching services
+     * @var array
      */
     protected array $allow_cached = [];
 
     /**
      * set cache storage
+     *
      * @param CacheInterface $cache
-     * @param string $key
+     * @param string         $key
      */
-    public function setCache(CacheInterface $cache, string $key)
+    public function setCache(CacheInterface $cache, string $key): void
     {
-        $this->container_cache = $cache;
-        $this->container_key = $key;
+        $this->cache = $cache;
+        $this->key = $key;
     }
 
-    public function addToCache(string $abstract)
+    /**
+     * @inheritDoc
+     *
+     * @param string $abstract
+     *
+     * @return void
+     * @see CachedContainerInterface::markAsCached()
+     */
+    public function markAsCached(string $abstract): void
     {
         $this->allow_cached[$abstract] = 1;
     }
 
     /**
-     * Разрешает кеширование сервиса в контейнере
+     * @inheritDoc
      *
-     * Если есть сервис кеша {@see \Psr\SimpleCache\CacheInterface} в контейнере , то указанный ключ будет добавлен для кешироваиня
-     *
-     * @param string $abstract - ключ сервиса для кеширования
+     * @param string              $abstract
      * @param Closure|string|null $concrete
-     * @param string|null $alias
+     * @param string|null         $alias
+     *
+     * @return $this
+     * @see CachedContainerInterface::cached()
+     *
      */
-    public function cached(string $abstract, Closure|string $concrete = null, string $alias = null)
+    public function cached(string $abstract, Closure|string $concrete = null, string $alias = null): static
     {
-
         /**
          * @var $this ContainerTrait|CachedContainerInterface
          */
-        // Если сервис есть уже из кеша, нет смысла биндить
+        // If the service is already from the cache, there is no point in binding
         if (!$this->bound($abstract)) {
             $this->singleton($abstract, $concrete);
         } else {
-            if (!$concrete instanceof \Closure) {
+            if (!$concrete instanceof Closure) {
                 $concrete = $this->getClosure($abstract, is_null($concrete) ? $abstract : $concrete);
             }
             $this->bindings[$abstract] = ['concrete' => $concrete, 'shared' => true];
-            //$this->fireResolvingCallbacks($abstract, $this->instances[$abstract]);
         }
         if ($alias) {
             $this->alias($abstract, $alias);
         }
         $this->allow_cached[$abstract] = 1;
+
+        return $this;
     }
 
     /**
-     * @return string
-     *
-     * @see \Serializable::serialize()
+     * @return array
      */
-    public function serialize()
-    {
-        return \serialize($this->getSerializeData());
-    }
-
     protected function getSerializeData(): array
     {
-        /**
-         * @var \Symbiotic\Container\ContainerTrait|\Symbiotic\Container\SubContainerTrait| $this
-         */
         $data = [
-            'cache' => $this->container_cache,
-            'key' => $this->container_key,
+            'cache' => $this->cache,
+            'key' => $this->key,
         ];
         $instances = [];
         foreach ($this->allow_cached as $k => $v) {
@@ -96,22 +100,32 @@ trait CachedContainerTrait /*implements CachedContainerInterface*/
             }
         }
         $data['instances'] = $instances;
+
         return $data;
     }
 
     /**
+     * @return string
+     *
+     * @see \Serializable::serialize()
+     */
+    public function serialize(): string
+    {
+        return \serialize($this->getSerializeData());
+    }
+
+    /**
+     * @inheritDoc
+     *
      * @param $serialized
      *
      * @see \Serializable::unserialize()
      */
-    public function unserialize($serialized)
+    public function unserialize($serialized): void
     {
-        /**
-         * @var \Symbiotic\Container\ContainerTrait|\Symbiotic\Container\SubContainerTrait| $this
-         */
         $data = \unserialize($serialized, ['allowed_classes' => true]);
-        $this->container_cache = $data['cache'];
-        $this->container_key = $data['key'];
+        $this->cache = $data['cache'];
+        $this->key = $data['key'];
         foreach ($data['instances'] as $k => $instance) {
             $this->instances[$k] = $instance;
             $this->resolved[$k] = true;
@@ -119,23 +133,24 @@ trait CachedContainerTrait /*implements CachedContainerInterface*/
         $this->unserialized($data);
     }
 
-    protected function unserialized(array $data)
+    /**
+     * Prepare after unserialize
+     *
+     * @param array $data
+     */
+    protected function unserialized(array $data): void
     {
-
     }
 
     public function __destruct()
     {
         /**
-         * @var \Symbiotic\Container\ContainerTrait|\Symbiotic\Container\SubContainerTrait| $this
+         * @var ContainerTrait|SubContainerTrait|$this
          */
-        if ($this->container_cache) {
-            if (!$this->container_cache->has($this->container_key) && !$this->has('cache_cleaned')) {
-                $this->container_cache->set($this->container_key, $this, 60 * 60);
+        if ($this->cache) {
+            if (!$this->cache->has($this->key) && !$this->has('cache_cleaned')) {
+                $this->cache->set($this->key, $this, 60 * 60);
             }
         }
-
-
     }
-
 }

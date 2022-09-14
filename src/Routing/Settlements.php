@@ -1,60 +1,55 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbiotic\Routing;
 
-use Symbiotic\Core\Support\Collection;
 
-/**
- * Class Settlements
- * @package Symbiotic\Services
- *
-
- */
 class Settlements implements SettlementsInterface
 {
 
+    /**
+     * @var array
+     */
     protected array $items = [];
 
+    /**
+     * @var array
+     */
     protected array $find_patterns = [];
 
     /**
      * Settlements constructor.
      *
-     * @param \Closure $items  Generator for Foreach
-     * [
-     *    [
-     *      'prefix' => '/backend/',
-     *      'router' => 'backend',
-     *       // optional params
-     *      'settings' => [],
-     *      'locale' => ''...
-     *    ],
-     *    [
-     *      'prefix' => '/api/',
-     *      'router' => 'api',
-     *       // .....
-     *    ],
-     *    [
-     *      'prefix' => '/module1_baseurl/',
-     *      'router' => 'module1',
-     *       // .....
-     *    ]
-     * ];
+     * @param array $items    from config
+     *                        [
+     *                        [
+     *                        'prefix' => '/backend/',
+     *                        'router' => 'backend',
+     *                        // optional params
+     *                        'settings' => [],
+     *                        'locale' => ''...
+     *                        ],
+     *                        [
+     *                        'prefix' => '/module1_baseurl/',
+     *                        'router' => 'module1',
+     *                        // .....
+     *                        ]
+     *                        ];
      *
      *
      *
      *
      */
-    public function __construct(\Closure $items, SettlementFactory $factory)
+    public function __construct(protected SettlementFactory $factory, array $items)
     {
         $pattern = '';
         $index = 0;
         $counter = 0;
 
-        foreach ($items() as $v) {
+        foreach ($items as $v) {
             $pattern .= '(?<id_' . $index . '>^/' . preg_quote(trim($v['prefix'], '\\/'), '~') . '/.*)|';
-            // Может оставить массив, а при запросе оборачивать? как часто будут запрашивать?
-            $this->items[$index++] = is_array($v) ? new Settlement($v) : $v;
+            $this->items[$index++] = $v;
             if ($counter === 60) {
                 $this->find_patterns[] = '~' . rtrim($pattern, '|') . '~';
                 $pattern = '';
@@ -66,12 +61,13 @@ class Settlements implements SettlementsInterface
         if ($counter > 0) {
             $this->find_patterns[] = '~' . rtrim($pattern, '|') . '~';
         }
-
-        //  var_dump($this);
-        //  exit;
-        //  exit;
     }
 
+    /**
+     * @param string $prefix
+     *
+     * @return string
+     */
     public static function normalizePrefix(string $prefix): string
     {
         $prefix = trim($prefix, ' \\/');
@@ -79,39 +75,50 @@ class Settlements implements SettlementsInterface
         return $prefix == '' ? '/' : '/' . $prefix . '/';
     }
 
-    public function addSettlement(array $data)
-    {
-        /// parent::add($settlement = new Settlement($data));
-        //  return $settlement;
-    }
+    /*  public function addSettlement(array $data)
+      {
+          /// parent::add($settlement = new Settlement($data));
+          //  return $settlement;
+      }*/
 
-    public function getByRouter(string $router)
+    /**
+     * @param string $router
+     *
+     * @return SettlementInterface|null
+     */
+    public function getByRouter(string $router): ?SettlementInterface
     {
         return $this->getByKey('router', $router);
     }
 
     /**
      * @param string $key
-     * @param $value
-     * @param bool $all
-     * @return Collection|Settlement[]|Settlement|null
+     * @param mixed  $value
+     * @param bool   $all
+     *
+     * @return SettlementInterface|array|SettlementInterface[]|null
      */
-    public function getByKey(string $key, $value, $all = false)
+    public function getByKey(string $key, mixed $value, bool $all = false): SettlementInterface|array|null
     {
         $result = [];
         foreach ($this->items as $v) {
             if ($v->get($key) === $value) {
                 if ($all) {
-                    $result[] = $v;
+                    $result[] = $this->factory->make($v);
                 } else {
-                    return $v;
+                    return $this->factory->make($v);
                 }
             }
         }
-        return $result;
+        return $all ? $result : null;
     }
 
-    public function getByUrl(string $url): ?Settlement
+    /**
+     * @param string $url
+     *
+     * @return Settlement|null
+     */
+    public function getByUrl(string $url): ?SettlementInterface
     {
         $path = $this->getPathByUrl($url);
 
@@ -123,7 +130,7 @@ class Settlements implements SettlementsInterface
                         continue;
                     }
                     $id = substr($k, 3);
-                    return $this->items[$id];
+                    return $this->factory->make($this->items[$id]);
                 }
             }
         }
@@ -131,6 +138,11 @@ class Settlements implements SettlementsInterface
         return null;
     }
 
+    /**
+     * @param string $url
+     *
+     * @return string
+     */
     public function getPathByUrl(string $url): string
     {
         return preg_replace('~(^((.+?\..+?)[/])|(^(https?://)?localhost(:\d+)?[/]))(.*)~i', '/', $url);

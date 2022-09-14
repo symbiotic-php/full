@@ -1,22 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbiotic\Routing;
+
 
 interface SettlementsInterface
 {
+    /**
+     * @param string $router
+     *
+     * @return SettlementInterface|null
+     */
+    public function getByRouter(string $router): ?SettlementInterface;
 
-    public function getByRouter(string $router);
-
-    public function getByUrl(string $url) : ? Settlement;
-
+    /**
+     * @param string $url
+     *
+     * @return SettlementInterface|null
+     */
+    public function getByUrl(string $url): ?SettlementInterface;
 
     /**
      * @param string $key
-     * @param $value
-     * @param bool $all
-     * @return Settlement[]|Settlement|null
+     * @param mixed  $value
+     * @param bool   $all
+     *
+     * @return SettlementInterface[]|SettlementInterface|null
      */
-    public function getByKey(string $key, $value, $all = false);
-
-
+    public function getByKey(string $key, mixed $value, bool $all = false): SettlementInterface|array|null;
 }

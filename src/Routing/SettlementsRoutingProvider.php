@@ -1,74 +1,48 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Symbiotic\Routing;
 
-
-use Symbiotic\Container\CachedContainerInterface;
 use Symbiotic\Container\DIContainerInterface;
-use Symbiotic\Packages\PackagesRepositoryInterface;
 
 
 class SettlementsRoutingProvider extends Provider
 {
-    public function boot(): void
-    {
-    }
 
     public function register(): void
     {
         parent::register();
 
 
-        //TODO: Надо сравнить, кешировать или нет, ориентировочно на 600 пакетов
         $core = $this->app;
-        if ($core instanceof CachedContainerInterface) {
-            // $this->app->cached(SettlementsInterface::class);
-        }
+        //TODO: It is necessary to compare, cache or not, approximately 600 packets
+
+        /* if ($core instanceof CachedContainerInterface) {
+             $this->app->cached(SettlementsInterface::class);
+         }*/
         if (!$core->bound(SettlementsInterface::class)) {
-            $core->singleton(SettlementsInterface::class, function ($app) {
-                $generator = function () use ($app) {
-                    $settlements = $app('config::settlements', []);
+            $core->singleton(
+                SettlementsInterface::class,
+                static function ($app) {
+                    $factory = $app[SettlementFactory::class];
 
-                    foreach ($settlements as $v) {
-                        yield $v;
+                    $settlements = new Settlements($factory, $app('config::settlements', []));
+                    if ($app('config::packages_settlements', true)) {
+                        $settlements = new PackagesSettlements(
+                            $settlements,
+                            $app[AppsRoutesRepository::class],
+                            $factory,
+                            \trim($app('config::backend_prefix', 'backend'), '/')
+                        );
                     }
-                    // TODO: Должна быть опция отключения формирования по ID
 
-                    /**   Перенесено в проксю {@see PackagesSettlements}
-                     * foreach ($app[PackagesRepositoryInterface::class]->getIds() as $id) {
-                     * yield  [
-                     * 'prefix' => $id,
-                     * 'router' => $id
-                     * ];
-                     * yield [
-                     * 'prefix' => 'backend/' . $id,
-                     * 'router' => 'backend:' . $id
-                     * ];
-                     * yield [
-                     * 'prefix' => 'api/' . $id,
-                     * 'router' => 'api:' . $id
-                     * ];
-                     * }*/
-
-                };
-                $factory = $app[SettlementFactory::class];
-                $settlements = new Settlements($generator, $factory);
-                if ($app('config::packages_settlements', true)) {
-                    $settlements = new PackagesSettlements(
-                        $settlements,
-                        $app[PackagesRepositoryInterface::class],
-                        $factory,
-                        \trim($app('config::backend_prefix', 'backend'), '/')
-                    );
-                }
-
-                return $settlements;
-            }, 'settlements');
+                    return $settlements;
+                },
+                'settlements'
+            );
         }
         $core->alias(SettlementsInterface::class, 'settlements');
-
-
     }
 
     protected function registerRouter()
@@ -76,68 +50,71 @@ class SettlementsRoutingProvider extends Provider
         $this->app->singleton(RouterInterface::class, function (DIContainerInterface $app) {
             return new SettlementsRouter(
                 $this->getFactory(),
-                $app['settlements']);
-        }, 'router');
+                $app['settlements'],
+                $app[AppsRoutesRepository::class]
+            );
+        },                    'router');
     }
 
-    protected function getFactoryClass()
+    protected function getFactoryClass(): string
     {
         return RouterNamedFactory::class;
     }
 
-    protected function getRouterClass()
+    protected function getRouterClass(): string
     {
         return RouterLazy::class;
     }
 
-    protected function routesLoaderCallback()
+    protected function routesLoaderCallback(): \Closure
     {
         $app = $this->app;
         return function (RouterInterface $router) use ($app) {
-
-
             /**
-             * @var SettlementsRouter $routing
+             * @var SettlementsRouter                    $routing
              * @var RouterInterface|NamedRouterInterface $router
              */
             $router_name = $router->getName();
-            // $routing = $app['router'];
-            //$routing->selectRouter($router_name);
-            //if (!$router->isLoadedRoutes()) {
+
             /**
-             * @var AppRoutingInterface $provider
+             * @var AppRoutingInterface  $provider
+             * @var AppsRoutesRepository $repo
              */
             $repo = $app[AppsRoutesRepository::class];
 
-            if ($provider = $repo->getByAppId($router_name)) {
-                $provider->loadFrontendRoutes($router);
-            } else if (preg_match('~^(backend|api):([0-9a-z_@\-\.]+)~', $router_name, $m)) {
-                $action = $m[1];
+            if (preg_match('~^(backend|api):([\da-z_@\-\.]+)~', $router_name, $m)) {
+                $global_router = $m[1];
                 $app_id = $m[2];
                 $provider = $repo->getByAppId($app_id);
                 if (!$provider) {
                     return;
                 }
-                if ($action === 'backend') {
+                if ($global_router === 'backend') {
                     $provider->loadBackendRoutes($router);
-                } elseif ($action === 'api') {
+                } elseif ($global_router === 'api') {
                     $provider->loadApiRoutes($router);
                 }
-            } else if ($router_name === 'default') {
-                foreach ($app[AppsRoutesRepository::class]->getProviders() as $provider) {
-                    $app_id = $provider->getAppId();
-                    $router->group(['as' => $app_id, 'app' => $app_id], function ($router) use ($provider) {
-                        $provider->loadDefaultRoutes($router);
-                    });
-
+            } else {
+                if ($router_name === 'default') {
+                    // We load the default router for all applications at once
+                    foreach ($repo->getProviders() as $provider) {
+                        $app_id = $provider->getAppId();
+                        /**
+                         * default:...
+                         * the prefix of the global router is added automatically when loading above
+                         * @see SettlementsRouter::getNamedRoutes()
+                         */
+                        $router->group(['as' => $app_id . '::', 'app' => $app_id],
+                            function (RouterInterface $router) use ($provider) {
+                                $provider->loadDefaultRoutes($router);
+                            });
+                    }
+                } else {
+                    if ($provider = $repo->getByAppId($router_name)) {
+                        $provider->loadFrontendRoutes($router);
+                    }
                 }
             }
-
-            //   }
-
-            // $routing->selectPreviousRouter();
-
         };
     }
-
 }

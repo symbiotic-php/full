@@ -1,5 +1,5 @@
 # 3-Clause BSD License
-Copyright &copy; 2021 SymbioticPHP.
+Copyright &copy; 2022 SymbioticPHP.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are

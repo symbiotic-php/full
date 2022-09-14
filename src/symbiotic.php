@@ -1,29 +1,27 @@
 <?php
-$basePath = dirname(__DIR__,4);
 
-\Symbiotic\Core\Autoloader::register(false, [$basePath . '/modules'],
-    $basePath . '/storage/cache/core'// Если не кешировать, будет долго искать при большом количестве автозагрузки провайдеров и бутстрапов! Там говнокод!
-);
+$config = include __DIR__ . '/config.sample.php';
 
-
-$config = include __DIR__.'/config.sample.php';
-
-// Режим совместной работы с другим фреймворком
+// Collaboration mode with another framework
 //$config['symbiotic'] = true;
-
-// Можно и в корне запускать
+// You can also run it in the root, without a prefix
 //$config['uri_prefix'] = '';
 
-$cache = new Symbiotic\SimpleCacheFilesystem\SimpleCache($basePath . '/storage/cache/core');
-/// Загружаем  ядро
-$app = (new \Symbiotic\Core\ContainerBuilder($cache))
-    ->buildCore($config);
+// Loading the Core
+if (isset($config['storage_path'])) {
+    $cache = new Symbiotic\Cache\FilesystemCache($config['storage_path'] . '/cache/core');
+    // Loading cached Core
+    $app = (new \Symbiotic\Core\ContainerBuilder($cache))
+        ->buildCore($config);
+} else {
+    $app = new \Symbiotic\Core\Core($config);
+}
 
-/// Запускаем
+/// Starting processing
 $app->run();
 
 /**
- * Дальше может идти запуск вашего фреймворка
- * при режиме симбиоза Symbiotic обрабаытвает только свои роуты
+ * In symbiosis mode, the framework processes only its own requests
+ * Then your framework can be launched
  */
 

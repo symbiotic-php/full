@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbiotic\Routing;
 
 
@@ -8,7 +10,7 @@ namespace Symbiotic\Routing;
  * @package Symbiotic\Routing
  * @property  RouterNamedFactory $router_factory
  */
-class RouterLazy extends Router implements NamedRouterInterface,LazyRouterInterface
+class RouterLazy extends Router implements NamedRouterInterface, LazyRouterInterface
 {
     use NamedRouterTrait;
 
@@ -17,35 +19,56 @@ class RouterLazy extends Router implements NamedRouterInterface,LazyRouterInterf
      */
     protected bool $loaded_routes = false;
 
-    protected RouterFactoryInterface|null $router_factory = null;
-
-
-    public function __construct(RouterFactoryInterface $routerFactory)
+    public function __construct(protected RouterFactoryInterface $routerFactory)
     {
-        $this->router_factory = $routerFactory;
         parent::__construct();
     }
 
     /**
-     * @param $name
-     * @return mixed|null
+     * @param string $name
+     *
+     * @return RouteInterface|null
      */
-    public function getRoute(string $name) : ? RouteInterface
+    public function getByName(string $name): ?RouteInterface
     {
         $this->loadRoutes();
-        return parent::getRoute($name);
+        return parent::getByName($name);
     }
 
-    public function getBySettlement(string $settlement):array
+    /**
+     * @return void
+     */
+    public function loadRoutes(): void
+    {
+        if (!$this->loaded_routes) {
+            $this->loaded_routes = true;
+            $this->routerFactory->loadRoutes($this);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getNamedRoutes(): array
     {
         $this->loadRoutes();
-        return parent::getBySettlement($settlement);
+        return parent::getNamedRoutes();
     }
 
-
+    /**
+     * @param string $name
+     *
+     * @return array|RouteInterface[]
+     */
+    public function getByNamePrefix(string $name): array
+    {
+        $this->loadRoutes();
+        return parent::getByNamePrefix($name);
+    }
 
     /**
      * @param string|null $httpMethod
+     *
      * @return array
      */
     public function getRoutes(string $httpMethod = null): array
@@ -54,23 +77,17 @@ class RouterLazy extends Router implements NamedRouterInterface,LazyRouterInterf
         return parent::getRoutes($httpMethod);
     }
 
-
-    public function isLoadedRoutes():bool
+    /**
+     * @return bool
+     */
+    public function isLoadedRoutes(): bool
     {
         return $this->loaded_routes;
     }
 
     /**
-     *
+     * @return string[]
      */
-    public function loadRoutes()
-    {
-        if(!$this->loaded_routes)  {
-            $this->loaded_routes = true;
-            $this->router_factory->loadRoutes($this);
-        }
-    }
-
     public function __sleep()
     {
         return [
@@ -78,11 +95,13 @@ class RouterLazy extends Router implements NamedRouterInterface,LazyRouterInterf
             'routes',
             'loaded_routes',
             'name',
-            'domain'
-
+            'params'
         ];
     }
 
+    /**
+     * @return void
+     */
     public function __wakeup()
     {
         $this->loaded_routes = true;

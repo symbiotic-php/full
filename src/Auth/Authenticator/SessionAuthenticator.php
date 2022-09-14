@@ -1,7 +1,8 @@
 <?php
 
-namespace Symbiotic\Auth\Authenticator;
+declare(strict_types=1);
 
+namespace Symbiotic\Auth\Authenticator;
 
 use Symbiotic\Auth\AuthResult;
 use Symbiotic\Auth\ResultInterface;
@@ -13,15 +14,13 @@ class SessionAuthenticator extends AbstractAuthenticator
 
     const SESSION_USER_KEY = 'symbiotic_user';
 
-
     /**
-     * @var SessionStorageInterface Service without namespace , all $_SESSION array
+     * @param SessionStorageInterface $session Service without namespace , all $_SESSION array
+     *
+     * @see SessionAuthProvider::register()
      */
-    protected SessionStorageInterface $session;
-
-    public function __construct(SessionStorageInterface $session)
+    public function __construct(protected SessionStorageInterface $session)
     {
-        $this->session = $session;
     }
 
     /**
@@ -40,7 +39,6 @@ class SessionAuthenticator extends AbstractAuthenticator
                 return new AuthResult($this->initUser($user));
             }
         }
-        return (new AuthResult())->setError('Not valid user session data!');
-
+        return (new AuthResult())->setError('Not exists symbiotic user session data!');
     }
 }

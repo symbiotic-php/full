@@ -1,15 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbiotic\Routing;
 
 
-/**
- * Interface NamedRouterInterface
- * @package Symbiotic\Routing
- */
 interface NamedRouterInterface
 {
-    public function setName(string $name);
+    /**
+     * @param string $name
+     *
+     * @return void
+     */
+    public function setName(string $name): void;
 
-    public function getName() : string;
+    /**
+     * @return string
+     */
+    public function getName(): string;
 }

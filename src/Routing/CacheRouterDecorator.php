@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbiotic\Routing;
 
 use Closure;
@@ -7,64 +9,101 @@ use Closure;
 
 class CacheRouterDecorator implements RouterInterface
 {
-
     use AddRouteTrait;
 
     /**
-     * @var RouterFactoryInterface|null
+     * @var bool
      */
-    protected ?RouterFactoryInterface $factory = null;
-
-    /**
-     * @var RouterInterface|null
-     */
-    protected ?RouterInterface $router = null;
-
-
-    protected string $cache_key = '';
-
     protected bool $allowed_cache = true;
 
-    public function __construct(RouterFactoryInterface $factory, RouterInterface $router, string $cache_key)
-    {
-        $this->factory = $factory;
-        $this->router = $router;
-        $this->cache_key = $cache_key;
+
+    /**
+     * @param RouterFactoryInterface $factory
+     * @param RouterInterface        $router
+     * @param string                 $cache_key
+     */
+    public function __construct(
+        protected RouterFactoryInterface $factory,
+        protected RouterInterface $router,
+        protected string $cache_key
+    ) {
     }
 
 
+    /**
+     * @return string
+     */
     public function getCacheKey(): string
     {
         return $this->cache_key;
     }
 
-    public function isAllowedCache()
+    /**
+     * @return bool
+     */
+    public function isAllowedCache(): bool
     {
         return $this->allowed_cache;
     }
 
+    /**
+     * @return RouterInterface
+     */
     public function getRealInstance(): RouterInterface
     {
         return $this->router;
     }
 
-    public function setRoutesDomain(string $domain)
+    /**
+     * @param array $params
+     *
+     * @return void
+     */
+    public function setParams(array $params): void
     {
         $this->call(__FUNCTION__, func_get_args());
     }
 
-    protected function call($method, $parameters)
+    /**
+     * @param string $domain
+     *
+     * @return void
+     */
+    public function setRoutesDomain(string $domain): void
+    {
+        $this->call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * @param string $method
+     * @param array  $parameters
+     *
+     * @return mixed
+     */
+    protected function call(string $method, array $parameters): mixed
     {
         return call_user_func_array([$this->router, $method], $parameters);
     }
 
-    public function addRoute($httpMethods, string $uri, string|array|\Closure $action): RouteInterface
+    /**
+     * @param string|array         $httpMethods
+     * @param string               $uri
+     * @param string|array|Closure $action
+     *
+     * @return RouteInterface
+     */
+    public function addRoute(string|array $httpMethods, string $uri, string|array|Closure $action): RouteInterface
     {
         $this->checkCallbacks($action);
         return $this->call(__FUNCTION__, func_get_args());
     }
 
-    private function checkCallbacks($data)
+    /**
+     * @param $data
+     *
+     * @return void
+     */
+    private function checkCallbacks($data): void
     {
         if (is_array($data)) {
             if (isset($data['middleware'])) {
@@ -82,7 +121,13 @@ class CacheRouterDecorator implements RouterInterface
         }
     }
 
-    public function group(array $attributes, \Closure $routes)
+    /**
+     * @param array   $attributes
+     * @param Closure $routes
+     *
+     * @return void
+     */
+    public function group(array $attributes, Closure $routes): void
     {
         $this->checkCallbacks($attributes);
         $this->router->group($attributes, function ($real_router) use ($routes) {
@@ -90,25 +135,52 @@ class CacheRouterDecorator implements RouterInterface
         });
     }
 
-    public function getRoute(string $name): ?RouteInterface
+    /**
+     * @param string $name
+     *
+     * @return RouteInterface|null
+     */
+    public function getByName(string $name): ?RouteInterface
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
-    public function getBySettlement(string $settlement): array
+    /**
+     * @return array|RouteInterface[]
+     */
+    public function getNamedRoutes(): array
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param string $name
+     *
+     * @return array|RouteInterface[]
+     */
+    public function getByNamePrefix(string $name): array
+    {
+        return $this->call(__FUNCTION__, func_get_args());
+    }
+
+    /**
+     * @param string|null $httpMethod
+     *
+     * @return array
+     */
     public function getRoutes(string $httpMethod = null): array
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
 
+    /**
+     * @param string $httpMethod
+     * @param string $uri
+     *
+     * @return RouteInterface|null
+     */
     public function match(string $httpMethod, string $uri): ?RouteInterface
     {
         return $this->call(__FUNCTION__, func_get_args());
     }
-
-
 }

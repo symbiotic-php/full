@@ -1,29 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbiotic\Routing;
 
 
-/**
- * Class Settlement
- * @package Symbiotic\Routing
- * @todo Добавить интефейс
- */
-class Settlement
+class Settlement implements SettlementInterface
 {
+    /**
+     * @var array
+     */
     protected array $config = [];
 
+    /**
+     * @var string
+     */
     protected string $path = '/';
 
     /**
      * Settlement constructor.
      *
      * @param array $config = [
-     *      'prefix' => '/backend/', // Require parameter
-     *      'router' => 'backend', // Require parameter
-     *       // optional params
-     *      'settings' => [],
-     *      'locale' => ''...
-     *    ];
+     *                      'prefix' => '/backend/', // Require parameter
+     *                      'router' => 'backend', // Require parameter
+     *                      // optional params
+     *                      'settings' => [],
+     *                      'locale' => ''...
+     *                      ];
      *
      *
      */
@@ -31,40 +34,51 @@ class Settlement
     {
         $this->config = $config;
         $this->path = '/' . trim($config['prefix'], '\\/ ');
-
     }
 
+    /**
+     * @param string $uri
+     *
+     * @return string
+     */
     public function getUriWithoutSettlement(string $uri): string
     {
         return preg_replace('/^' . preg_quote($this->getPath(), '/') . '/uDs', '', $uri);
     }
 
+    /**
+     * @return string
+     */
     public function getPath(): string
     {
         return $this->path;
     }
 
+    /**
+     * @return string
+     */
     public function getRouter(): string
     {
         return $this->get('router');
     }
 
     /**
-     * @param string|null $name
-     * @param null $default
+     * @param string $name
+     * @param mixed  $default
      *
-     * @return array|mixed
+     * @return mixed
      */
-    public function get(string $name = null, $default = null)
+    public function get(string $name, mixed $default = null): mixed
     {
-        return !$name ? $this->config : (isset($this->config[$name]) ? $this->config[$name] : $default);
+        return $this->config[$name] ?? $default;
     }
 
     /**
-     * Проверяет соответствие пути к префиксу поселения
-     * Например:
+     * Checks the correspondence of the path to the settlement prefix
+     *
+     * For example:
      * prefix = '/test/'
-     * валидные пути
+     * valid paths:
      * /test/
      * /test/data
      * /test/data/data....
@@ -73,10 +87,8 @@ class Settlement
      *
      * @return bool
      */
-    public function validatePath(string $path)
+    public function validatePath(string $path): bool
     {
-        return (bool)preg_match('/^' . preg_quote($this->getPath(), '/') . '.*/uDs', $path, $r);
+        return (bool)preg_match('/^' . preg_quote($this->getPath(), '/') . '.*/uDs', $path);
     }
-
-
 }

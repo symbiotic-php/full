@@ -1,19 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Symbiotic\Routing;
 
 
-/**
- * Interface NamedRouterInterface
- * @package Symbiotic\Routing
- */
 interface LazyRouterInterface extends NamedRouterInterface
 {
-
-    public function isLoadedRoutes():bool;
+    /**
+     * @return bool
+     */
+    public function isLoadedRoutes(): bool;
 
     /**
-     * @return mixed
+     * @return void
      */
-    public function loadRoutes();
+    public function loadRoutes(): void;
 }

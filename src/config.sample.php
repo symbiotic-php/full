@@ -1,6 +1,7 @@
 <?php
 
-$basePath = dirname(__DIR__, 3);
+$basePath = dirname(__DIR__, 4);
+
 $microConfig = $basePath . '/vendor/symbiotic/micro/src/config.sample.php';
 if (file_exists($microConfig)) {
     $config = include $microConfig;

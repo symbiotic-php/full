@@ -2,7 +2,7 @@
   "name": "symbiotic/full",
   "description": "Complete assembly of the SymbioticPHP framework with a cached container and optimized core services",
   "license": "BSD-3-Clause",
-  "version": "1.4.0.3",
+  "version": "1.4.1.3",
   "homepage": "https://symbioticphp.com",
   "authors": [
     {

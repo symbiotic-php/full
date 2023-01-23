@@ -116,6 +116,6 @@ class PackagesSettlements implements SettlementsInterface
      */
     public function getPathByUrl(string $url): string
     {
-        return preg_replace('~(^((.+?\..+?)[/])|(^(https?://)?localhost(:\d+)?[/]))(.*)~i', '/', $url);
+       return  parse_url($url, PHP_URL_PATH);
     }
 }

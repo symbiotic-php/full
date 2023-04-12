@@ -109,9 +109,9 @@ trait CachedContainerTrait /* implements CachedContainerInterface */
      *
      * @see \Serializable::serialize()
      */
-    public function serialize(): string
+    public function __serialize(): array
     {
-        return \serialize($this->getSerializeData());
+        return $this->getSerializeData();
     }
 
     /**
@@ -121,9 +121,9 @@ trait CachedContainerTrait /* implements CachedContainerInterface */
      *
      * @see \Serializable::unserialize()
      */
-    public function unserialize($serialized): void
+    public function __unserialize(array $data): void
     {
-        $data = \unserialize($serialized, ['allowed_classes' => true]);
+
         $this->cache = $data['cache'];
         $this->key = $data['key'];
         foreach ($data['instances'] as $k => $instance) {
@@ -149,7 +149,7 @@ trait CachedContainerTrait /* implements CachedContainerInterface */
          */
         if ($this->cache) {
             if (!$this->cache->has($this->key) && !$this->has('cache_cleaned')) {
-                $this->cache->set($this->key, $this, 60 * 60);
+                $this->cache->set($this->key, \serialize($this), 60 * 60);
             }
         }
     }

@@ -26,6 +26,8 @@ class ContainerBuilder
             if ($core === $time) {
                 $core = new CachedCore($config);
                 $core->setCache($this->cache, $key);
+            } else {
+                $core = \unserialize($core, ['allowed_classes' => true]);
             }
         } else {
             $core = new Core($config);

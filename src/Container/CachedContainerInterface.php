@@ -6,7 +6,7 @@ namespace Symbiotic\Container;
 
 use Closure;
 
-interface CachedContainerInterface extends DIContainerInterface, \Serializable
+interface CachedContainerInterface extends DIContainerInterface
 {
     /**
      * Allows caching of the service in the container
@@ -31,4 +31,8 @@ interface CachedContainerInterface extends DIContainerInterface, \Serializable
      * @return void
      */
     public function markAsCached(string $abstract): void;
+
+    public function __serialize(): array;
+
+    public function __unserialize(array $data): void;
 }

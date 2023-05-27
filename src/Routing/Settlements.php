@@ -48,7 +48,13 @@ class Settlements implements SettlementsInterface
         $counter = 0;
 
         foreach ($items as $v) {
-            $pattern .= '(?<id_' . $index . '>^/' . preg_quote(trim($v['prefix'], '\\/'), '~') . '/.*)|';
+            /// for / root
+            if(empty(trim($v['prefix'], '\\/'))) {
+                $pattern .= '(?<id_' . $index . '>^/.*)|';
+            } else {
+                $pattern .= '(?<id_' . $index . '>^/' . preg_quote(trim($v['prefix'], '\\/'), '~') . '/.*)|';
+
+            }
             $this->items[$index++] = $v;
             if ($counter === 60) {
                 $this->find_patterns[] = '~' . rtrim($pattern, '|') . '~';
@@ -102,7 +108,7 @@ class Settlements implements SettlementsInterface
     {
         $result = [];
         foreach ($this->items as $v) {
-            if ($v->get($key) === $value) {
+            if (isset($v[$key]) && $v[$key] === $value) {
                 if ($all) {
                     $result[] = $this->factory->make($v);
                 } else {

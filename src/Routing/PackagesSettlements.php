@@ -46,7 +46,11 @@ class PackagesSettlements implements SettlementsInterface
     public function getByUrl(string $url): ?SettlementInterface
     {
         $path = $this->getPathByUrl($url);
-        return $this->getSettlementByString($path);
+        $settlement = $this->getSettlementByString($path);
+        if(null !== $settlement) {
+            return $settlement;
+        }
+        return $this->settlements->getByUrl($url);
     }
 
     protected function getSettlementByString(string $string): ?SettlementInterface
